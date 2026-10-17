@@ -164,6 +164,17 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 
 .graph { position: relative; min-height: 0; border-top: 1px solid #343845; }
 .view-split .graph { border-top: 0; }
+.graph-tools { position: absolute; z-index: 5; top: 8px; right: 8px; display: flex; gap: 2px; padding: 3px; background: #1b1e25e6; border: 1px solid #414858; border-radius: 6px; font-size: 12px; box-shadow: 0 4px 12px #0006; }
+.graph-tools button { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; color: #cfd5e2; }
+.graph-tools button:hover { background: #3a4152; }
+.graph-tools button.on { background: #3974d6; color: #fff; }
+.selection-bar { position: absolute; z-index: 5; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 12px; background: #292d37f2; border: 1px solid #5b6f9e; border-radius: 8px; font-size: 12px; box-shadow: 0 6px 18px #000a; white-space: nowrap; }
+.selection-bar span { margin-right: 6px; color: #dfe4ee; }
+.selection-bar button { border: 1px solid #485064; background: #2f3a4e; padding: 3px 10px; border-radius: 5px; cursor: pointer; }
+.selection-bar button:hover { border-color: var(--accent); }
+.selection-bar button.danger { background: #8e2f35; border-color: #b4474e; color: #fff; }
+.selection-bar button.danger:hover { background: #b23a42; }
+.react-flow__selection, .react-flow__nodesselection-rect { background: #6da7ff22; border: 1px dashed #6da7ff; }
 .breadcrumb { position: absolute; z-index: 5; top: 8px; left: 8px; display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #292d37ee; border: 1px solid #b48cff; border-radius: 6px; font-size: 12px; box-shadow: 0 4px 12px #0007; }
 .breadcrumb button:not(.bar-btn) { border: 0; background: none; color: #b8c6ff; cursor: pointer; padding: 0; text-decoration: underline; }
 

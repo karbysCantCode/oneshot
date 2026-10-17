@@ -19,6 +19,7 @@ import {
   type Connection,
   type Edge,
   type ReactFlowInstance,
+  SelectionMode,
 } from '@xyflow/react';
 import ShaderNodeView from './components/ShaderNode';
 import ContextMenu, { type MenuItem, type MenuState } from './components/ContextMenu';
@@ -231,6 +232,12 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [showExport, setShowExport] = useState(false);
+  /** Workspace: left-drag draws a selection box instead of panning. */
+  const [boxSelect, setBoxSelect] = useState(false);
+  /** Last mass delete, for Undo (Ctrl/⌘+Z). */
+  const [undoDelete, setUndoDelete] = useState<{ nodes: ShaderNode[]; edges: Edge[]; luts: Map<string, LutData>; count: number } | null>(null);
+  /** True while the pointer was last used in the node workspace (scopes Ctrl/⌘+A and Delete). */
+  const graphActive = useRef(false);
   const [exporting, setExporting] = useState(false);
   const [exportOpts, setExportOpts] = useState<ExportOptions>(loadExportOptions);
 
@@ -701,13 +708,128 @@ export default function App() {
     setNodes((all) => all.map((n) => (ids.has(n.id) ? { ...n, data: { ...n.data, bypass: on } } : n)));
   }, [setNodes]);
 
+  /* ---------- mass selection & delete ---------- */
+  /** Group Input / Output define a group's sockets and can't be deleted. */
+  const deletable = (n: ShaderNode) => n.data.kind !== 'groupIn' && n.data.kind !== 'groupOut';
+
+  /** Delete nodes (by id) and selected wires, keeping one step of undo. */
+  const deleteNodes = useCallback(
+    (ids: Set<string>, alsoSelectedEdges = true) => {
+      const { nodes: ns, edges: es, luts: lt } = live.current;
+      let gone = new Set(ns.filter((n) => ids.has(n.id) && deletable(n)).map((n) => n.id));
+      // Mass deletes keep the Output node (delete it on its own if you really mean to).
+      const keptOutput = gone.size > 1 && ns.some((n) => gone.has(n.id) && n.data.kind === 'output');
+      if (keptOutput) gone = new Set([...gone].filter((id) => ns.find((n) => n.id === id)?.data.kind !== 'output'));
+      const keptEdges = es.filter((e) => !(alsoSelectedEdges && e.selected) && !gone.has(e.source) && !gone.has(e.target));
+      const wires = es.length - keptEdges.length;
+      if (!gone.size && !wires) {
+        setStatus('Nothing selected to delete');
+        return;
+      }
+      setUndoDelete({ nodes: ns, edges: es, luts: lt, count: gone.size });
+      setNodes(ns.filter((n) => !gone.has(n.id)));
+      setEdges(keptEdges);
+      if ([...gone].some((id) => lt.has(id)))
+        setLuts((m) => {
+          const next = new Map(m);
+          gone.forEach((id) => next.delete(id));
+          return next;
+        });
+      setMenu(null);
+      setStatus(
+        `Deleted ${gone.size} node${gone.size === 1 ? '' : 's'}${wires ? ` and ${wires} wire${wires === 1 ? '' : 's'}` : ''}${keptOutput ? ' (Output kept)' : ''} – Ctrl/⌘+Z to undo`,
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [setNodes, setEdges],
+  );
+
+  const deleteSelected = useCallback(
+    () => deleteNodes(new Set(live.current.nodes.filter((n) => n.selected).map((n) => n.id))),
+    [deleteNodes],
+  );
+
+  /** Delete every node on this level except Output (and a group's Input/Output). */
+  const clearWorkspace = () => {
+    const ids = new Set(live.current.nodes.filter((n) => n.data.kind !== 'output').map((n) => n.id));
+    if (!ids.size) return setStatus('The workspace is already empty');
+    if (!window.confirm(`Delete all ${ids.size} nodes${stack.length ? ' in this group' : ''}? (Output is kept · Ctrl/⌘+Z undoes)`)) return;
+    deleteNodes(ids);
+  };
+
+  const undoLastDelete = useCallback(() => {
+    if (!undoDelete) return;
+    setNodes(undoDelete.nodes.map((n) => ({ ...n, selected: false })));
+    setEdges(undoDelete.edges);
+    setLuts(undoDelete.luts);
+    setStatus(`Restored ${undoDelete.count} deleted node${undoDelete.count === 1 ? '' : 's'}`);
+    setUndoDelete(null);
+  }, [undoDelete, setNodes, setEdges]);
+
+  // Moving to another graph level makes the snapshot meaningless.
+  useEffect(() => setUndoDelete(null), [stack.length]);
+
+  const selectNodes = useCallback(
+    (fn: (n: ShaderNode) => boolean) => {
+      setNodes((ns) => ns.map((n) => ({ ...n, selected: fn(n) })));
+      setEdges((es) => es.map((e) => (e.selected ? { ...e, selected: false } : e)));
+    },
+    [setNodes, setEdges],
+  );
+  const selectAll = useCallback(() => selectNodes(() => true), [selectNodes]);
+  const selectNone = useCallback(() => selectNodes(() => false), [selectNodes]);
+  const invertSelection = () => selectNodes((n) => !n.selected);
+  const selectBypassed = () => selectNodes((n) => !!n.data.bypass);
+  /** Nodes not connected (directly or indirectly) to Output – safe to clean up. */
+  const selectUnused = () => {
+    const { nodes: ns, edges: es } = live.current;
+    const used = new Set<string>();
+    const stackIds = ns.filter((n) => n.data.kind === 'output' || n.data.kind === 'groupOut').map((n) => n.id);
+    while (stackIds.length) {
+      const id = stackIds.pop()!;
+      if (used.has(id)) continue;
+      used.add(id);
+      es.filter((e) => e.target === id).forEach((e) => stackIds.push(e.source));
+    }
+    const unused = ns.filter((n) => !used.has(n.id) && deletable(n));
+    selectNodes((n) => unused.some((u) => u.id === n.id));
+    setStatus(unused.length ? `Selected ${unused.length} node${unused.length === 1 ? '' : 's'} not connected to Output` : 'Every node feeds the Output');
+  };
+
+  const selectedCount = nodes.filter((n) => n.selected).length;
+  const selectedEdgeCount = edges.filter((e) => e.selected).length;
+
+  // Remember whether the node workspace was the last place the pointer was used.
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      graphActive.current = !!graphDiv.current?.contains(e.target as globalThis.Node);
+    };
+    window.addEventListener('pointerdown', onDown, true);
+    return () => window.removeEventListener('pointerdown', onDown, true);
+  }, []);
+
   // Keyboard: Ctrl/⌘+G group · Ctrl/⌘+Shift+G ungroup · Tab enter/exit group · M bypass
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
       const mod = e.ctrlKey || e.metaKey;
-      if (mod && e.key.toLowerCase() === 'g') {
+      const inGraph = graphActive.current;
+      if (inGraph && (e.key === 'Delete' || e.key === 'Backspace')) {
+        e.preventDefault();
+        deleteSelected();
+      } else if (inGraph && mod && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        if (e.shiftKey) selectNone();
+        else selectAll();
+      } else if (inGraph && e.key === 'Escape') {
+        selectNone();
+      } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'z' && undoDelete) {
+        e.preventDefault();
+        undoLastDelete();
+      } else if (inGraph && !mod && !e.altKey && e.key.toLowerCase() === 'b') {
+        setBoxSelect((v) => !v);
+      } else if (mod && e.key.toLowerCase() === 'g') {
         e.preventDefault();
         if (e.shiftKey || e.altKey) ungroupSelected();
         else groupSelected();
@@ -725,7 +847,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [groupSelected, ungroupSelected, enterGroup, exitTo, toggleBypassSelected]);
+  }, [groupSelected, ungroupSelected, enterGroup, exitTo, toggleBypassSelected, deleteSelected, selectAll, selectNone, undoDelete, undoLastDelete]);
 
   const onNodeMenu = useCallback(
     (e: ReactMouseEvent, node: ShaderNode) => {
@@ -763,16 +885,16 @@ export default function App() {
           },
         });
       items.push('separator', {
-        label: 'Delete',
+        label: selCount > 1 && node.selected ? `Delete ${selCount} nodes` : 'Delete',
         danger: true,
         onSelect: () => {
-          setNodes((ns) => ns.filter((n) => n.id !== node.id));
-          setEdges((es) => es.filter((x) => x.source !== node.id && x.target !== node.id));
+          const sel = live.current.nodes.filter((n) => n.selected).map((n) => n.id);
+          deleteNodes(new Set(sel.includes(node.id) ? sel : [node.id]), false);
         },
       });
       setMenu({ x: e.clientX, y: e.clientY, title: node.data.label, items });
     },
-    [enterGroup, toggleBypass, resetNode, renameNode, groupSelected, setNodes, setEdges],
+    [enterGroup, toggleBypass, resetNode, renameNode, groupSelected, deleteNodes, setNodes, setEdges],
   );
 
   /* ---------- nodes & edges passed to React Flow ---------- */
@@ -1393,12 +1515,6 @@ export default function App() {
     ]);
   };
 
-  const deleteSelected = () => {
-    const gone = new Set(nodes.filter((n) => n.selected).map((n) => n.id));
-    setNodes((ns) => ns.filter((n) => !n.selected));
-    setEdges((es) => es.filter((e) => !e.selected && !gone.has(e.source) && !gone.has(e.target)));
-  };
-
   /* ---------- project files ---------- */
   const save = () => {
     const root = rootGraph();
@@ -1529,7 +1645,20 @@ export default function App() {
           <details>
             <summary>Edit</summary>
             <div>
-              <button onClick={menuAction(deleteSelected)}>Delete selected</button>
+              <button disabled={!undoDelete} onClick={menuAction(undoLastDelete)}>
+                Undo delete (Ctrl/⌘+Z)
+              </button>
+              <hr />
+              <button onClick={menuAction(selectAll)}>Select all nodes (Ctrl/⌘+A)</button>
+              <button onClick={menuAction(invertSelection)}>Invert selection</button>
+              <button onClick={menuAction(selectUnused)}>Select unused nodes</button>
+              <button onClick={menuAction(selectBypassed)}>Select bypassed nodes</button>
+              <button onClick={menuAction(selectNone)}>Select none (Esc)</button>
+              <hr />
+              <button disabled={!selectedCount && !selectedEdgeCount} onClick={menuAction(deleteSelected)}>
+                Delete selected{selectedCount ? ` (${selectedCount})` : ''} (Delete)
+              </button>
+              <button onClick={menuAction(clearWorkspace)}>Delete all nodes…</button>
               <button onClick={menuAction(toggleBypassSelected)}>Bypass selected (M)</button>
               <button onClick={menuAction(() => resetNodes('selected'))}>Reset selected nodes to defaults</button>
               <button onClick={menuAction(() => resetNodes('all'))}>Reset all nodes to defaults…</button>
@@ -1611,6 +1740,11 @@ export default function App() {
               <p>
                 <b>Media Pool:</b> click / Ctrl-click / Shift-click to select images, Select all, then Delete (or the bin). Images,
                 the Library and the workspace graph are kept in this browser across refreshes.
+              </p>
+              <p>
+                <b>Selecting & deleting nodes:</b> Shift-drag (or turn on Box select / B) to draw a selection box, Ctrl/⌘-click to add,
+                Ctrl/⌘+A for all. Delete / Backspace or the selection bar deletes; Edit → Delete all nodes clears the workspace;
+                Ctrl/⌘+Z undoes the last delete.
               </p>
               <p>
                 <b>Library:</b> Insert adds a look’s nodes after your graph so you can tweak them; Edit replaces the graph.
@@ -1710,6 +1844,56 @@ export default function App() {
                 </button>
               </div>
             )}
+            <div className="graph-tools">
+              <button
+                className={boxSelect ? 'on' : ''}
+                onClick={() => setBoxSelect((v) => !v)}
+                title={boxSelect ? 'Box select ON: drag to select · middle/right-drag to pan (B)' : 'Box select OFF: drag to pan · Shift-drag to select (B)'}
+              >
+                <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
+                  <rect x="1.5" y="1.5" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1.4" strokeDasharray="2.2 1.6" />
+                </svg>
+                Box select
+              </button>
+              <button onClick={selectAll} title="Select all nodes (Ctrl/⌘+A)">
+                All
+              </button>
+              <button onClick={selectUnused} title="Select nodes that don't feed the Output">
+                Unused
+              </button>
+              {undoDelete && (
+                <button onClick={undoLastDelete} title="Undo the last delete (Ctrl/⌘+Z)">
+                  ↶ Undo delete
+                </button>
+              )}
+            </div>
+            {(selectedCount > 0 || selectedEdgeCount > 0) && (
+              <div className="selection-bar">
+                <span>
+                  {selectedCount} node{selectedCount === 1 ? '' : 's'}
+                  {selectedEdgeCount ? ` · ${selectedEdgeCount} wire${selectedEdgeCount === 1 ? '' : 's'}` : ''} selected
+                </span>
+                {selectedCount > 0 && (
+                  <>
+                    <button onClick={toggleBypassSelected} title="Bypass / enable (M)">
+                      Bypass
+                    </button>
+                    <button onClick={() => resetNodes('selected')} title="Reset values to defaults">
+                      Reset
+                    </button>
+                    <button onClick={groupSelected} title="Group into a compound node (Ctrl/⌘+G)">
+                      Group
+                    </button>
+                  </>
+                )}
+                <button className="danger" onClick={deleteSelected} title="Delete selected (Delete / Backspace)">
+                  Delete
+                </button>
+                <button onClick={selectNone} title="Clear selection (Esc)">
+                  ✕
+                </button>
+              </div>
+            )}
             <ReactFlow
               nodes={wiredNodes}
               edges={wiredEdges}
@@ -1731,7 +1915,12 @@ export default function App() {
               colorMode="dark"
               minZoom={0.15}
               fitView
-              deleteKeyCode={['Backspace', 'Delete']}
+              deleteKeyCode={null}
+              selectionOnDrag={boxSelect}
+              panOnDrag={boxSelect ? [1, 2] : true}
+              selectionMode={SelectionMode.Partial}
+              selectionKeyCode="Shift"
+              multiSelectionKeyCode={['Meta', 'Control']}
             >
               <Background color="#4a5266" gap={18} />
               <Controls />
