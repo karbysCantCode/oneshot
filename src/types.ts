@@ -97,6 +97,7 @@ export type ShaderData = {
   onClearLut?: (id: string) => void;
   onTogglePreview?: (id: string) => void;
   onToggleBypass?: (id: string) => void;
+  onResetNode?: (id: string) => void;
   onRename?: (id: string, label: string) => void;
   onEnterGroup?: (id: string) => void;
   onHandleClick?: (id: string, side: HandleSide, socket: string, x: number, y: number) => void;

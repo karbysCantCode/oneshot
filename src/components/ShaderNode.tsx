@@ -16,6 +16,12 @@ const BypassIcon = () => (
     <circle cx="6.5" cy="8.5" r="1.6" fill="currentColor" />
   </svg>
 );
+const ResetIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+    <path d="M2.6 4.2 A4 4 0 1 1 2 7" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M1.2 1.6 L2.7 4.4 L5.6 3.4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+  </svg>
+);
 const EditGroupIcon = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
     <path d="M1.5 4.5 V1.5 H4.5 M7.5 1.5 H10.5 V4.5 M10.5 7.5 V10.5 H7.5 M4.5 10.5 H1.5 V7.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
@@ -29,6 +35,8 @@ export default function ShaderNodeView({ id, data, selected }: NodeProps<ShaderN
   const connected = new Set(data.connected ?? []);
   const params = data.params ?? {};
   const [renaming, setRenaming] = useState(false);
+  /** Node has values that can be reset (parameters, inline inputs, curves, ramp). */
+  const resettable = !!def && (def.controls.some((c) => c.type !== 'note' && c.type !== 'lut') || inputs.some((s) => !s.hideValue));
 
   const { registerPreview, onHandleClick } = data;
 
@@ -120,6 +128,11 @@ export default function ShaderNodeView({ id, data, selected }: NodeProps<ShaderN
           {data.kind === 'group' && (
             <button className="nodrag tool-btn" title="Edit group contents (Tab)" onClick={(e) => (stop(e), data.onEnterGroup?.(id))}>
               <EditGroupIcon />
+            </button>
+          )}
+          {resettable && (
+            <button className="nodrag tool-btn" title="Reset all values to defaults" onClick={(e) => (stop(e), data.onResetNode?.(id))}>
+              <ResetIcon />
             </button>
           )}
           {data.kind !== 'groupIn' && data.kind !== 'groupOut' && data.kind !== 'output' && (

@@ -27,8 +27,10 @@ import MediaPool from './components/MediaPool';
 import Viewer, { type ViewItem } from './components/Viewer';
 import Toolbox from './components/Toolbox';
 import ImageGraphPanel from './components/ImageGraphPanel';
+import Splitter from './components/Splitter';
+import ExportDialog from './components/ExportDialog';
 import { WebGLPipeline, type RenderItem } from './gl/pipeline';
-import { loadSettings, saveSettings, type Settings, type ViewerLayout, type ViewSource } from './settings';
+import { LAYOUT_LIMITS, defaultSettings, loadSettings, saveSettings, type Settings, type ViewerLayout, type ViewSource } from './settings';
 import {
   ALL_MEDIA,
   LOOSE,
@@ -39,8 +41,20 @@ import {
   isImageFile,
   naturalCompare,
   uniqueFolderName,
+  type DroppedFile,
 } from './media';
-import { NODE_DEFS, defaultParams, type NodeDef } from './nodes/registry';
+import {
+  ZIP_MAX_BYTES,
+  downloadBlob,
+  encodeCanvas,
+  exportName,
+  loadExportOptions,
+  makeZip,
+  saveExportOptions,
+  type ExportOptions,
+  type ExportScope,
+} from './export';
+import { NODE_DEFS, defaultParams, getDef, type NodeDef } from './nodes/registry';
 import {
   DEFAULT_RAMP,
   cleanEdge,
@@ -177,12 +191,17 @@ export default function App() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
   const [menu, setMenu] = useState<MenuState | null>(null);
+  const [showExport, setShowExport] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportOpts, setExportOpts] = useState<ExportOptions>(loadExportOptions);
 
   const active = useMemo(() => media.find((m) => m.id === activeId) ?? null, [media, activeId]);
 
   const gpu = useRef<WebGLPipeline | null>(null);
   const rf = useRef<ReactFlowInstance<ShaderNode, Edge> | null>(null);
   const graphDiv = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLElement>(null);
+  const dragBase = useRef(0);
   const viewerCanvases = useRef(new Map<string, HTMLCanvasElement>());
   const previewCanvases = useRef(new Map<string, HTMLCanvasElement>());
   const rendered = useRef(new WeakMap<HTMLCanvasElement, string>());
@@ -483,7 +502,7 @@ export default function App() {
       const plan = outputPlan(flat);
       batch = entriesFor(plan, media, active, settings);
       if (!plan.target) message = media.length ? 'Output is not connected – connect an Image Input, Folder Input or texture to Output' : 'Import an image or folder, or connect a texture node to Output';
-      else if (!batch.length) message = plan.usesCurrent && media.length ? 'Select an image in the Media Pool' : 'The connected input has no images';
+      else if (!batch.length) message = !media.length ? 'Import an image or folder to begin' : plan.usesCurrent ? 'Select an image in the Media Pool' : 'The connected input has no images';
     } else {
       batch = media.map((m) => mediaEntry(m, presetName(m)));
       if (!media.length) message = 'Import images, then apply saved graphs to them (Toolbox → Library)';
@@ -509,6 +528,13 @@ export default function App() {
   );
   const updateRamp = useCallback((id: string, ramp: Ramp) => patchNode(id, () => ({ ramp })), [patchNode]);
   const toggleBypass = useCallback((id: string) => patchNode(id, (d) => ({ bypass: !d.bypass })), [patchNode]);
+  /** Reset a node's values (parameters, inline inputs, curves, ramp) to defaults. Keeps name, wires, LUT file, folder and bypass. */
+  const resetData = (d: ShaderNode['data']): Partial<ShaderNode['data']> => ({
+    params: defaultParams(d.kind),
+    curves: undefined,
+    ramp: getDef(d.kind)?.ramp ? structuredClone(DEFAULT_RAMP) : undefined,
+  });
+  const resetNode = useCallback((id: string) => patchNode(id, resetData), [patchNode]);
   const renameNode = useCallback((id: string, label: string) => patchNode(id, () => ({ label })), [patchNode]);
   const togglePreview = useCallback((id: string) => patchNode(id, (d) => ({ showPreview: d.showPreview === false })), [patchNode]);
   const setNodeFolder = useCallback((id: string, folder: string) => patchNode(id, () => ({ folder })), [patchNode]);
@@ -612,6 +638,22 @@ export default function App() {
     setEdges(es);
   }, [setNodes, setEdges]);
 
+  const resetNodes = useCallback(
+    (which: 'selected' | 'all') => {
+      const target = live.current.nodes.filter((n) => (which === 'all' || n.selected) && getDef(n.data.kind));
+      if (!target.length) {
+        setStatus(which === 'all' ? 'No nodes to reset' : 'Select nodes to reset');
+        return;
+      }
+      if (which === 'all' && !window.confirm(`Reset the values of all ${target.length} nodes on this level to their defaults?`)) return;
+      const ids = new Set(target.map((n) => n.id));
+      setNodes((all) => all.map((n) => (ids.has(n.id) ? { ...n, data: { ...n.data, ...resetData(n.data) } } : n)));
+      setStatus(`Reset ${target.length} node${target.length === 1 ? '' : 's'} to default values`);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [setNodes],
+  );
+
   const toggleBypassSelected = useCallback(() => {
     const sel = live.current.nodes.filter((n) => n.selected && n.data.kind !== 'output' && n.data.kind !== 'groupIn' && n.data.kind !== 'groupOut');
     if (!sel.length) return;
@@ -635,6 +677,9 @@ export default function App() {
         const sel = live.current.nodes.filter((n) => n.selected);
         if (sel.length === 1 && sel[0].data.kind === 'group') enterGroup(sel[0].id);
         else if (live.current.stack.length) exitTo(live.current.stack.length - 1);
+      } else if (mod && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        setShowExport(true);
       } else if (!mod && !e.altKey && e.key.toLowerCase() === 'm') {
         toggleBypassSelected();
       }
@@ -651,6 +696,7 @@ export default function App() {
       if (node.data.kind === 'group') items.push({ label: 'Edit group (Tab)', onSelect: () => enterGroup(node.id) });
       if (!['output', 'groupIn', 'groupOut'].includes(node.data.kind))
         items.push({ label: node.data.bypass ? 'Enable (un-bypass) (M)' : 'Bypass (M)', onSelect: () => toggleBypass(node.id) });
+      if (getDef(node.data.kind)) items.push({ label: 'Reset values to defaults', onSelect: () => resetNode(node.id) });
       items.push({
         label: 'Rename…',
         onSelect: () => {
@@ -687,7 +733,7 @@ export default function App() {
       });
       setMenu({ x: e.clientX, y: e.clientY, title: node.data.label, items });
     },
-    [enterGroup, toggleBypass, renameNode, groupSelected, setNodes, setEdges],
+    [enterGroup, toggleBypass, resetNode, renameNode, groupSelected, setNodes, setEdges],
   );
 
   /* ---------- nodes & edges passed to React Flow ---------- */
@@ -698,7 +744,7 @@ export default function App() {
   }, [edges]);
 
   const wiredNodes = useMemo(
-    () =>
+    (): ShaderNode[] =>
       nodes.map((n) => {
         const info = derived.perNode.get(n.id);
         return {
@@ -719,6 +765,7 @@ export default function App() {
             onClearLut: clearLut,
             onTogglePreview: togglePreview,
             onToggleBypass: toggleBypass,
+            onResetNode: resetNode,
             onRename: renameNode,
             onEnterGroup: enterGroup,
             onHandleClick,
@@ -728,11 +775,11 @@ export default function App() {
           },
         };
       }),
-    [nodes, derived, settings.nodePreviews, folderOpts, mediaOpts, connectedByNode, luts, updateParams, updateCurve, updateRamp, loadLut, clearLut, togglePreview, toggleBypass, renameNode, enterGroup, onHandleClick, registerPreview, setNodeFolder, pickFolder],
+    [nodes, derived, settings.nodePreviews, folderOpts, mediaOpts, connectedByNode, luts, updateParams, updateCurve, updateRamp, loadLut, clearLut, togglePreview, toggleBypass, resetNode, renameNode, enterGroup, onHandleClick, registerPreview, setNodeFolder, pickFolder],
   );
 
   // Colour wires by the type of value they carry.
-  const wiredEdges = useMemo(() => {
+  const wiredEdges = useMemo((): Edge[] => {
     const byId = new Map(nodes.map((n) => [n.id, n]));
     return edges.map((e) => {
       const s = byId.get(e.source);
@@ -831,7 +878,7 @@ export default function App() {
     [setNodes, setEdges, setNodeFolder],
   );
 
-  const importFiles = async (list: FileList | null) => {
+  const importFiles = async (list: FileList | File[] | null) => {
     const files = Array.from(list ?? []).filter(isImageFile);
     if (!files.length) return;
     const items = (await Promise.all(files.map((f) => loadImage(f, LOOSE)))).filter((m): m is MediaItem => !!m);
@@ -845,19 +892,23 @@ export default function App() {
     setStatus(`${last.name} • ${last.image.naturalWidth}×${last.image.naturalHeight}`);
   };
 
-  const importFolder = async (list: FileList | null) => {
+  const importFolder = (list: FileList | null) => {
     const targetNode = folderTargetNode.current;
     folderTargetNode.current = null;
+    const files = Array.from(list ?? []).map((file) => ({ file, path: file.webkitRelativePath || file.name }));
+    return importFolderFiles(files, targetNode);
+  };
 
-    const files = Array.from(list ?? [])
-      .filter(isImageFile)
-      .sort((a, b) => naturalCompare(a.webkitRelativePath || a.name, b.webkitRelativePath || b.name));
+  /** Import one folder's files (paths start with the folder name; sub-folders are included). */
+  const importFolderFiles = async (dropped: DroppedFile[], targetNode: string | null) => {
+    const sorted = dropped.filter((d) => isImageFile(d.file)).sort((a, b) => naturalCompare(a.path, b.path));
+    const files = sorted.map((d) => d.file);
     if (!files.length) {
       setStatus('No images found in that folder');
       return;
     }
 
-    const root = (files[0].webkitRelativePath || '').split('/')[0] || 'Folder';
+    const root = sorted[0].path.split('/')[0] || 'Folder';
     const folder = uniqueFolderName(root, live.current.media);
 
     const results: (MediaItem | null)[] = new Array(files.length).fill(null);
@@ -885,6 +936,98 @@ export default function App() {
     if (live.current.settings.viewSource === 'workspace') assignFolder(folder, targetNode);
     if (items.length > 1) setSettings((s) => ({ ...s, viewerLayout: 'grid' }));
     setStatus(`${folderLabel(folder)} • ${items.length} images${failed ? ` (${failed} could not be decoded)` : ''}`);
+  };
+
+  /** Drag & drop onto the Media Pool: loose files and/or whole folders. */
+  const importDropped = async (dropped: DroppedFile[]) => {
+    const loose = dropped.filter((d) => !d.path.includes('/'));
+    const byFolder = new Map<string, DroppedFile[]>();
+    for (const d of dropped) {
+      if (!d.path.includes('/')) continue;
+      const root = d.path.split('/')[0];
+      byFolder.set(root, [...(byFolder.get(root) ?? []), d]);
+    }
+    if (loose.length) {
+      await importFiles(loose.map((d) => d.file));
+    }
+    for (const files of byFolder.values()) await importFolderFiles(files, null);
+    if (!dropped.some((d) => isImageFile(d.file))) setStatus('No images in the dropped files');
+  };
+
+  // Dropping files outside the Media Pool must not navigate the browser away from the app.
+  useEffect(() => {
+    const block = (e: DragEvent) => {
+      if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) e.preventDefault();
+    };
+    window.addEventListener('dragover', block);
+    window.addEventListener('drop', block);
+    return () => {
+      window.removeEventListener('dragover', block);
+      window.removeEventListener('drop', block);
+    };
+  }, []);
+
+  /* ---------- export ---------- */
+  /** Images the export would include, per scope, for the current view. */
+  const exportSets = (): Record<ExportScope, Entry[]> => {
+    const batch = derived.batch;
+    const shown = batch.filter((e) => e.view.visible);
+    return { current: derived.current ? [derived.current] : [], shown: shown.length ? shown : batch, batch };
+  };
+
+  const runExport = async (opts: ExportOptions) => {
+    const g = gpu.current;
+    if (!g) return;
+    setExportOpts(opts);
+    saveExportOptions(opts);
+    const entries = exportSets()[opts.scope];
+    if (!entries.length) return;
+    setExporting(true);
+    try {
+      const st = live.current.settings;
+      const root = rootGraph();
+      const lutIds = lutIdMap(live.current.luts);
+      const workspacePlan = outputPlan(flatten(root.nodes, root.edges), lutIds);
+      const lookup = (id: string) => {
+        const m = live.current.media.find((x) => x.id === id);
+        return m ? toRenderItem(m) : null;
+      };
+      const used = new Set<string>();
+      const files: { name: string; blob: Blob }[] = [];
+      for (let i = 0; i < entries.length; i++) {
+        const e = entries[i];
+        setStatus(`Exporting ${i + 1}/${entries.length}: ${e.view.name}…`);
+        const { plan, luts: lt } =
+          st.viewSource === 'library' && e.media ? libraryPlan(e.media) : { plan: workspacePlan, luts: live.current.luts };
+        if (!g.render(plan, { item: e.render, maxSize: opts.maxSize || Infinity, media: lookup, luts: lt })) continue;
+        // toBlob copies the canvas immediately, so later renders can't change this image.
+        const blob = await encodeCanvas(g.canvas, opts.format, opts.quality);
+        files.push({ name: exportName(e.media ? e.view.name : 'procedural', opts.suffix, opts.format, used), blob });
+      }
+      scheduleRender(); // the export used the shared GPU canvas
+      if (!files.length) {
+        setStatus('Nothing to export – is the Output connected?');
+        return;
+      }
+      const total = files.reduce((n, f) => n + f.blob.size, 0);
+      const mb = (total / 1048576).toFixed(1);
+      if (files.length === 1) downloadBlob(files[0].blob, files[0].name);
+      else if (opts.packaging === 'zip' && total < ZIP_MAX_BYTES) {
+        setStatus(`Packaging ${files.length} images…`);
+        downloadBlob(await makeZip(files), `nodegl-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.zip`);
+      } else {
+        for (const f of files) {
+          downloadBlob(f.blob, f.name);
+          await new Promise((r) => setTimeout(r, 250)); // let the browser start each download
+        }
+      }
+      setStatus(`Exported ${files.length} image${files.length === 1 ? '' : 's'} (${mb} MB)${opts.packaging === 'zip' && files.length > 1 && total >= ZIP_MAX_BYTES ? ' as separate files (too large for one ZIP)' : ''}`);
+      setShowExport(false);
+    } catch (err) {
+      setStatus(`Export failed: ${(err as Error).message}`);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const stepImage = (dir: 1 | -1) => {
@@ -1061,12 +1204,41 @@ export default function App() {
       .catch(() => setStatus('Could not read project'));
   };
 
+  /* ---------- resizable panels ---------- */
+  const clampTo = (v: number, [lo, hi]: readonly [number, number]) => Math.min(hi, Math.max(lo, v));
+  const resizeMedia = {
+    onStart: () => (dragBase.current = live.current.settings.mediaWidth),
+    onDrag: (d: number) => setSettings((s) => ({ ...s, mediaWidth: Math.round(clampTo(dragBase.current + d, LAYOUT_LIMITS.mediaWidth)) })),
+    onReset: () => setSettings((s) => ({ ...s, mediaWidth: defaultSettings.mediaWidth })),
+  };
+  const resizeToolbox = {
+    onStart: () => (dragBase.current = live.current.settings.toolboxWidth),
+    onDrag: (d: number) => setSettings((s) => ({ ...s, toolboxWidth: Math.round(clampTo(dragBase.current - d, LAYOUT_LIMITS.toolboxWidth)) })),
+    onReset: () => setSettings((s) => ({ ...s, toolboxWidth: defaultSettings.toolboxWidth })),
+  };
+  const resizeViewer = {
+    onStart: () => (dragBase.current = live.current.settings.viewerSplit),
+    onDrag: (d: number) => {
+      // Height shared by viewer + graph (minus viewer bar and splitter).
+      const h = (centerRef.current?.clientHeight ?? 600) - 34 - 6;
+      setSettings((s) => ({ ...s, viewerSplit: clampTo(dragBase.current + d / Math.max(h, 1), LAYOUT_LIMITS.viewerSplit) }));
+    },
+    onReset: () => setSettings((s) => ({ ...s, viewerSplit: defaultSettings.viewerSplit })),
+  };
+  const resetLayout = () =>
+    setSettings((s) => ({ ...s, mediaWidth: defaultSettings.mediaWidth, toolboxWidth: defaultSettings.toolboxWidth, viewerSplit: defaultSettings.viewerSplit }));
+
   const menuAction = (fn: () => void) => () => {
     fn();
     closeMenus();
   };
 
-  const centerStyle = { '--wire-width': `${settings.wireWidth}px`, '--bg-dim': settings.backgroundDim } as CSSProperties;
+  const centerStyle = {
+    '--wire-width': `${settings.wireWidth}px`,
+    '--bg-dim': settings.backgroundDim,
+    '--viewer-split-f': settings.viewerSplit.toFixed(4),
+  } as CSSProperties;
+  const mainStyle = { '--media-w': `${settings.mediaWidth}px`, '--tool-w': `${settings.toolboxWidth}px` } as CSSProperties;
   const check = (on: boolean) => (on ? '✓ ' : '');
 
   return (
@@ -1124,6 +1296,10 @@ export default function App() {
               </label>
               <hr />
               <button onClick={menuAction(savePreset)}>Save graph to Library…</button>
+              <hr />
+              <button disabled={!derived.batch.length} onClick={menuAction(() => setShowExport(true))}>
+                Export images… (Ctrl/⌘+E)
+              </button>
             </div>
           </details>
           <details>
@@ -1131,6 +1307,8 @@ export default function App() {
             <div>
               <button onClick={menuAction(deleteSelected)}>Delete selected</button>
               <button onClick={menuAction(toggleBypassSelected)}>Bypass selected (M)</button>
+              <button onClick={menuAction(() => resetNodes('selected'))}>Reset selected nodes to defaults</button>
+              <button onClick={menuAction(() => resetNodes('all'))}>Reset all nodes to defaults…</button>
               <button onClick={menuAction(() => setEdges([]))}>Disconnect all wires</button>
               <hr />
               <button onClick={menuAction(groupSelected)}>Group selected (Ctrl/⌘+G)</button>
@@ -1171,6 +1349,7 @@ export default function App() {
               <hr />
               <button onClick={menuAction(() => setSettings((s) => ({ ...s, nodePreviews: !s.nodePreviews })))}>{check(settings.nodePreviews)}Node previews</button>
               <hr />
+              <button onClick={menuAction(resetLayout)}>Reset panel sizes</button>
               <button onClick={menuAction(() => document.documentElement.requestFullscreen())}>Fullscreen</button>
               <button onClick={menuAction(() => setShowSettings(true))}>Settings…</button>
             </div>
@@ -1198,6 +1377,22 @@ export default function App() {
               <p>
                 <b>Procedural:</b> texture nodes work without an image – the canvas size is in Settings.
               </p>
+              <p>
+                <b>Masks:</b> Circle / Ellipse / Rectangle / Polygon Mask output a per-pixel value – connect it to Mix → Factor (or any value
+                input). X/Y are fractions of the image width/height; sizes and feather are fractions of the image height.
+              </p>
+              <p>
+                <b>Import:</b> drag images or whole folders onto the Media Pool.
+              </p>
+              <p>
+                <b>Reset:</b> the reset button in a node’s title restores its default values (Edit menu: selected / all nodes).
+              </p>
+              <p>
+                <b>Export:</b> Export… in the viewer bar (Ctrl/⌘+E) saves processed images as JPEG / PNG / WebP, singly or as a ZIP.
+              </p>
+              <p>
+                <b>Layout:</b> drag the dividers between panels to resize them; double-click a divider to reset.
+              </p>
             </div>
           </details>
         </nav>
@@ -1207,7 +1402,7 @@ export default function App() {
         </button>
       </header>
 
-      <main>
+      <main style={mainStyle}>
         <MediaPool
           media={media}
           activeId={activeId}
@@ -1222,9 +1417,12 @@ export default function App() {
           }}
           onImportFiles={(list) => void importFiles(list)}
           onImportFolder={() => pickFolder(null)}
+          onDropFiles={(files) => void importDropped(files)}
         />
 
-        <section className={`center view-${settings.previewMode}`} style={centerStyle}>
+        <Splitter axis="x" title="Drag to resize the Media Pool · double-click to reset" {...resizeMedia} />
+
+        <section ref={centerRef} className={`center view-${settings.previewMode}`} style={centerStyle}>
           {settings.previewMode !== 'hidden' && (
             <Viewer
               layout={settings.viewerLayout}
@@ -1240,6 +1438,8 @@ export default function App() {
               onToggleVisible={toggleVisible}
               onSetVisible={setVisible}
               registerCanvas={registerViewerCanvas}
+              onExport={() => setShowExport(true)}
+              canExport={derived.batch.length > 0 && !exporting}
               footer={
                 settings.viewSource === 'library' && media.length > 0 ? (
                   <ImageGraphPanel
@@ -1257,6 +1457,7 @@ export default function App() {
               }
             />
           )}
+          {settings.previewMode === 'split' && <Splitter axis="y" title="Drag to resize the viewer · double-click to reset" {...resizeViewer} />}
           <div className="graph" ref={graphDiv}>
             {stack.length > 0 && (
               <div className="breadcrumb">
@@ -1302,6 +1503,8 @@ export default function App() {
           </div>
         </section>
 
+        <Splitter axis="x" title="Drag to resize the Toolbox · double-click to reset" {...resizeToolbox} />
+
         <Toolbox
           onAdd={addNode}
           presets={presets}
@@ -1317,6 +1520,19 @@ export default function App() {
 
       {menu && <ContextMenu menu={menu} onClose={() => setMenu(null)} />}
       {showSettings && <SettingsDialog settings={settings} onChange={setSettings} onClose={() => setShowSettings(false)} />}
+      {showExport && (() => {
+        const sets = exportSets();
+        return (
+          <ExportDialog
+            initial={exportOpts}
+            counts={{ current: sets.current.length, shown: sets.shown.length, batch: sets.batch.length }}
+            sourceLabel={settings.viewSource === 'library' ? 'each image’s Library graph' : 'the Workspace graph'}
+            busy={exporting}
+            onExport={(o) => void runExport(o)}
+            onClose={() => setShowExport(false)}
+          />
+        );
+      })()}
     </div>
   );
 }

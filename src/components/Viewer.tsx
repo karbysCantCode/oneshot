@@ -22,6 +22,9 @@ type Props = {
   onSetVisible: (ids: string[], visible: boolean) => void;
   /** Must be a stable callback. */
   registerCanvas: (key: string, el: HTMLCanvasElement | null) => void;
+  /** Open the export dialog. */
+  onExport: () => void;
+  canExport: boolean;
   /** Panel shown under the image (Library parameters). */
   footer?: ReactNode;
 };
@@ -89,6 +92,9 @@ export default function Viewer(p: Props) {
         </button>
         <button className="bar-btn" disabled={!p.batch.length} onClick={() => p.onSetVisible(p.batch.map((m) => m.id), false)}>
           Hide all
+        </button>
+        <button className="bar-btn primary" disabled={!p.canExport} onClick={p.onExport} title="Export processed images (Ctrl/⌘+E)">
+          Export…
         </button>
       </div>
 

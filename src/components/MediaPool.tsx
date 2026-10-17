@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { folderGroups, folderLabel } from '../media';
+import { useRef, useState, type DragEvent } from 'react';
+import { folderGroups, folderLabel, readDropped, type DroppedFile } from '../media';
 import type { MediaItem } from '../types';
 
 type Props = {
@@ -13,11 +13,39 @@ type Props = {
   onUseFolder: (folder: string) => void;
   onImportFiles: (files: FileList | null) => void;
   onImportFolder: () => void;
+  /** Files / folders dropped onto the pool. */
+  onDropFiles: (files: DroppedFile[]) => void;
 };
 
 export default function MediaPool(p: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const groups = folderGroups(p.media);
+  const [dragging, setDragging] = useState(false);
+  const depth = useRef(0);
+
+  const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes('Files');
+  const onDragEnter = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    depth.current++;
+    setDragging(true);
+  };
+  const onDragOver = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+  const onDragLeave = () => {
+    depth.current = Math.max(0, depth.current - 1);
+    if (!depth.current) setDragging(false);
+  };
+  const onDrop = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    depth.current = 0;
+    setDragging(false);
+    void readDropped(e.dataTransfer).then((files) => files.length && p.onDropFiles(files));
+  };
 
   const toggleCollapsed = (key: string) =>
     setCollapsed((s) => {
@@ -28,7 +56,14 @@ export default function MediaPool(p: Props) {
     });
 
   return (
-    <aside className="media">
+    <aside
+      className={`media ${dragging ? 'drop-target' : ''}`}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      {dragging && <div className="drop-overlay">Drop images or folders</div>}
       <h3>Media Pool</h3>
       <div className="import-row">
         <label className="import" title="Import one or more images">
@@ -49,7 +84,7 @@ export default function MediaPool(p: Props) {
         </button>
       </div>
 
-      {!p.media.length && <p className="hint">Images stay in this browser tab – nothing is uploaded.</p>}
+      {!p.media.length && <p className="hint drop-hint">Drag images or folders here, or use the buttons above. Images stay in this browser tab – nothing is uploaded.</p>}
 
       {groups.map((g) => {
         const allShown = g.items.every((m) => m.visible);

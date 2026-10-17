@@ -47,3 +47,40 @@ export function uniqueFolderName(name: string, media: MediaItem[]) {
 /** Images in a folder (or all media). */
 export const imagesInFolder = (media: MediaItem[], folder: string) =>
   folder === ALL_MEDIA ? media : media.filter((m) => m.folder === folder);
+
+/* ---------------- drag & drop ---------------- */
+
+export type DroppedFile = { file: File; /** Path relative to the dropped item, e.g. "Shoot/day1/IMG_1.jpg" ('' folder part = loose file). */ path: string };
+
+/** Read every file from a drop, recursing into dropped folders (Chrome, Edge, Firefox, Safari). */
+export async function readDropped(dt: DataTransfer): Promise<DroppedFile[]> {
+  const items = Array.from(dt.items ?? []).filter((i) => i.kind === 'file');
+  const entries = items.map((i) => (typeof i.webkitGetAsEntry === 'function' ? i.webkitGetAsEntry() : null));
+  // Fallback: no entry API – plain files only.
+  if (!entries.some((e) => e)) return Array.from(dt.files ?? []).map((file) => ({ file, path: file.name }));
+
+  const out: DroppedFile[] = [];
+  const fileOf = (e: FileSystemFileEntry) => new Promise<File | null>((res) => e.file(res, () => res(null)));
+  const readAll = async (dir: FileSystemDirectoryEntry) => {
+    const reader = dir.createReader();
+    const all: FileSystemEntry[] = [];
+    // readEntries returns results in batches – keep reading until empty.
+    for (;;) {
+      const batch = await new Promise<FileSystemEntry[]>((res) => reader.readEntries(res, () => res([])));
+      if (!batch.length) break;
+      all.push(...batch);
+    }
+    return all;
+  };
+  const walk = async (entry: FileSystemEntry, prefix: string): Promise<void> => {
+    if (entry.isFile) {
+      const f = await fileOf(entry as FileSystemFileEntry);
+      if (f) out.push({ file: f, path: prefix + f.name });
+    } else if (entry.isDirectory) {
+      for (const child of await readAll(entry as FileSystemDirectoryEntry)) await walk(child, `${prefix}${entry.name}/`);
+    }
+  };
+  // Entries must be taken synchronously from the event; walking can be async.
+  for (const e of entries) if (e) await walk(e, '');
+  return out;
+}

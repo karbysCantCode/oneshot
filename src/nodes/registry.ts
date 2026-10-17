@@ -29,8 +29,8 @@ import {
  *  - Float outputs: return the value in .x (written as (v,v,v,1)).
  * ===================================================================== */
 
-export type Category = 'Input / Output' | 'Tone' | 'Colour' | 'Filter' | 'Texture' | 'Converter' | 'Utility' | 'Group';
-export const CATEGORIES: Category[] = ['Input / Output', 'Tone', 'Colour', 'Filter', 'Texture', 'Converter', 'Utility'];
+export type Category = 'Input / Output' | 'Tone' | 'Colour' | 'Filter' | 'Texture' | 'Mask' | 'Converter' | 'Utility' | 'Group';
+export const CATEGORIES: Category[] = ['Input / Output', 'Tone', 'Colour', 'Filter', 'Texture', 'Mask', 'Converter', 'Utility'];
 
 export type CurveChannel = { id: string; label: string; color: string; periodic: boolean; defaults: CurvePoint[]; xAxis?: 'tone' | 'hue' };
 export type SelectOption = { value: string; label: string; group?: string };
@@ -160,6 +160,27 @@ float sobelLuma(vec2 uv, float k) {
   float gy = (tl + 2.0 * tc + tr) - (bl + 2.0 * bc + br);
   return length(vec2(gx, gy));
 }`;
+
+/* ---------- mask shapes ----------
+ * Positions: X = fraction of image width (0 left → 1 right), Y = fraction of image height (0 top → 1 bottom).
+ * Sizes, radii and feather are fractions of the image HEIGHT, so shapes stay round on any aspect ratio
+ * and scale with the image (previews, grid tiles and full size match).
+ * Output: Mask value 1 inside, 0 outside; feather fades from the edge outwards.
+ */
+const MASK_GLSL = `uniform float u_inv;
+vec2 maskP(vec2 uv, vec2 c) { return vec2((uv.x - c.x) * u_aspect, (1.0 - uv.y) - c.y); }
+vec2 rot2(vec2 p, float deg) { float a = radians(deg); float s = sin(a), co = cos(a); return vec2(co * p.x - s * p.y, s * p.x + co * p.y); }
+vec4 maskOut(float d, float feather) {
+  float f = max(feather, 1.0 / u_size.y); // at least one pixel of anti-aliasing
+  float m = 1.0 - smoothstep(0.0, f, d);
+  return vec4(u_inv > 0.5 ? 1.0 - m : m);
+}`;
+const maskPos = [f('x', 'X', 0.5, 0, 1, 0.001), f('y', 'Y', 0.5, 0, 1, 0.001)];
+const maskFeather = f('feather', 'Feather', 0.05, 0, 0.5, 0.001);
+const maskRot = f('rotation', 'Rotation', 0, -180, 180, 1);
+const maskOutSock = [fOut('mask', 'Mask')];
+const maskInvert: Control = { type: 'check', key: 'invert', label: 'Invert', default: false };
+const maskUniforms = (p: Params) => ({ u_inv: p.invert ? 1 : 0 });
 
 /* ---------- operation lists ---------- */
 
@@ -1031,6 +1052,69 @@ vec4 run(vec2 uv) {
   if (u_out == 1) return vec4(s);
   return s > 0.5 ? c_color1(uv) : c_color2(uv);
 }`,
+  },
+
+  /* ===== Mask (primitive shapes → per-pixel factor) ===== */
+  {
+    kind: 'circleMask', label: 'Circle Mask', category: 'Mask', description: 'Feathered circle at X, Y with radius R → mask value',
+    keywords: 'circle mask shape vignette spot radial feather matte', style: 'run',
+    inputs: [...maskPos, f('radius', 'Radius', 0.25, 0, 1, 0.001), maskFeather], outputs: maskOutSock, controls: [maskInvert],
+    glsl: `${MASK_GLSL}
+vec4 run(vec2 uv) {
+  vec2 p = maskP(uv, vec2(f_x(uv), f_y(uv)));
+  return maskOut(length(p) - max(f_radius(uv), 0.0), f_feather(uv));
+}`,
+    uniforms: maskUniforms,
+  },
+  {
+    kind: 'ellipseMask', label: 'Ellipse Mask', category: 'Mask', description: 'Feathered, rotatable ellipse → mask value',
+    keywords: 'ellipse oval mask shape feather matte', style: 'run',
+    inputs: [...maskPos, f('rx', 'Radius X', 0.35, 0, 1, 0.001), f('ry', 'Radius Y', 0.2, 0, 1, 0.001), maskRot, maskFeather],
+    outputs: maskOutSock, controls: [maskInvert],
+    glsl: `${MASK_GLSL}
+vec4 run(vec2 uv) {
+  vec2 p = rot2(maskP(uv, vec2(f_x(uv), f_y(uv))), -f_rotation(uv));
+  vec2 r = max(vec2(f_rx(uv), f_ry(uv)), vec2(1e-5));
+  float d = (length(p / r) - 1.0) * min(r.x, r.y);
+  return maskOut(d, f_feather(uv));
+}`,
+    uniforms: maskUniforms,
+  },
+  {
+    kind: 'rectMask', label: 'Rectangle Mask', category: 'Mask', description: 'Feathered, rotatable box with rounded corners → mask value',
+    keywords: 'rectangle box square mask shape rounded feather matte', style: 'run',
+    inputs: [...maskPos, f('w', 'Width', 0.6, 0, 2, 0.001), f('h', 'Height', 0.4, 0, 2, 0.001), f('corner', 'Corner', 0, 0, 0.5, 0.001), maskRot, maskFeather],
+    outputs: maskOutSock, controls: [maskInvert],
+    glsl: `${MASK_GLSL}
+vec4 run(vec2 uv) {
+  vec2 p = rot2(maskP(uv, vec2(f_x(uv), f_y(uv))), -f_rotation(uv));
+  vec2 b = 0.5 * max(vec2(f_w(uv), f_h(uv)), vec2(0.0));
+  float cr = clamp(f_corner(uv), 0.0, min(b.x, b.y));
+  vec2 q = abs(p) - b + cr;
+  float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - cr;
+  return maskOut(d, f_feather(uv));
+}`,
+    uniforms: maskUniforms,
+  },
+  {
+    kind: 'polygonMask', label: 'Polygon Mask', category: 'Mask', description: 'Feathered regular polygon (3–32 sides) → mask value',
+    keywords: 'polygon triangle hexagon pentagon mask shape feather matte', style: 'run',
+    inputs: [...maskPos, f('radius', 'Radius', 0.3, 0, 1, 0.001), f('sides', 'Sides', 6, 3, 12, 1), maskRot, maskFeather],
+    outputs: maskOutSock, controls: [maskInvert],
+    glsl: `${MASK_GLSL}
+vec4 run(vec2 uv) {
+  vec2 p = rot2(maskP(uv, vec2(f_x(uv), f_y(uv))), -f_rotation(uv));
+  p.y = -p.y; // first vertex points up
+  float r = max(f_radius(uv), 0.0);
+  float n = clamp(floor(f_sides(uv) + 0.5), 3.0, 32.0);
+  float an = PI / n;
+  float bn = mod(atan(p.x, p.y), 2.0 * an) - an;
+  vec2 q = length(p) * vec2(cos(bn), abs(sin(bn)));
+  q -= r * vec2(cos(an), sin(an));
+  q.y += clamp(-q.y, 0.0, r * sin(an));
+  return maskOut(length(q) * sign(q.x), f_feather(uv));
+}`,
+    uniforms: maskUniforms,
   },
 
   /* ===== Converter ===== */

@@ -38,10 +38,26 @@ details button:hover:not(:disabled), details label:hover { background: #3a4152; 
 .icon-btn.small { font-size: 12px; padding: 2px 6px; }
 
 /* ---------- layout ---------- */
-main { min-height: 0; display: grid; grid-template-columns: 230px 1fr 240px; }
+main { min-height: 0; display: grid; grid-template-columns: var(--media-w, 230px) 6px minmax(0, 1fr) 6px var(--tool-w, 240px); }
+
+/* ---------- resizable panel dividers ---------- */
+.splitter { position: relative; z-index: 6; background: #1b1e25; touch-action: none; transition: background 0.12s; }
+.splitter::after { content: ''; position: absolute; border-radius: 2px; background: #4a5266; }
+.splitter-x { cursor: col-resize; border-left: 1px solid #343845; border-right: 1px solid #343845; }
+.splitter-x::after { left: 1px; right: 1px; top: 50%; height: 32px; margin-top: -16px; }
+.splitter-y { cursor: row-resize; border-top: 1px solid #343845; border-bottom: 1px solid #343845; }
+.splitter-y::after { top: 1px; bottom: 1px; left: 50%; width: 32px; margin-left: -16px; }
+.splitter:hover, body.resizing-x .splitter-x:active, body.resizing-y .splitter-y:active { background: #3974d6; }
+.splitter:hover::after { background: #cfe0ff; }
+/* While dragging: keep the resize cursor everywhere and stop text selection / canvas interaction */
+body.resizing-x, body.resizing-x * { cursor: col-resize !important; user-select: none !important; }
+body.resizing-y, body.resizing-y * { cursor: row-resize !important; user-select: none !important; }
 .media, .toolbox { background: #20232b; padding: 12px; overflow: auto; }
-.media { border-right: 1px solid #343845; }
-.toolbox { border-left: 1px solid #343845; }
+.media, .toolbox { min-width: 0; }
+.media { position: relative; }
+.media.drop-target { background: #223049; box-shadow: inset 0 0 0 2px var(--accent); }
+.drop-overlay { position: absolute; inset: 8px; z-index: 10; display: grid; place-items: center; border: 2px dashed var(--accent); border-radius: 8px; background: #15171dcc; color: #cfe0ff; font-weight: 600; pointer-events: none; }
+.drop-hint { padding: 14px 8px; border: 1px dashed #485064; border-radius: 6px; text-align: center; }
 h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: #98a0b3; margin: 4px 0 12px; }
 
 /* ---------- media pool ---------- */
@@ -66,7 +82,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 
 /* ---------- center: viewer bar + viewer + graph ---------- */
 .center { position: relative; min-width: 0; min-height: 0; display: grid; }
-.view-split { grid-template-rows: 34px minmax(0, 46%) minmax(0, 1fr); }
+.view-split { grid-template-rows: 34px minmax(0, calc((100% - 40px) * var(--viewer-split-f, 0.46))) 6px minmax(0, 1fr); }
 .view-background { grid-template-rows: 34px minmax(0, 1fr); }
 .view-hidden { grid-template-rows: minmax(0, 1fr); }
 
@@ -81,6 +97,8 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .spacer { flex: 1; }
 .bar-btn { border: 1px solid #414858; background: #262a33; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 12px; white-space: nowrap; }
 .bar-btn:hover:not(:disabled) { border-color: var(--accent); }
+.bar-btn.primary { background: #3974d6; border-color: #3974d6; color: #fff; }
+.bar-btn.primary:hover:not(:disabled) { background: #4682e4; }
 .file-btn { display: block; text-align: center; padding: 6px; margin-bottom: 10px; }
 
 .viewer-wrap { position: relative; display: flex; flex-direction: column; min-height: 0; }
@@ -121,6 +139,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .param-media .ctl-select span { display: none; }
 
 .graph { position: relative; min-height: 0; border-top: 1px solid #343845; }
+.view-split .graph { border-top: 0; }
 .breadcrumb { position: absolute; z-index: 5; top: 8px; left: 8px; display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #292d37ee; border: 1px solid #b48cff; border-radius: 6px; font-size: 12px; box-shadow: 0 4px 12px #0007; }
 .breadcrumb button:not(.bar-btn) { border: 0; background: none; color: #b8c6ff; cursor: pointer; padding: 0; text-decoration: underline; }
 
@@ -147,6 +166,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .tool.cat-colour { border-left-color: #b45fc4; }
 .tool.cat-filter { border-left-color: #4fa3b8; }
 .tool.cat-texture { border-left-color: #d9714f; }
+.tool.cat-mask { border-left-color: #8fbf4a; }
 .tool.cat-converter { border-left-color: #5f7fd6; }
 .tool.cat-utility { border-left-color: #6b7488; }
 .preset { padding: 8px; margin-bottom: 6px; background: #292d37; border: 1px solid #414858; border-left: 3px solid #b48cff; border-radius: 6px; }
@@ -179,6 +199,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .cat-colour .node-title { background: #503a5a; }
 .cat-filter .node-title { background: #2c4f58; }
 .cat-texture .node-title { background: #5c3a2e; }
+.cat-mask .node-title { background: #445a2c; }
 .cat-converter .node-title { background: #303f66; }
 .cat-group .node-title { background: #45366b; }
 .kind-input .node-title, .kind-value .node-title, .kind-rgb .node-title, .kind-texcoord .node-title { background: #3c5a45; }
@@ -329,13 +350,16 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .slider-row { display: grid; grid-template-columns: 120px 1fr 52px; align-items: center; gap: 10px; padding: 6px 4px; font-size: 13px; }
 .slider-row b { text-align: right; font-weight: 500; color: #c3c9d6; }
 .size-row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-size: 13px; }
+.radio-row.disabled { opacity: 0.45; cursor: default; }
+.modal .seg button { padding: 5px 16px; }
+.modal-foot button:disabled { opacity: 0.5; }
+.size-row input[type='text'] { width: 110px; }
 .size-row input { width: 90px; background: #15171d; border: 1px solid #485064; border-radius: 4px; padding: 4px 6px; }
 .modal-foot { display: flex; justify-content: space-between; margin-top: 20px; }
 .modal-foot button { padding: 7px 14px; border-radius: 5px; border: 1px solid #485064; background: #2c313d; cursor: pointer; }
 .modal-foot button.primary { background: #3974d6; border-color: #3974d6; }
 
 @media (max-width: 800px) {
-  main { grid-template-columns: 170px 1fr; }
-  .toolbox { display: none; }
-  .view-split { grid-template-rows: 34px minmax(0, 42%) minmax(0, 1fr); }
+  main { grid-template-columns: 170px 0 minmax(0, 1fr) 0 0; }
+  main > .splitter-x, .toolbox { display: none; }
 }

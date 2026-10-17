@@ -20,6 +20,11 @@ export type Settings = {
   /** Size of the procedural canvas (graphs with no image input). */
   canvasWidth: number;
   canvasHeight: number;
+  /** Panel layout (drag the splitters; double-click a splitter to reset it). */
+  mediaWidth: number;
+  toolboxWidth: number;
+  /** Fraction of the centre column used by the viewer (viewer-panel mode). */
+  viewerSplit: number;
 };
 
 export const defaultSettings: Settings = {
@@ -32,7 +37,17 @@ export const defaultSettings: Settings = {
   wireWidth: 3,
   canvasWidth: 1920,
   canvasHeight: 1080,
+  mediaWidth: 230,
+  toolboxWidth: 240,
+  viewerSplit: 0.46,
 };
+
+/** Limits for the resizable panels. */
+export const LAYOUT_LIMITS = {
+  mediaWidth: [140, 520],
+  toolboxWidth: [180, 560],
+  viewerSplit: [0.12, 0.88],
+} as const;
 
 const KEY = 'nodegl.settings.v1';
 
