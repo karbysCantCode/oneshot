@@ -50,7 +50,6 @@ export default function CurveEditor({ channels, curves, onChange }: Props) {
     if (e.button !== 0) return;
     svgRef.current!.setPointerCapture(e.pointerId);
     const [x, y] = toLocal(e);
-    // Hit-test existing points (in px).
     const r = svgRef.current!.getBoundingClientRect();
     const hit = points.findIndex(([px, py]) => Math.hypot((px - x) * r.width, (py - y) * r.height) < 9);
     if (hit >= 0) {
@@ -69,7 +68,6 @@ export default function CurveEditor({ channels, curves, onChange }: Props) {
     const next = points.map((p) => [...p] as CurvePoint);
     if (isEndpoint(i)) x = next[i][0];
     else {
-      // Keep points ordered: stay between neighbours.
       const lo = i > 0 ? next[i - 1][0] + 0.01 : 0;
       const hi = i < next.length - 1 ? next[i + 1][0] - 0.01 : 1;
       x = Math.min(hi, Math.max(lo, x));
@@ -87,24 +85,23 @@ export default function CurveEditor({ channels, curves, onChange }: Props) {
   };
 
   const isHue = ch.xAxis === 'hue';
+  const many = channels.length > 4 || channels.some((c) => c.label.length > 3);
 
   return (
     <div className="curve-ctl nodrag nowheel">
-      <div className="curve-tabs">
+      <div className={`curve-tabs ${many ? 'wrap' : ''}`}>
         {channels.map((c) => (
           <button
             key={c.id}
             className={c.id === ch.id ? 'on' : ''}
             style={{ color: c.color }}
+            title={c.label}
             onPointerDown={stop}
             onClick={() => setActive(c.id)}
           >
             {c.label}
           </button>
         ))}
-        <button className="reset" onPointerDown={stop} onClick={() => update(ch.defaults)} title="Reset this channel">
-          Reset
-        </button>
       </div>
       <div className={`curve-box ${isHue ? 'hue' : 'tone'}`}>
         <svg
@@ -133,7 +130,12 @@ export default function CurveEditor({ channels, curves, onChange }: Props) {
           ))}
         </svg>
       </div>
-      <small className="curve-help">Click to add · drag to move · double-click a point to delete</small>
+      <div className="curve-foot">
+        <small className="curve-help">Click: add · drag: move · double-click: delete</small>
+        <button className="mini-btn" onPointerDown={stop} onClick={() => update(ch.defaults)} title="Reset this channel">
+          Reset
+        </button>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,8 @@ import type { MediaItem } from '../types';
 type Props = {
   media: MediaItem[];
   activeId: string | null;
+  /** Name of the saved graph applied to an image (Library), if any. */
+  graphName: (item: MediaItem) => string | undefined;
   onSelect: (id: string) => void;
   onToggleVisible: (id: string) => void;
   onSetVisible: (ids: string[], visible: boolean) => void;
@@ -78,24 +80,30 @@ export default function MediaPool(p: Props) {
             </div>
             {open && (
               <div className="media-list">
-                {g.items.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`media-item ${m.id === p.activeId ? 'active' : ''} ${m.visible ? '' : 'muted'}`}
-                    onClick={() => p.onSelect(m.id)}
-                    title={m.name}
-                  >
-                    <img src={m.url} alt="" loading="lazy" decoding="async" />
-                    <span>{m.name}</span>
-                    <input
-                      type="checkbox"
-                      title="Show in viewer"
-                      checked={m.visible}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => p.onToggleVisible(m.id)}
-                    />
-                  </div>
-                ))}
+                {g.items.map((m) => {
+                  const graph = p.graphName(m);
+                  return (
+                    <div
+                      key={m.id}
+                      className={`media-item ${m.id === p.activeId ? 'active' : ''} ${m.visible ? '' : 'muted'}`}
+                      onClick={() => p.onSelect(m.id)}
+                      title={graph ? `${m.name} · graph: ${graph}` : m.name}
+                    >
+                      <img src={m.url} alt="" loading="lazy" decoding="async" />
+                      <span>
+                        {m.name}
+                        {graph && <em className="graph-badge">{graph}</em>}
+                      </span>
+                      <input
+                        type="checkbox"
+                        title="Show in viewer"
+                        checked={m.visible}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={() => p.onToggleVisible(m.id)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

@@ -16,6 +16,7 @@ const layouts: { value: ViewerLayout; label: string; hint: string }[] = [
 
 export default function SettingsDialog({ settings, onChange, onClose }: Props) {
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) => onChange({ ...settings, [key]: value });
+  const px = (v: string) => Math.min(8192, Math.max(16, Math.round(Number(v) || 16)));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -39,12 +40,7 @@ export default function SettingsDialog({ settings, onChange, onClose }: Props) {
           <h4>Output display</h4>
           {modes.map((m) => (
             <label key={m.value} className="radio-row">
-              <input
-                type="radio"
-                name="previewMode"
-                checked={settings.previewMode === m.value}
-                onChange={() => set('previewMode', m.value)}
-              />
+              <input type="radio" name="previewMode" checked={settings.previewMode === m.value} onChange={() => set('previewMode', m.value)} />
               <span>
                 <b>{m.label}</b>
                 <small>{m.hint}</small>
@@ -54,14 +50,7 @@ export default function SettingsDialog({ settings, onChange, onClose }: Props) {
           {settings.previewMode === 'background' && (
             <label className="slider-row">
               Background dim
-              <input
-                type="range"
-                min={0}
-                max={0.9}
-                step={0.05}
-                value={settings.backgroundDim}
-                onChange={(e) => set('backgroundDim', Number(e.target.value))}
-              />
+              <input type="range" min={0} max={0.9} step={0.05} value={settings.backgroundDim} onChange={(e) => set('backgroundDim', Number(e.target.value))} />
               <b>{Math.round(settings.backgroundDim * 100)}%</b>
             </label>
           )}
@@ -71,12 +60,7 @@ export default function SettingsDialog({ settings, onChange, onClose }: Props) {
           <h4>Viewer layout</h4>
           {layouts.map((l) => (
             <label key={l.value} className="radio-row">
-              <input
-                type="radio"
-                name="viewerLayout"
-                checked={settings.viewerLayout === l.value}
-                onChange={() => set('viewerLayout', l.value)}
-              />
+              <input type="radio" name="viewerLayout" checked={settings.viewerLayout === l.value} onChange={() => set('viewerLayout', l.value)} />
               <span>
                 <b>{l.label}</b>
                 <small>{l.hint}</small>
@@ -85,26 +69,26 @@ export default function SettingsDialog({ settings, onChange, onClose }: Props) {
           ))}
           <label className="slider-row">
             Grid tile size
-            <input
-              type="range"
-              min={120}
-              max={480}
-              step={20}
-              value={settings.gridTileSize}
-              onChange={(e) => set('gridTileSize', Number(e.target.value))}
-            />
+            <input type="range" min={120} max={480} step={20} value={settings.gridTileSize} onChange={(e) => set('gridTileSize', Number(e.target.value))} />
             <b>{settings.gridTileSize}px</b>
           </label>
         </section>
 
         <section>
+          <h4>Procedural canvas</h4>
+          <small className="hint">Size used when a graph has no image input (e.g. pure noise / maths).</small>
+          <div className="size-row">
+            <input type="number" min={16} max={8192} value={settings.canvasWidth} onChange={(e) => set('canvasWidth', px(e.target.value))} />
+            <span>×</span>
+            <input type="number" min={16} max={8192} value={settings.canvasHeight} onChange={(e) => set('canvasHeight', px(e.target.value))} />
+            <span>px</span>
+          </div>
+        </section>
+
+        <section>
           <h4>Nodes</h4>
           <label className="check-row">
-            <input
-              type="checkbox"
-              checked={settings.nodePreviews}
-              onChange={(e) => set('nodePreviews', e.target.checked)}
-            />
+            <input type="checkbox" checked={settings.nodePreviews} onChange={(e) => set('nodePreviews', e.target.checked)} />
             Show image previews on top of nodes
           </label>
         </section>
@@ -113,14 +97,7 @@ export default function SettingsDialog({ settings, onChange, onClose }: Props) {
           <h4>Wires</h4>
           <label className="slider-row">
             Thickness
-            <input
-              type="range"
-              min={1}
-              max={8}
-              step={0.5}
-              value={settings.wireWidth}
-              onChange={(e) => set('wireWidth', Number(e.target.value))}
-            />
+            <input type="range" min={1} max={8} step={0.5} value={settings.wireWidth} onChange={(e) => set('wireWidth', Number(e.target.value))} />
             <b>{settings.wireWidth}px</b>
           </label>
         </section>

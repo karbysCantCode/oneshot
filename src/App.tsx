@@ -18,15 +18,17 @@ import {
   useEdgesState,
   type Connection,
   type Edge,
+  type ReactFlowInstance,
 } from '@xyflow/react';
 import ShaderNodeView from './components/ShaderNode';
 import ContextMenu, { type MenuItem, type MenuState } from './components/ContextMenu';
 import SettingsDialog from './components/SettingsDialog';
 import MediaPool from './components/MediaPool';
-import Viewer from './components/Viewer';
+import Viewer, { type ViewItem } from './components/Viewer';
 import Toolbox from './components/Toolbox';
-import { WebGLPipeline, type Op } from './gl/pipeline';
-import { loadSettings, saveSettings, type Settings, type ViewerLayout } from './settings';
+import ImageGraphPanel from './components/ImageGraphPanel';
+import { WebGLPipeline, type RenderItem } from './gl/pipeline';
+import { loadSettings, saveSettings, type Settings, type ViewerLayout, type ViewSource } from './settings';
 import {
   ALL_MEDIA,
   LOOSE,
@@ -38,30 +40,58 @@ import {
   naturalCompare,
   uniqueFolderName,
 } from './media';
-import { defaultParams, getDef, resolveCurves, type NodeDef } from './nodes/registry';
-import { curveTable } from './nodes/curves';
-import { parseCube } from './nodes/lut';
+import { NODE_DEFS, defaultParams, type NodeDef } from './nodes/registry';
 import {
-  isSourceKind,
-  type CurvePoint,
-  type HandleSide,
-  type LutData,
-  type MediaItem,
-  type Params,
-  type ShaderData,
-  type ShaderNode,
+  DEFAULT_RAMP,
+  cleanEdge,
+  cleanNode,
+  flatten,
+  inHandle,
+  makeGroup,
+  migrateGraph,
+  outHandle,
+  outputPlan,
+  previewPlan,
+  socketsOf,
+  ungroup,
+  type FlatGraph,
+  type Plan,
+} from './nodes/graph';
+import { parseCube } from './nodes/lut';
+import { loadPresets, makePreset, savePresets } from './library';
+import type {
+  CurvePoint,
+  GraphPreset,
+  HandleSide,
+  LutData,
+  MediaItem,
+  Params,
+  Ramp,
+  ShaderNode,
 } from './types';
 
+/* ---------------- constants & helpers ---------------- */
+
 const starter: ShaderNode[] = [
-  { id: 'input', type: 'shader', position: { x: 40, y: 140 }, data: { label: 'Image Input', kind: 'input' } },
+  { id: 'input', type: 'shader', position: { x: 40, y: 140 }, data: { label: 'Image Input', kind: 'input', params: defaultParams('input') } },
   { id: 'exposure', type: 'shader', position: { x: 300, y: 120 }, data: { label: 'Exposure', kind: 'exposure', params: defaultParams('exposure') } },
   { id: 'output', type: 'shader', position: { x: 560, y: 140 }, data: { label: 'Output', kind: 'output' } },
 ];
 
 const starterEdges: Edge[] = [
-  { id: 'e1', source: 'input', target: 'exposure' },
-  { id: 'e2', source: 'exposure', target: 'output' },
+  { id: 'e1', source: 'input', sourceHandle: outHandle('image'), target: 'exposure', targetHandle: inHandle('image') },
+  { id: 'e2', source: 'exposure', sourceHandle: outHandle('image'), target: 'output', targetHandle: inHandle('image') },
 ];
+
+/** "Original" graph for images without an assigned saved graph (Library view). */
+const IDENTITY_FLAT = flatten(
+  [
+    { id: 'i', type: 'shader', position: { x: 0, y: 0 }, data: { kind: 'input', label: 'Image Input' } },
+    { id: 'o', type: 'shader', position: { x: 0, y: 0 }, data: { kind: 'output', label: 'Output' } },
+  ],
+  [{ id: 'e', source: 'i', sourceHandle: outHandle('image'), target: 'o', targetHandle: inHandle('image') }],
+);
+const IDENTITY_PLAN = outputPlan(IDENTITY_FLAT);
 
 /** Longest edge (px) of the GPU thumbnails drawn on top of nodes. */
 const PREVIEW_SIZE = 256;
@@ -69,6 +99,7 @@ const PREVIEW_SIZE = 256;
 const GRID_SIZE = 1024;
 /** Images decoded in parallel when importing a folder. */
 const DECODE_CONCURRENCY = 6;
+const CANVAS_ID = '__canvas';
 
 /** crypto.randomUUID only exists on https/localhost; fall back for LAN access over http. */
 const uid = () =>
@@ -78,81 +109,19 @@ const uid = () =>
 
 const closeMenus = () => document.querySelectorAll('header details[open]').forEach((d) => d.removeAttribute('open'));
 
-/** Turn a node into a GPU operation (parameters merged with defaults, curve table, LUT). */
-function buildOp(n: ShaderNode, luts: Map<string, LutData>): Op {
-  const kind = n.data.kind;
-  const params = { ...defaultParams(kind), ...n.data.params };
-  const rows = resolveCurves(kind, n.data.curves);
-  const curve = rows.length ? { ...curveTable(rows), rows: rows.length } : undefined;
-  const lut = getDef(kind)?.lut ? luts.get(n.id) ?? null : undefined;
-  return {
-    kind,
-    params,
-    curve,
-    lut,
-    sig: `${kind}${JSON.stringify(params)}${curve?.key ?? ''}${lut?.id ?? ''}`,
-  };
-}
-
-/** Walk upstream from a node to its source (Image Input / Folder Input). Ops are in processing order. */
-function traceChain(
-  nodeId: string,
-  nodes: ShaderNode[],
-  edges: Edge[],
-  luts: Map<string, LutData>,
-): { ops: Op[]; source: ShaderNode | null } {
-  const byId = new Map(nodes.map((n) => [n.id, n]));
-  const incoming = new Map(edges.map((e) => [e.target, e.source]));
-  const chain: ShaderNode[] = [];
-  const seen = new Set<string>();
-  let id: string | undefined = nodeId;
-  while (id && !seen.has(id)) {
-    seen.add(id);
-    const n = byId.get(id);
-    if (!n) break;
-    chain.unshift(n);
-    if (isSourceKind(n.data.kind)) return { ops: chain.map((c) => buildOp(c, luts)), source: n };
-    id = incoming.get(id);
-  }
-  return { ops: [], source: null };
-}
-
-/** Images a source node feeds into the graph. */
-function batchFor(source: ShaderNode | null, media: MediaItem[], active: MediaItem | null): MediaItem[] {
-  if (!source) return [];
-  if (source.data.kind === 'input') return active ? [active] : [];
-  return imagesInFolder(media, source.data.folder ?? ALL_MEDIA);
-}
-
-/** Which image of a batch to show in single view / node previews. */
-const focusFor = (batch: MediaItem[], active: MediaItem | null) =>
-  batch.find((m) => m.id === active?.id) ?? batch.find((m) => m.visible) ?? batch[0] ?? null;
-
-/** Strip runtime-only callbacks/flags before saving a project. */
-const serializeNode = (n: ShaderNode) => ({
-  id: n.id,
-  type: n.type,
-  position: n.position,
-  data: {
-    label: n.data.label,
-    kind: n.data.kind,
-    params: n.data.params,
-    curves: n.data.curves,
-    lutName: n.data.lutName,
-    showPreview: n.data.showPreview,
-    folder: n.data.folder,
-  } satisfies ShaderData,
-});
-
-/** Upgrade nodes from older project files. */
-const migrateNode = (n: ShaderNode): ShaderNode => {
-  const data = { ...n.data };
-  if (data.kind === 'exposure' && data.value !== undefined && data.params?.stops === undefined) {
-    data.params = { ...data.params, stops: data.value };
-  }
-  delete data.value;
-  return { ...n, type: 'shader', data };
+const download = (data: unknown, name: string) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 };
+
+const toRenderItem = (m: MediaItem): RenderItem => ({ id: m.id, image: m.image, width: m.image.naturalWidth, height: m.image.naturalHeight });
+
+/** A row in the viewer: media image or the procedural canvas. */
+type Entry = { view: ViewItem; render: RenderItem; media?: MediaItem };
 
 const loadImage = (file: File, folder: string) =>
   new Promise<MediaItem | null>((resolve) => {
@@ -167,14 +136,43 @@ const loadImage = (file: File, folder: string) =>
     image.src = url;
   });
 
-type RenderJob = { canvas: HTMLCanvasElement; item: MediaItem | null; ops: Op[] | null; maxSize: number };
+/** All node ids in a graph, including inside groups. */
+const allNodeIds = (nodes: ShaderNode[], out = new Set<string>()) => {
+  for (const n of nodes) {
+    out.add(n.id);
+    if (n.data.group) allNodeIds(n.data.group.nodes, out);
+  }
+  return out;
+};
+
+const parseLuts = (luts: Record<string, { name: string; text: string }> | undefined) => {
+  const map = new Map<string, LutData>();
+  const failed: string[] = [];
+  for (const [id, entry] of Object.entries(luts ?? {})) {
+    try {
+      map.set(id, parseCube(entry.text, entry.name));
+    } catch {
+      failed.push(entry.name);
+    }
+  }
+  return { map, failed };
+};
+
+const lutIdMap = (luts: Map<string, LutData>) => new Map([...luts].map(([k, v]) => [k, v.id]));
+
+/** Editing stack for compound nodes: the outer graph levels above the one being edited. */
+type Frame = { groupId: string; label: string; nodes: ShaderNode[]; edges: Edge[] };
+
+type RenderJob = { canvas: HTMLCanvasElement; plan: Plan | null; item: RenderItem | null; maxSize: number; luts: Map<string, LutData> };
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState<ShaderNode>(starter);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(starterEdges);
+  const [stack, setStack] = useState<Frame[]>([]);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [luts, setLuts] = useState<Map<string, LutData>>(new Map());
+  const [presets, setPresets] = useState<GraphPreset[]>(loadPresets);
   const [status, setStatus] = useState('Import an image or folder to begin');
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
@@ -183,6 +181,8 @@ export default function App() {
   const active = useMemo(() => media.find((m) => m.id === activeId) ?? null, [media, activeId]);
 
   const gpu = useRef<WebGLPipeline | null>(null);
+  const rf = useRef<ReactFlowInstance<ShaderNode, Edge> | null>(null);
+  const graphDiv = useRef<HTMLDivElement>(null);
   const viewerCanvases = useRef(new Map<string, HTMLCanvasElement>());
   const previewCanvases = useRef(new Map<string, HTMLCanvasElement>());
   const rendered = useRef(new WeakMap<HTMLCanvasElement, string>());
@@ -191,24 +191,91 @@ export default function App() {
   const reconnectOk = useRef(true);
   const folderInput = useRef<HTMLInputElement | null>(null);
   const folderTargetNode = useRef<string | null>(null);
+  const libraryFlats = useRef(new Map<string, FlatGraph>());
+
+  // Parsed LUTs of saved graphs.
+  const presetLuts = useMemo(() => new Map(presets.map((p) => [p.id, parseLuts(p.luts).map])), [presets]);
+  useEffect(() => libraryFlats.current.clear(), [presets]);
 
   // Latest state for stable callbacks and the render loop.
-  const live = useRef({ nodes, edges, media, active, settings, luts });
-  live.current = { nodes, edges, media, active, settings, luts };
+  const live = useRef({ nodes, edges, stack, media, active, settings, luts, presets, presetLuts });
+  live.current = { nodes, edges, stack, media, active, settings, luts, presets, presetLuts };
 
   const nodeTypes = useMemo(() => ({ shader: ShaderNodeView }), []);
 
   useEffect(() => saveSettings(settings), [settings]);
+
+  /* ---------- graph levels (compound nodes) ---------- */
+
+  /** The full graph: current level folded back into its parent groups. */
+  const rootGraph = useCallback((): { nodes: ShaderNode[]; edges: Edge[] } => {
+    const { nodes: ns, edges: es, stack: st } = live.current;
+    let curN = ns;
+    let curE = es;
+    for (let i = st.length - 1; i >= 0; i--) {
+      const f = st[i];
+      const innerN = curN.map(cleanNode);
+      const innerE = curE.map(cleanEdge);
+      curN = f.nodes.map((n) =>
+        n.id === f.groupId && n.data.group ? { ...n, data: { ...n.data, group: { ...n.data.group, nodes: innerN, edges: innerE } } } : n,
+      );
+      curE = f.edges;
+    }
+    return { nodes: curN, edges: curE };
+  }, []);
+
+  const pathPrefix = (st: Frame[]) => st.map((f) => `${f.groupId}/`).join('');
+
+  const fitSoon = () => setTimeout(() => rf.current?.fitView({ padding: 0.2, duration: 200 }), 30);
+
+  const enterGroup = useCallback(
+    (id: string) => {
+      const { nodes: ns, edges: es } = live.current;
+      const g = ns.find((n) => n.id === id);
+      if (!g?.data.group) return;
+      setStack((s) => [...s, { groupId: id, label: g.data.label, nodes: ns, edges: es }]);
+      // Group Input / Output define the group's sockets – keep them.
+      setNodes(g.data.group.nodes.map((n) => ({ ...n, selected: false, deletable: n.data.kind !== 'groupIn' && n.data.kind !== 'groupOut' })));
+      setEdges(g.data.group.edges);
+      setMenu(null);
+      fitSoon();
+    },
+    [setNodes, setEdges],
+  );
+
+  /** Leave group levels until `depth` levels remain. */
+  const exitTo = useCallback(
+    (depth: number) => {
+      const { stack: st } = live.current;
+      if (depth >= st.length) return;
+      let curN = live.current.nodes;
+      let curE = live.current.edges;
+      for (let i = st.length - 1; i >= depth; i--) {
+        const f = st[i];
+        const innerN = curN.map(cleanNode);
+        const innerE = curE.map(cleanEdge);
+        curN = f.nodes.map((n) =>
+          n.id === f.groupId && n.data.group ? { ...n, data: { ...n.data, group: { ...n.data.group, nodes: innerN, edges: innerE } } } : n,
+        );
+        curE = f.edges;
+      }
+      setStack(st.slice(0, depth));
+      setNodes(curN);
+      setEdges(curE);
+      fitSoon();
+    },
+    [setNodes, setEdges],
+  );
 
   /* ---------- WebGL setup ---------- */
   useEffect(() => {
     if (gpu.current) return;
     try {
       gpu.current = new WebGLPipeline();
+      const failed = gpu.current.warmUp(NODE_DEFS.map((d) => d.kind));
       setStatus(
-        gpu.current.floatTargets
-          ? 'WebGL 2 ready (16-bit float pipeline) – import an image or folder'
-          : 'WebGL 2 ready (8-bit fallback: no float render targets on this GPU) – import an image or folder',
+        (gpu.current.floatTargets ? 'WebGL 2 ready (16-bit float pipeline)' : 'WebGL 2 ready (8-bit fallback: no float render targets on this GPU)') +
+          (failed.length ? ` – shaders failed: ${failed.join(', ')} (see console)` : ' – import an image or folder'),
       );
     } catch (e) {
       setStatus((e as Error).message);
@@ -226,45 +293,103 @@ export default function App() {
     return () => window.removeEventListener('pointerdown', onDown);
   }, []);
 
+  /* ---------- batches ---------- */
+
+  const canvasEntry = (st: Settings): Entry => ({
+    view: { id: CANVAS_ID, name: `Procedural canvas ${st.canvasWidth}×${st.canvasHeight}`, visible: true },
+    render: { id: CANVAS_ID, image: null, width: st.canvasWidth, height: st.canvasHeight },
+  });
+  const mediaEntry = (m: MediaItem, badge?: string): Entry => ({ view: { id: m.id, name: m.name, visible: m.visible, badge }, render: toRenderItem(m), media: m });
+
+  /** Items a workspace plan processes. */
+  const entriesFor = (plan: Plan, ms: MediaItem[], act: MediaItem | null, st: Settings): Entry[] => {
+    if (!plan.target) return [];
+    if (plan.folder !== undefined) return imagesInFolder(ms, plan.folder).map((m) => mediaEntry(m));
+    if (plan.usesCurrent) return act ? [mediaEntry(act)] : [];
+    if (plan.mediaIds.length) {
+      const m = ms.find((x) => x.id === plan.mediaIds[0]);
+      return m ? [mediaEntry(m)] : [];
+    }
+    return [canvasEntry(st)];
+  };
+
+  const focusFor = (batch: Entry[], act: MediaItem | null) =>
+    batch.find((e) => e.view.id === act?.id) ?? batch.find((e) => e.view.visible) ?? batch[0] ?? null;
+
+  /** Library: flattened saved graph for an image (with its per-image overrides). */
+  const libraryPlan = (m: MediaItem): { plan: Plan; luts: Map<string, LutData> } => {
+    const { presets: ps, presetLuts: pl } = live.current;
+    const preset = m.graph && ps.find((p) => p.id === m.graph!.presetId);
+    if (!preset) return { plan: IDENTITY_PLAN, luts: new Map() };
+    const lt = pl.get(preset.id) ?? new Map<string, LutData>();
+    const key = `${preset.id}|${JSON.stringify(m.graph!.overrides)}`;
+    let flat = libraryFlats.current.get(key);
+    if (!flat) {
+      flat = flatten(preset.nodes, preset.edges, m.graph!.overrides);
+      libraryFlats.current.set(key, flat);
+      if (libraryFlats.current.size > 256) libraryFlats.current.delete(libraryFlats.current.keys().next().value as string);
+    }
+    return { plan: outputPlan(flat, lutIdMap(lt)), luts: lt };
+  };
+
+  const presetName = useCallback((m: MediaItem) => live.current.presets.find((p) => p.id === m.graph?.presetId)?.name, []);
+
   /* ---------- GPU render loop ---------- */
-  // Renders the viewer, grid tiles and node previews in small time-sliced chunks so large batches stay responsive.
+  // Renders the viewer, grid tiles and node previews in time-sliced chunks so large batches stay responsive.
   const scheduleRender = useCallback(() => {
     const gen = ++renderGen.current;
     cancelAnimationFrame(rafId.current);
 
     rafId.current = requestAnimationFrame(() => {
-      const { nodes: ns, edges: es, media: ms, active: act, settings: st, luts: lt } = live.current;
+      const { media: ms, active: act, settings: st, luts: lt, stack: stk } = live.current;
+      const root = rootGraph();
+      const flat = flatten(root.nodes, root.edges);
+      const lutIds = lutIdMap(lt);
       const jobs: RenderJob[] = [];
-
-      const out = ns.find((n) => n.data.kind === 'output');
-      const outInfo = out ? traceChain(out.id, ns, es, lt) : { ops: [], source: null };
-      const outOps = outInfo.source ? outInfo.ops : null;
-      const outBatch = batchFor(outInfo.source, ms, act);
-      const current = focusFor(outBatch, act);
       const viewerOn = st.previewMode !== 'hidden';
 
-      const single = viewerCanvases.current.get('single');
-      if (viewerOn && st.viewerLayout === 'single' && single) {
-        jobs.push({ canvas: single, item: current, ops: outOps, maxSize: Infinity });
+      if (viewerOn) {
+        if (st.viewSource === 'workspace') {
+          const plan = outputPlan(flat, lutIds);
+          const batch = entriesFor(plan, ms, act, st);
+          const current = focusFor(batch, act);
+          const single = viewerCanvases.current.get('single');
+          if (st.viewerLayout === 'single' && single) jobs.push({ canvas: single, plan, item: current?.render ?? null, maxSize: Infinity, luts: lt });
+          if (st.viewerLayout === 'grid')
+            for (const e of batch) {
+              const canvas = e.view.visible && viewerCanvases.current.get(`tile:${e.view.id}`);
+              if (canvas) jobs.push({ canvas, plan, item: e.render, maxSize: GRID_SIZE, luts: lt });
+            }
+        } else {
+          const single = viewerCanvases.current.get('single');
+          const cur = act ?? ms.find((m) => m.visible) ?? ms[0];
+          if (st.viewerLayout === 'single' && single && cur) {
+            const lp = libraryPlan(cur);
+            jobs.push({ canvas: single, plan: lp.plan, item: toRenderItem(cur), maxSize: Infinity, luts: lp.luts });
+          }
+          if (st.viewerLayout === 'grid')
+            for (const m of ms) {
+              const canvas = m.visible && viewerCanvases.current.get(`tile:${m.id}`);
+              if (!canvas) continue;
+              const lp = libraryPlan(m);
+              jobs.push({ canvas, plan: lp.plan, item: toRenderItem(m), maxSize: GRID_SIZE, luts: lp.luts });
+            }
+        }
       }
 
       if (st.nodePreviews) {
-        for (const n of ns) {
-          const canvas = previewCanvases.current.get(n.id);
-          if (!canvas) continue;
-          const info = traceChain(n.id, ns, es, lt);
-          const item = focusFor(batchFor(info.source, ms, act), act);
-          jobs.push({ canvas, item, ops: info.source ? info.ops : null, maxSize: PREVIEW_SIZE });
+        const prefix = pathPrefix(stk);
+        for (const [id, canvas] of previewCanvases.current) {
+          const plan = previewPlan(flat, prefix + id, lutIds);
+          const item = focusFor(entriesFor(plan, ms, act, st), act);
+          jobs.push({ canvas, plan, item: item?.render ?? null, maxSize: PREVIEW_SIZE, luts: lt });
         }
       }
 
-      if (viewerOn && st.viewerLayout === 'grid') {
-        for (const m of outBatch) {
-          if (!m.visible) continue;
-          const canvas = viewerCanvases.current.get(`tile:${m.id}`);
-          if (canvas) jobs.push({ canvas, item: m, ops: outOps, maxSize: GRID_SIZE });
-        }
-      }
+      const lookup = (id: string) => {
+        const m = live.current.media.find((x) => x.id === id);
+        return m ? toRenderItem(m) : null;
+      };
 
       let i = 0;
       const step = () => {
@@ -272,27 +397,26 @@ export default function App() {
         const g = gpu.current;
         const t0 = performance.now();
         while (i < jobs.length && performance.now() - t0 < 12) {
-          const { canvas, item, ops, maxSize } = jobs[i++];
-          if (!g || !item || !ops) {
+          const { canvas, plan, item, maxSize, luts: jl } = jobs[i++];
+          if (!g || !item || !plan?.target) {
             if (rendered.current.get(canvas) !== 'empty') {
               canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
               rendered.current.set(canvas, 'empty');
             }
             continue;
           }
-          // Skip canvases whose image + node chain haven't changed.
-          const sig = `${item.id}|${maxSize}|${ops.map((o) => o.sig).join('>')}`;
+          // Skip canvases whose image + graph haven't changed.
+          const sig = `${item.id}|${item.width}x${item.height}|${maxSize}|${plan.sig}`;
           if (rendered.current.get(canvas) === sig) continue;
-          const key = g.source(item.id, item.image, maxSize);
-          g.render(key, ops);
-          g.present(canvas);
+          if (g.render(plan, { item, maxSize, media: lookup, luts: jl })) g.present(canvas);
           rendered.current.set(canvas, sig);
         }
         if (i < jobs.length) rafId.current = requestAnimationFrame(step);
       };
       step();
     });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rootGraph]);
 
   useEffect(() => () => cancelAnimationFrame(rafId.current), []);
 
@@ -301,9 +425,7 @@ export default function App() {
       if (el) {
         viewerCanvases.current.set(key, el);
         scheduleRender();
-      } else {
-        viewerCanvases.current.delete(key);
-      }
+      } else viewerCanvases.current.delete(key);
     },
     [scheduleRender],
   );
@@ -313,9 +435,7 @@ export default function App() {
       if (el) {
         previewCanvases.current.set(id, el);
         scheduleRender();
-      } else {
-        previewCanvases.current.delete(id);
-      }
+      } else previewCanvases.current.delete(id);
     },
     [scheduleRender],
   );
@@ -324,10 +444,11 @@ export default function App() {
   const graphKey = useMemo(
     () =>
       JSON.stringify({
-        n: nodes.map((n) => [n.id, n.data.kind, n.data.params, n.data.curves, n.data.showPreview, n.data.folder]),
-        e: edges.map((e) => [e.source, e.target]),
+        n: nodes.map((n) => [n.id, n.data.kind, n.data.params, n.data.curves, n.data.ramp, n.data.bypass, n.data.showPreview, n.data.folder, n.data.group ? n.data.group.edges.length : 0]),
+        e: edges.map((e) => [e.source, e.sourceHandle, e.target, e.targetHandle]),
+        s: stack.map((f) => f.groupId),
       }),
-    [nodes, edges],
+    [nodes, edges, stack],
   );
 
   useEffect(scheduleRender, [
@@ -335,56 +456,62 @@ export default function App() {
     media,
     active,
     luts,
+    presets,
     settings.viewerLayout,
     settings.previewMode,
     settings.nodePreviews,
+    settings.viewSource,
+    settings.canvasWidth,
+    settings.canvasHeight,
     scheduleRender,
   ]);
 
-  /* ---------- derived graph info for the UI ---------- */
+  /* ---------- derived info for the UI ---------- */
   const derived = useMemo(() => {
-    const byId = new Map(nodes.map((n) => [n.id, n]));
-    const incoming = new Map(edges.map((e) => [e.target, e.source]));
-    // Source node for each node (cheap walk, no op building).
-    const sourceOf = (id: string) => {
-      const seen = new Set<string>();
-      let cur: string | undefined = id;
-      while (cur && !seen.has(cur)) {
-        seen.add(cur);
-        const n = byId.get(cur);
-        if (!n) return null;
-        if (isSourceKind(n.data.kind)) return n;
-        cur = incoming.get(cur);
-      }
-      return null;
-    };
-    const out = nodes.find((n) => n.data.kind === 'output');
-    const outSource = out ? sourceOf(out.id) : null;
-    const batch = batchFor(outSource, media, active);
+    const root = rootGraph();
+    const flat = flatten(root.nodes, root.edges);
+    const prefix = pathPrefix(stack);
     const perNode = new Map<string, { hasImage: boolean; count: number }>();
     for (const n of nodes) {
-      const b = batchFor(sourceOf(n.id), media, active);
-      perNode.set(n.id, { hasImage: b.length > 0, count: b.length });
+      const b = entriesFor(previewPlan(flat, prefix + n.id), media, active, settings);
+      perNode.set(n.id, { hasImage: b.length > 0, count: n.data.kind === 'folder' ? imagesInFolder(media, n.data.folder ?? ALL_MEDIA).length : b.length });
     }
-    return { connected: !!outSource, batch, current: focusFor(batch, active), perNode };
-  }, [nodes, edges, media, active]);
+
+    let batch: Entry[];
+    let message: string | null = null;
+    if (settings.viewSource === 'workspace') {
+      const plan = outputPlan(flat);
+      batch = entriesFor(plan, media, active, settings);
+      if (!plan.target) message = media.length ? 'Output is not connected – connect an Image Input, Folder Input or texture to Output' : 'Import an image or folder, or connect a texture node to Output';
+      else if (!batch.length) message = plan.usesCurrent && media.length ? 'Select an image in the Media Pool' : 'The connected input has no images';
+    } else {
+      batch = media.map((m) => mediaEntry(m, presetName(m)));
+      if (!media.length) message = 'Import images, then apply saved graphs to them (Toolbox → Library)';
+    }
+    return { batch, current: focusFor(batch, active), message, perNode };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, edges, stack, media, active, settings, presets, rootGraph, presetName]);
 
   const folderOpts = useMemo(() => folderOptions(media), [media]);
+  const mediaOpts = useMemo(() => media.map((m) => ({ id: m.id, name: m.name })), [media]);
 
   /* ---------- node callbacks (stable) ---------- */
-  const updateParams = useCallback(
-    (id: string, patch: Params) =>
-      setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, params: { ...n.data.params, ...patch } } } : n))),
+  const patchNode = useCallback(
+    (id: string, fn: (d: ShaderNode['data']) => Partial<ShaderNode['data']>) =>
+      setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, ...fn(n.data) } } : n))),
     [setNodes],
   );
 
+  const updateParams = useCallback((id: string, patch: Params) => patchNode(id, (d) => ({ params: { ...d.params, ...patch } })), [patchNode]);
   const updateCurve = useCallback(
-    (id: string, channel: string, points: CurvePoint[]) =>
-      setNodes((ns) =>
-        ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, curves: { ...n.data.curves, [channel]: points } } } : n)),
-      ),
-    [setNodes],
+    (id: string, channel: string, points: CurvePoint[]) => patchNode(id, (d) => ({ curves: { ...d.curves, [channel]: points } })),
+    [patchNode],
   );
+  const updateRamp = useCallback((id: string, ramp: Ramp) => patchNode(id, () => ({ ramp })), [patchNode]);
+  const toggleBypass = useCallback((id: string) => patchNode(id, (d) => ({ bypass: !d.bypass })), [patchNode]);
+  const renameNode = useCallback((id: string, label: string) => patchNode(id, () => ({ label })), [patchNode]);
+  const togglePreview = useCallback((id: string) => patchNode(id, (d) => ({ showPreview: d.showPreview === false })), [patchNode]);
+  const setNodeFolder = useCallback((id: string, folder: string) => patchNode(id, () => ({ folder })), [patchNode]);
 
   const loadLut = useCallback(
     (id: string, file: File) => {
@@ -393,12 +520,12 @@ export default function App() {
         .then((text) => {
           const lut = parseCube(text, file.name);
           setLuts((m) => new Map(m).set(id, lut));
-          setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, lutName: file.name } } : n)));
+          patchNode(id, () => ({ lutName: file.name }));
           setStatus(`Loaded LUT ${file.name} (${lut.size}³)`);
         })
         .catch((e: Error) => setStatus(`Could not load ${file.name}: ${e.message}`));
     },
-    [setNodes],
+    [patchNode],
   );
 
   const clearLut = useCallback(
@@ -408,23 +535,9 @@ export default function App() {
         next.delete(id);
         return next;
       });
-      setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, lutName: undefined } } : n)));
+      patchNode(id, () => ({ lutName: undefined }));
     },
-    [setNodes],
-  );
-
-  const togglePreview = useCallback(
-    (id: string) =>
-      setNodes((ns) =>
-        ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, showPreview: n.data.showPreview === false } } : n)),
-      ),
-    [setNodes],
-  );
-
-  const setNodeFolder = useCallback(
-    (id: string, folder: string) =>
-      setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, folder } } : n))),
-    [setNodes],
+    [patchNode],
   );
 
   const pickFolder = useCallback((nodeId: string | null) => {
@@ -437,9 +550,11 @@ export default function App() {
   const labelOf = useCallback((id: string) => live.current.nodes.find((n) => n.id === id)?.data.label ?? id, []);
 
   const onHandleClick = useCallback(
-    (nodeId: string, side: HandleSide, x: number, y: number) => {
+    (nodeId: string, side: HandleSide, socket: string, x: number, y: number) => {
       const es = live.current.edges;
-      const linked = es.filter((e) => (side === 'target' ? e.target === nodeId : e.source === nodeId));
+      const linked = es.filter((e) =>
+        side === 'target' ? e.target === nodeId && e.targetHandle === inHandle(socket) : e.source === nodeId && e.sourceHandle === outHandle(socket),
+      );
       const items: MenuItem[] = linked.length
         ? linked.map((e) => ({
             label: side === 'target' ? `Disconnect from ${labelOf(e.source)}` : `Disconnect from ${labelOf(e.target)}`,
@@ -448,13 +563,9 @@ export default function App() {
           }))
         : [{ label: 'Not connected – drag from this socket to connect', disabled: true }];
       if (linked.length > 1) {
-        items.push('separator', {
-          label: `Disconnect all (${linked.length})`,
-          danger: true,
-          onSelect: () => removeEdges(linked.map((e) => e.id)),
-        });
+        items.push('separator', { label: `Disconnect all (${linked.length})`, danger: true, onSelect: () => removeEdges(linked.map((e) => e.id)) });
       }
-      setMenu({ x, y, title: `${labelOf(nodeId)} · ${side === 'target' ? 'Input' : 'Output'} socket`, items });
+      setMenu({ x, y, title: `${labelOf(nodeId)} · ${socket}`, items });
     },
     [labelOf, removeEdges],
   );
@@ -472,6 +583,120 @@ export default function App() {
     [labelOf, removeEdges],
   );
 
+  /* ---------- grouping ---------- */
+  const groupSelected = useCallback(() => {
+    const { nodes: ns, edges: es } = live.current;
+    const ids = ns.filter((n) => n.selected).map((n) => n.id);
+    const r = makeGroup(ns, es, ids);
+    if (!r) {
+      setStatus('Select one or more nodes (not Output) to group');
+      return;
+    }
+    setNodes(r.nodes);
+    setEdges(r.edges);
+    setStatus('Grouped – press Tab (or the edit button) to open the group, Ctrl/⌘+Shift+G to ungroup');
+  }, [setNodes, setEdges]);
+
+  const ungroupSelected = useCallback(() => {
+    let { nodes: ns, edges: es } = live.current;
+    const groups = ns.filter((n) => n.selected && n.data.kind === 'group');
+    if (!groups.length) {
+      setStatus('Select a group node to ungroup');
+      return;
+    }
+    for (const g of groups) {
+      const r = ungroup(ns, es, g.id);
+      if (r) ({ nodes: ns, edges: es } = r);
+    }
+    setNodes(ns);
+    setEdges(es);
+  }, [setNodes, setEdges]);
+
+  const toggleBypassSelected = useCallback(() => {
+    const sel = live.current.nodes.filter((n) => n.selected && n.data.kind !== 'output' && n.data.kind !== 'groupIn' && n.data.kind !== 'groupOut');
+    if (!sel.length) return;
+    const on = !sel.every((n) => n.data.bypass);
+    const ids = new Set(sel.map((n) => n.id));
+    setNodes((all) => all.map((n) => (ids.has(n.id) ? { ...n, data: { ...n.data, bypass: on } } : n)));
+  }, [setNodes]);
+
+  // Keyboard: Ctrl/⌘+G group · Ctrl/⌘+Shift+G ungroup · Tab enter/exit group · M bypass
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && e.key.toLowerCase() === 'g') {
+        e.preventDefault();
+        if (e.shiftKey || e.altKey) ungroupSelected();
+        else groupSelected();
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const sel = live.current.nodes.filter((n) => n.selected);
+        if (sel.length === 1 && sel[0].data.kind === 'group') enterGroup(sel[0].id);
+        else if (live.current.stack.length) exitTo(live.current.stack.length - 1);
+      } else if (!mod && !e.altKey && e.key.toLowerCase() === 'm') {
+        toggleBypassSelected();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [groupSelected, ungroupSelected, enterGroup, exitTo, toggleBypassSelected]);
+
+  const onNodeMenu = useCallback(
+    (e: ReactMouseEvent, node: ShaderNode) => {
+      e.preventDefault();
+      const selCount = live.current.nodes.filter((n) => n.selected || n.id === node.id).length;
+      const items: MenuItem[] = [];
+      if (node.data.kind === 'group') items.push({ label: 'Edit group (Tab)', onSelect: () => enterGroup(node.id) });
+      if (!['output', 'groupIn', 'groupOut'].includes(node.data.kind))
+        items.push({ label: node.data.bypass ? 'Enable (un-bypass) (M)' : 'Bypass (M)', onSelect: () => toggleBypass(node.id) });
+      items.push({
+        label: 'Rename…',
+        onSelect: () => {
+          const v = window.prompt('Node name', node.data.label);
+          if (v?.trim()) renameNode(node.id, v.trim());
+        },
+      });
+      items.push('separator');
+      items.push({
+        label: `Group ${selCount > 1 ? `${selCount} nodes` : 'node'} (Ctrl/⌘+G)`,
+        onSelect: () => {
+          setNodes((ns) => ns.map((n) => (n.id === node.id ? { ...n, selected: true } : n)));
+          setTimeout(groupSelected, 0);
+        },
+      });
+      if (node.data.kind === 'group')
+        items.push({
+          label: 'Ungroup (Ctrl/⌘+Shift+G)',
+          onSelect: () => {
+            const r = ungroup(live.current.nodes, live.current.edges, node.id);
+            if (r) {
+              setNodes(r.nodes);
+              setEdges(r.edges);
+            }
+          },
+        });
+      items.push('separator', {
+        label: 'Delete',
+        danger: true,
+        onSelect: () => {
+          setNodes((ns) => ns.filter((n) => n.id !== node.id));
+          setEdges((es) => es.filter((x) => x.source !== node.id && x.target !== node.id));
+        },
+      });
+      setMenu({ x: e.clientX, y: e.clientY, title: node.data.label, items });
+    },
+    [enterGroup, toggleBypass, renameNode, groupSelected, setNodes, setEdges],
+  );
+
+  /* ---------- nodes & edges passed to React Flow ---------- */
+  const connectedByNode = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const e of edges) if (e.targetHandle) m.set(e.target, [...(m.get(e.target) ?? []), e.targetHandle]);
+    return m;
+  }, [edges]);
+
   const wiredNodes = useMemo(
     () =>
       nodes.map((n) => {
@@ -484,12 +709,18 @@ export default function App() {
             hasImage: !!info?.hasImage,
             batchCount: info?.count ?? 0,
             folderOptions: folderOpts,
+            mediaOptions: mediaOpts,
+            connected: connectedByNode.get(n.id),
             lut: luts.get(n.id) ?? null,
             onParams: updateParams,
             onCurve: updateCurve,
+            onRamp: updateRamp,
             onLoadLut: loadLut,
             onClearLut: clearLut,
             onTogglePreview: togglePreview,
+            onToggleBypass: toggleBypass,
+            onRename: renameNode,
+            onEnterGroup: enterGroup,
             onHandleClick,
             registerPreview,
             onFolderChange: setNodeFolder,
@@ -497,42 +728,40 @@ export default function App() {
           },
         };
       }),
-    [
-      nodes,
-      derived,
-      settings.nodePreviews,
-      folderOpts,
-      luts,
-      updateParams,
-      updateCurve,
-      loadLut,
-      clearLut,
-      togglePreview,
-      onHandleClick,
-      registerPreview,
-      setNodeFolder,
-      pickFolder,
-    ],
+    [nodes, derived, settings.nodePreviews, folderOpts, mediaOpts, connectedByNode, luts, updateParams, updateCurve, updateRamp, loadLut, clearLut, togglePreview, toggleBypass, renameNode, enterGroup, onHandleClick, registerPreview, setNodeFolder, pickFolder],
   );
 
+  // Colour wires by the type of value they carry.
+  const wiredEdges = useMemo(() => {
+    const byId = new Map(nodes.map((n) => [n.id, n]));
+    return edges.map((e) => {
+      const s = byId.get(e.source);
+      const sock = s ? socketsOf(s).outputs.find((o) => outHandle(o.id) === e.sourceHandle) : undefined;
+      return { ...e, className: `wire-${sock?.type ?? 'color'}` };
+    });
+  }, [nodes, edges]);
+
   /* ---------- connections ---------- */
-  // Prevent self-links and cycles.
+  // Prevent self-links and cycles (a node may not feed anything upstream of itself).
   const isValidConnection = useCallback((c: Connection | Edge) => {
     if (c.source === c.target) return false;
-    const incoming = new Map(live.current.edges.map((e) => [e.target, e.source]));
+    const upstream = new Map<string, string[]>();
+    for (const e of live.current.edges) upstream.set(e.target, [...(upstream.get(e.target) ?? []), e.source]);
     const seen = new Set<string>();
-    let id: string | undefined = c.source;
-    while (id && !seen.has(id)) {
+    const stackIds = [c.source];
+    while (stackIds.length) {
+      const id = stackIds.pop()!;
       if (id === c.target) return false;
+      if (seen.has(id)) continue;
       seen.add(id);
-      id = incoming.get(id);
+      stackIds.push(...(upstream.get(id) ?? []));
     }
     return true;
   }, []);
 
   // Each input socket takes one wire: a new connection replaces the old one.
   const onConnect = useCallback(
-    (c: Connection) => setEdges((es) => addEdge(c, es.filter((e) => e.target !== c.target))),
+    (c: Connection) => setEdges((es) => addEdge({ ...c, id: `e-${uid()}` }, es.filter((e) => !(e.target === c.target && e.targetHandle === c.targetHandle)))),
     [setEdges],
   );
 
@@ -544,7 +773,9 @@ export default function App() {
   const onReconnect = useCallback(
     (oldEdge: Edge, c: Connection) => {
       reconnectOk.current = true;
-      setEdges((es) => reconnectEdge(oldEdge, c, es.filter((e) => e.id === oldEdge.id || e.target !== c.target)));
+      setEdges((es) =>
+        reconnectEdge(oldEdge, c, es.filter((e) => e.id === oldEdge.id || !(e.target === c.target && e.targetHandle === c.targetHandle))),
+      );
     },
     [setEdges],
   );
@@ -565,10 +796,7 @@ export default function App() {
     setStatus(`${m.name} • ${m.image.naturalWidth}×${m.image.naturalHeight}`);
   }, []);
 
-  const toggleVisible = useCallback(
-    (id: string) => setMedia((ms) => ms.map((m) => (m.id === id ? { ...m, visible: !m.visible } : m))),
-    [],
-  );
+  const toggleVisible = useCallback((id: string) => setMedia((ms) => ms.map((m) => (m.id === id ? { ...m, visible: !m.visible } : m))), []);
 
   const setVisible = useCallback((ids: string[], visible: boolean) => {
     const set = new Set(ids);
@@ -582,17 +810,12 @@ export default function App() {
   const assignFolder = useCallback(
     (folder: string, nodeId: string | null) => {
       const ns = live.current.nodes;
-      const targetId =
-        nodeId ??
-        ns.find((n) => n.selected && n.data.kind === 'folder')?.id ??
-        ns.find((n) => n.data.kind === 'folder')?.id;
-
+      const targetId = nodeId ?? ns.find((n) => n.selected && n.data.kind === 'folder')?.id ?? ns.find((n) => n.data.kind === 'folder')?.id;
       if (targetId) {
         setNodeFolder(targetId, folder);
         return;
       }
-
-      const input = ns.find((n) => n.data.kind === 'input');
+      const input = ns.find((n) => n.data.kind === 'input' && !n.data.params?.media);
       const id = uid();
       setNodes((all) => [
         ...all,
@@ -637,7 +860,6 @@ export default function App() {
     const root = (files[0].webkitRelativePath || '').split('/')[0] || 'Folder';
     const folder = uniqueFolderName(root, live.current.media);
 
-    // Decode with limited concurrency, reporting progress.
     const results: (MediaItem | null)[] = new Array(files.length).fill(null);
     let next = 0;
     let done = 0;
@@ -660,34 +882,147 @@ export default function App() {
 
     setMedia((m) => [...m, ...items]);
     setActiveId(items[0].id);
-    assignFolder(folder, targetNode);
+    if (live.current.settings.viewSource === 'workspace') assignFolder(folder, targetNode);
     if (items.length > 1) setSettings((s) => ({ ...s, viewerLayout: 'grid' }));
     setStatus(`${folderLabel(folder)} • ${items.length} images${failed ? ` (${failed} could not be decoded)` : ''}`);
   };
 
   const stepImage = (dir: 1 | -1) => {
-    const shown = derived.batch.filter((m) => m.visible);
+    const shown = derived.batch.filter((e) => e.view.visible);
     const pool = shown.length ? shown : derived.batch;
     if (!pool.length) return;
-    const i = pool.findIndex((m) => m.id === derived.current?.id);
-    selectImage(pool[(i + dir + pool.length) % pool.length].id);
+    const i = pool.findIndex((e) => e.view.id === derived.current?.view.id);
+    selectImage(pool[(i + dir + pool.length) % pool.length].view.id);
   };
 
   const setLayout = (viewerLayout: ViewerLayout) => setSettings((s) => ({ ...s, viewerLayout }));
+  const setSource = (viewSource: ViewSource) => setSettings((s) => ({ ...s, viewSource }));
+
+  /* ---------- library (saved graphs) ---------- */
+  const commitPresets = (next: GraphPreset[]) => {
+    setPresets(next);
+    const err = savePresets(next);
+    if (err) setStatus(err);
+  };
+
+  const lutTextsFor = (ns: ShaderNode[], lt: Map<string, LutData>) => {
+    const ids = allNodeIds(ns);
+    const out: Record<string, { name: string; text: string }> = {};
+    for (const [id, lut] of lt) if (ids.has(id)) out[id] = { name: lut.name, text: lut.text };
+    return out;
+  };
+
+  const savePreset = () => {
+    const name = window.prompt('Name for this graph', `Graph ${presets.length + 1}`);
+    if (!name?.trim()) return;
+    const root = rootGraph();
+    if (!root.nodes.some((n) => n.data.kind === 'output')) {
+      setStatus('The graph needs an Output node to be saved');
+      return;
+    }
+    const p = makePreset(name.trim(), root.nodes, root.edges, lutTextsFor(root.nodes, luts));
+    commitPresets([...presets, p]);
+    setStatus(`Saved “${p.name}” to the Library`);
+  };
+
+  const loadPresetIntoWorkspace = (id: string) => {
+    const p = presets.find((x) => x.id === id);
+    if (!p || !window.confirm(`Replace the current graph with “${p.name}”?`)) return;
+    const g = migrateGraph(p.nodes, p.edges);
+    setStack([]);
+    setNodes(g.nodes);
+    setEdges(g.edges);
+    setLuts(parseLuts(p.luts).map);
+    setSource('workspace');
+    fitSoon();
+    setStatus(`Editing “${p.name}” – save again to update the Library`);
+  };
+
+  const shownMediaIds = () => {
+    const ms = live.current.media;
+    const shown = ms.filter((m) => m.visible);
+    return new Set((shown.length ? shown : ms).map((m) => m.id));
+  };
+
+  const applyPresetToShown = (presetId: string) => {
+    const ids = shownMediaIds();
+    setMedia((ms) => ms.map((m) => (ids.has(m.id) ? { ...m, graph: { presetId, overrides: m.graph?.presetId === presetId ? m.graph.overrides : {} } } : m)));
+    setSource('library');
+    const p = presets.find((x) => x.id === presetId);
+    setStatus(`Applied “${p?.name}” to ${ids.size} image${ids.size === 1 ? '' : 's'}`);
+  };
+
+  const renamePreset = (id: string) => {
+    const p = presets.find((x) => x.id === id);
+    const name = p && window.prompt('Rename graph', p.name);
+    if (name?.trim()) commitPresets(presets.map((x) => (x.id === id ? { ...x, name: name.trim() } : x)));
+  };
+
+  const deletePreset = (id: string) => {
+    const p = presets.find((x) => x.id === id);
+    if (!p || !window.confirm(`Delete “${p.name}” from the Library?`)) return;
+    commitPresets(presets.filter((x) => x.id !== id));
+    setMedia((ms) => ms.map((m) => (m.graph?.presetId === id ? { ...m, graph: undefined } : m)));
+  };
+
+  const exportPreset = (id: string) => {
+    const p = presets.find((x) => x.id === id);
+    if (p) download({ nodegl: 'graph', version: 5, ...p }, `${p.name.replace(/[^\w\- ]+/g, '_')}.nodegl-graph.json`);
+  };
+
+  const importPreset = (file: File) => {
+    file
+      .text()
+      .then((text) => {
+        const j = JSON.parse(text);
+        if (!Array.isArray(j.nodes) || !Array.isArray(j.edges)) throw new Error('not a graph file');
+        const g = migrateGraph(j.nodes, j.edges);
+        const p = makePreset(j.name ?? file.name.replace(/\.(nodegl-graph\.)?json$/i, ''), g.nodes, g.edges, j.luts ?? {});
+        commitPresets([...live.current.presets, p]);
+        setStatus(`Imported “${p.name}” into the Library`);
+      })
+      .catch((e: Error) => setStatus(`Could not import ${file.name}: ${e.message}`));
+  };
+
+  const libraryItem = settings.viewSource === 'library' ? derived.current?.media ?? null : null;
+
+  const setItemGraph = (itemId: string, presetId: string) =>
+    setMedia((ms) => ms.map((m) => (m.id === itemId ? { ...m, graph: presetId ? { presetId, overrides: {} } : undefined } : m)));
+
+  const overrideParam = (itemId: string, nodeId: string, patch: Params) =>
+    setMedia((ms) =>
+      ms.map((m) =>
+        m.id === itemId && m.graph
+          ? { ...m, graph: { ...m.graph, overrides: { ...m.graph.overrides, [nodeId]: { ...m.graph.overrides[nodeId], ...patch } } } }
+          : m,
+      ),
+    );
+
+  const applyItemGraphToShown = (itemId: string) => {
+    const src = live.current.media.find((m) => m.id === itemId)?.graph;
+    if (!src) return;
+    const ids = shownMediaIds();
+    setMedia((ms) => ms.map((m) => (ids.has(m.id) ? { ...m, graph: { presetId: src.presetId, overrides: structuredClone(src.overrides) } } : m)));
+    setStatus(`Applied to ${ids.size} image${ids.size === 1 ? '' : 's'}`);
+  };
 
   /* ---------- graph editing ---------- */
   const addNode = (def: NodeDef) => {
     const groups = folderGroups(media);
+    const r = graphDiv.current?.getBoundingClientRect();
+    const centre = r && rf.current ? rf.current.screenToFlowPosition({ x: r.left + r.width / 2, y: r.top + r.height / 2 }) : { x: 300, y: 150 };
     setNodes((ns) => [
-      ...ns,
+      ...ns.map((n) => ({ ...n, selected: false })),
       {
         id: uid(),
         type: 'shader',
-        position: { x: 220 + Math.random() * 180, y: 80 + Math.random() * 200 },
+        selected: true,
+        position: { x: centre.x - 95 + (Math.random() - 0.5) * 60, y: centre.y - 60 + (Math.random() - 0.5) * 60 },
         data: {
           kind: def.kind,
           label: def.label,
           params: defaultParams(def.kind),
+          ramp: def.ramp ? structuredClone(DEFAULT_RAMP) : undefined,
           folder: def.kind === 'folder' ? groups[groups.length - 1]?.key ?? ALL_MEDIA : undefined,
         },
       },
@@ -702,43 +1037,28 @@ export default function App() {
 
   /* ---------- project files ---------- */
   const save = () => {
-    const lutTexts: Record<string, { name: string; text: string }> = {};
-    for (const n of nodes) {
-      const lut = luts.get(n.id);
-      if (lut) lutTexts[n.id] = { name: lut.name, text: lut.text };
-    }
-    const project = { version: 4, nodes: nodes.map(serializeNode), edges, luts: lutTexts };
-    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'nodegl-project.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const root = rootGraph();
+    download(
+      { version: 5, nodes: root.nodes.map(cleanNode), edges: root.edges.map(cleanEdge), luts: lutTextsFor(root.nodes, luts) },
+      'nodegl-project.json',
+    );
   };
 
   const load = (file: File) => {
-    const r = new FileReader();
-    r.onload = () => {
-      try {
-        const p = JSON.parse(String(r.result));
-        const loaded = new Map<string, LutData>();
-        const failed: string[] = [];
-        for (const [id, entry] of Object.entries((p.luts ?? {}) as Record<string, { name: string; text: string }>)) {
-          try {
-            loaded.set(id, parseCube(entry.text, entry.name));
-          } catch {
-            failed.push(entry.name);
-          }
-        }
-        setNodes((p.nodes as ShaderNode[]).map(migrateNode));
-        setEdges(p.edges);
-        setLuts(loaded);
+    file
+      .text()
+      .then((text) => {
+        const p = JSON.parse(text);
+        const { map, failed } = parseLuts(p.luts);
+        const g = migrateGraph(p.nodes as ShaderNode[], p.edges as Edge[]);
+        setStack([]);
+        setNodes(g.nodes);
+        setEdges(g.edges);
+        setLuts(map);
+        fitSoon();
         setStatus(failed.length ? `Project loaded – could not read LUT(s): ${failed.join(', ')}` : 'Project loaded');
-      } catch {
-        setStatus('Could not read project');
-      }
-    };
-    r.readAsText(file);
+      })
+      .catch(() => setStatus('Could not read project'));
   };
 
   const menuAction = (fn: () => void) => () => {
@@ -746,11 +1066,7 @@ export default function App() {
     closeMenus();
   };
 
-  const centerStyle = {
-    '--wire-width': `${settings.wireWidth}px`,
-    '--bg-dim': settings.backgroundDim,
-  } as CSSProperties;
-
+  const centerStyle = { '--wire-width': `${settings.wireWidth}px`, '--bg-dim': settings.backgroundDim } as CSSProperties;
   const check = (on: boolean) => (on ? '✓ ' : '');
 
   return (
@@ -806,19 +1122,29 @@ export default function App() {
                   }}
                 />
               </label>
+              <hr />
+              <button onClick={menuAction(savePreset)}>Save graph to Library…</button>
             </div>
           </details>
           <details>
             <summary>Edit</summary>
             <div>
               <button onClick={menuAction(deleteSelected)}>Delete selected</button>
+              <button onClick={menuAction(toggleBypassSelected)}>Bypass selected (M)</button>
               <button onClick={menuAction(() => setEdges([]))}>Disconnect all wires</button>
+              <hr />
+              <button onClick={menuAction(groupSelected)}>Group selected (Ctrl/⌘+G)</button>
+              <button onClick={menuAction(ungroupSelected)}>Ungroup (Ctrl/⌘+Shift+G)</button>
+              <button disabled={!stack.length} onClick={menuAction(() => exitTo(stack.length - 1))}>
+                Exit group (Tab)
+              </button>
               <hr />
               <button onClick={menuAction(() => setVisible(media.map((m) => m.id), true))}>Show all images</button>
               <button onClick={menuAction(() => setVisible(media.map((m) => m.id), false))}>Hide all images</button>
               <hr />
               <button
                 onClick={menuAction(() => {
+                  setStack([]);
                   setNodes(starter);
                   setEdges(starterEdges);
                   setLuts(new Map());
@@ -831,22 +1157,19 @@ export default function App() {
           <details>
             <summary>Window</summary>
             <div>
-              <button onClick={menuAction(() => setSettings((s) => ({ ...s, previewMode: 'split' })))}>
-                {check(settings.previewMode === 'split')}Viewer panel
-              </button>
+              <button onClick={menuAction(() => setSettings((s) => ({ ...s, previewMode: 'split' })))}>{check(settings.previewMode === 'split')}Viewer panel</button>
               <button onClick={menuAction(() => setSettings((s) => ({ ...s, previewMode: 'background' })))}>
                 {check(settings.previewMode === 'background')}Output behind nodes
               </button>
-              <button onClick={menuAction(() => setSettings((s) => ({ ...s, previewMode: 'hidden' })))}>
-                {check(settings.previewMode === 'hidden')}Hide viewer
-              </button>
+              <button onClick={menuAction(() => setSettings((s) => ({ ...s, previewMode: 'hidden' })))}>{check(settings.previewMode === 'hidden')}Hide viewer</button>
+              <hr />
+              <button onClick={menuAction(() => setSource('workspace'))}>{check(settings.viewSource === 'workspace')}Workspace view</button>
+              <button onClick={menuAction(() => setSource('library'))}>{check(settings.viewSource === 'library')}Library view (per-image graphs)</button>
               <hr />
               <button onClick={menuAction(() => setLayout('single'))}>{check(settings.viewerLayout === 'single')}Single image view</button>
               <button onClick={menuAction(() => setLayout('grid'))}>{check(settings.viewerLayout === 'grid')}Grid view</button>
               <hr />
-              <button onClick={menuAction(() => setSettings((s) => ({ ...s, nodePreviews: !s.nodePreviews })))}>
-                {check(settings.nodePreviews)}Node previews
-              </button>
+              <button onClick={menuAction(() => setSettings((s) => ({ ...s, nodePreviews: !s.nodePreviews })))}>{check(settings.nodePreviews)}Node previews</button>
               <hr />
               <button onClick={menuAction(() => document.documentElement.requestFullscreen())}>Fullscreen</button>
               <button onClick={menuAction(() => setShowSettings(true))}>Settings…</button>
@@ -856,22 +1179,24 @@ export default function App() {
             <summary>Help</summary>
             <div className="help">
               <p>
-                <b>Nodes:</b> Toolbox → Tone and Colour. Double-click any slider to reset it. Curves: click to add a point, drag, double-click a
-                point to delete.
+                <b>Sockets:</b> yellow = colour, grey = value. Values and colours convert automatically (colour → value uses luminance).
+                Unconnected inputs can be edited on the node.
               </p>
               <p>
-                <b>Colour:</b> images are processed in linear light (16-bit float where supported) and encoded to sRGB for display.
+                <b>Wires:</b> drag between sockets. Click a socket or wire to disconnect, or drag a wire end into empty space.
               </p>
               <p>
-                <b>Batch:</b> import a folder (Media Pool “+ Folder” or File → Import folder…). A Folder Input node processes every image in
-                it through the same graph. Auto nodes adapt to each image.
+                <b>Bypass:</b> the bypass button in a node’s title (or M) passes its input straight through.
               </p>
               <p>
-                <b>Display:</b> switch Single / Grid in the viewer bar. Tick images in the Media Pool (or use Show all / Hide all) to choose
-                what the grid shows.
+                <b>Compound nodes:</b> select nodes, Ctrl/⌘+G. Tab or the edit button opens a group, Tab again exits. Ctrl/⌘+Shift+G ungroups.
               </p>
               <p>
-                <b>Wires:</b> drag between sockets to connect. Click a socket or wire to disconnect, or drag a wire end into empty space.
+                <b>Library:</b> save graphs (Toolbox → Library), apply them to images, and vary each image’s Value / RGB Colour / Image Input
+                nodes under the image in Library view.
+              </p>
+              <p>
+                <b>Procedural:</b> texture nodes work without an image – the canvas size is in Settings.
               </p>
             </div>
           </details>
@@ -886,11 +1211,13 @@ export default function App() {
         <MediaPool
           media={media}
           activeId={activeId}
+          graphName={presetName}
           onSelect={selectImage}
           onToggleVisible={toggleVisible}
           onSetVisible={setVisible}
           onUseFolder={(folder) => {
             assignFolder(folder, null);
+            setSource('workspace');
             setStatus(`${folderLabel(folder)} is now the Folder Input batch`);
           }}
           onImportFiles={(list) => void importFiles(list)}
@@ -902,22 +1229,52 @@ export default function App() {
             <Viewer
               layout={settings.viewerLayout}
               onLayout={setLayout}
-              batch={derived.batch}
-              current={derived.current}
-              connected={derived.connected}
-              hasMedia={media.length > 0}
+              source={settings.viewSource}
+              onSource={setSource}
+              batch={derived.batch.map((e) => e.view)}
+              current={derived.current?.view ?? null}
+              message={derived.message}
               tileSize={settings.gridTileSize}
               onSelect={selectImage}
               onStep={stepImage}
               onToggleVisible={toggleVisible}
               onSetVisible={setVisible}
               registerCanvas={registerViewerCanvas}
+              footer={
+                settings.viewSource === 'library' && media.length > 0 ? (
+                  <ImageGraphPanel
+                    item={libraryItem}
+                    presets={presets}
+                    mediaOptions={mediaOpts}
+                    onAssign={(pid) => libraryItem && setItemGraph(libraryItem.id, pid)}
+                    onApplyToShown={() => libraryItem && applyItemGraphToShown(libraryItem.id)}
+                    onOverride={(nodeId, patch) => libraryItem && overrideParam(libraryItem.id, nodeId, patch)}
+                    onReset={() =>
+                      libraryItem && setMedia((ms) => ms.map((m) => (m.id === libraryItem.id && m.graph ? { ...m, graph: { ...m.graph, overrides: {} } } : m)))
+                    }
+                  />
+                ) : undefined
+              }
             />
           )}
-          <div className="graph">
+          <div className="graph" ref={graphDiv}>
+            {stack.length > 0 && (
+              <div className="breadcrumb">
+                <button onClick={() => exitTo(0)}>Root</button>
+                {stack.map((f, i) => (
+                  <span key={f.groupId}>
+                    ›{' '}
+                    {i < stack.length - 1 ? <button onClick={() => exitTo(i + 1)}>{f.label}</button> : <b>{f.label}</b>}
+                  </span>
+                ))}
+                <button className="bar-btn" onClick={() => exitTo(stack.length - 1)}>
+                  Exit group (Tab)
+                </button>
+              </div>
+            )}
             <ReactFlow
               nodes={wiredNodes}
-              edges={edges}
+              edges={wiredEdges}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
@@ -927,12 +1284,14 @@ export default function App() {
               isValidConnection={isValidConnection}
               onEdgeClick={onEdgeMenu}
               onEdgeContextMenu={onEdgeMenu}
+              onNodeContextMenu={onNodeMenu}
               onPaneClick={() => setMenu(null)}
+              onInit={(inst) => (rf.current = inst)}
               nodeTypes={nodeTypes}
               connectOnClick={false}
-              connectionRadius={36}
+              connectionRadius={30}
               colorMode="dark"
-              minZoom={0.2}
+              minZoom={0.15}
               fitView
               deleteKeyCode={['Backspace', 'Delete']}
             >
@@ -943,7 +1302,17 @@ export default function App() {
           </div>
         </section>
 
-        <Toolbox onAdd={addNode} />
+        <Toolbox
+          onAdd={addNode}
+          presets={presets}
+          onSavePreset={savePreset}
+          onLoadPreset={loadPresetIntoWorkspace}
+          onApplyPreset={applyPresetToShown}
+          onRenamePreset={renamePreset}
+          onDeletePreset={deletePreset}
+          onExportPreset={exportPreset}
+          onImportPreset={importPreset}
+        />
       </main>
 
       {menu && <ContextMenu menu={menu} onClose={() => setMenu(null)} />}
