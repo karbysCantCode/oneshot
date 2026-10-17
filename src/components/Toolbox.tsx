@@ -12,7 +12,7 @@ type Props = {
   onRenamePreset: (id: string) => void;
   onDeletePreset: (id: string) => void;
   onExportPreset: (id: string) => void;
-  onImportPreset: (file: File) => void;
+  onImportPreset: (files: File[]) => void;
 };
 
 export default function Toolbox(p: Props) {
@@ -78,14 +78,15 @@ export default function Toolbox(p: Props) {
             + Save current graph
           </button>
           <label className="bar-btn file-btn">
-            Import graph file…
+            Import graph / pack files…
             <input
               hidden
               type="file"
+              multiple
               accept="application/json,.json"
               onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) p.onImportPreset(f);
+                const files: File[] = Array.from((e.target as HTMLInputElement).files ?? []);
+                if (files.length) p.onImportPreset(files);
                 e.target.value = '';
               }}
             />
@@ -102,6 +103,7 @@ export default function Toolbox(p: Props) {
               <div key={g.id} className="preset">
                 <div className="preset-head">
                   <b title={g.name}>{g.name}</b>
+                  {g.description && <span className="preset-desc">{g.description}</span>}
                   <small>
                     {g.nodes.length} nodes · {exposed} param{exposed === 1 ? '' : 's'}
                   </small>

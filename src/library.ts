@@ -35,6 +35,21 @@ export function makePreset(
   nodes: ShaderNode[],
   edges: Edge[],
   luts: Record<string, { name: string; text: string }>,
+  description?: string,
 ): GraphPreset {
-  return { id: uid(), name, created: Date.now(), nodes: nodes.map(cleanNode), edges: edges.map(cleanEdge), luts };
+  const p: GraphPreset = { id: uid(), name, created: Date.now(), nodes: nodes.map(cleanNode), edges: edges.map(cleanEdge), luts };
+  if (description) p.description = description;
+  return p;
+}
+
+/**
+ * Graphs in an imported file. Accepts a single graph ({ nodes, edges, … }),
+ * a pack ({ nodegl: 'graph-pack', graphs: [...] }) or a plain array of graphs.
+ */
+export function graphsInFile(json: unknown): { name?: string; description?: string; nodes: ShaderNode[]; edges: Edge[]; luts?: Record<string, { name: string; text: string }> }[] {
+  const list = Array.isArray(json) ? json : json && typeof json === 'object' && Array.isArray((json as { graphs?: unknown[] }).graphs) ? (json as { graphs: unknown[] }).graphs : [json];
+  return list.filter(
+    (g): g is { nodes: ShaderNode[]; edges: Edge[] } =>
+      !!g && typeof g === 'object' && Array.isArray((g as { nodes?: unknown }).nodes) && Array.isArray((g as { edges?: unknown }).edges),
+  );
 }

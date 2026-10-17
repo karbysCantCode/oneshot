@@ -136,4 +136,6 @@ export type GraphPreset = {
   nodes: ShaderNode[];
   edges: Edge[];
   luts: Record<string, { name: string; text: string }>;
+  /** Optional short description shown in the Library. */
+  description?: string;
 };

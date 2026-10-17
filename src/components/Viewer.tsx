@@ -1,5 +1,6 @@
 import { useRef, type ReactNode } from 'react';
 import type { ViewerLayout, ViewSource } from '../settings';
+import PanZoom from './PanZoom';
 
 /** Something the viewer can show: a media image or the procedural canvas. */
 export type ViewItem = { id: string; name: string; visible: boolean; badge?: string };
@@ -22,6 +23,8 @@ type Props = {
   onSetVisible: (ids: string[], visible: boolean) => void;
   /** Must be a stable callback. */
   registerCanvas: (key: string, el: HTMLCanvasElement | null) => void;
+  /** Viewer sits behind the node graph (no pan/zoom interaction). */
+  background?: boolean;
   /** Open the export dialog. */
   onExport: () => void;
   canExport: boolean;
@@ -100,7 +103,7 @@ export default function Viewer(p: Props) {
 
       <div className="viewer-wrap">
         <div className={`viewer layout-${p.layout}`}>
-          {p.layout === 'single' && <canvas ref={refFor('single')} className={message ? 'blank' : ''} />}
+          {p.layout === 'single' && <PanZoom canvasRef={refFor('single')} resetKey={p.current?.id ?? ''} blank={!!message} passive={p.background} />}
 
           {p.layout === 'grid' && !message && (
             <div className="tile-grid" style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${p.tileSize}px, 1fr))` }}>

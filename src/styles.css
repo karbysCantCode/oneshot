@@ -111,7 +111,19 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
   background-size: 24px 24px;
   background-position: 0 0, 0 12px, 12px -12px, -12px 0;
 }
-.viewer.layout-single canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+.viewer.layout-single { place-items: stretch; }
+/* pan / zoom viewer */
+.pz { position: relative; width: 100%; height: 100%; overflow: hidden; cursor: grab; outline: none; touch-action: none; }
+.pz.panning { cursor: grabbing; }
+.pz.passive { cursor: default; }
+.pz:focus-visible { box-shadow: inset 0 0 0 2px #3974d688; }
+.pz canvas { position: absolute; left: 0; top: 0; transform-origin: 0 0; box-shadow: 0 0 0 1px #0008, 0 4px 18px #0007; }
+.pz canvas.pixelated { image-rendering: pixelated; }
+.pz-hud { position: absolute; right: 10px; bottom: 10px; z-index: 2; display: flex; align-items: center; gap: 2px; padding: 3px; background: #1b1e25e6; border: 1px solid #414858; border-radius: 6px; font-size: 12px; cursor: default; box-shadow: 0 4px 12px #0006; }
+.pz-hud button { border: 0; background: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; color: #cfd5e2; }
+.pz-hud button:hover { background: #3a4152; }
+.pz-hud button.on { background: #3974d6; color: #fff; }
+.pz-zoom { min-width: 52px; text-align: center; color: #e8ebf3; font-variant-numeric: tabular-nums; }
 .viewer canvas.blank { visibility: hidden; }
 .empty { position: absolute; color: #6c7486; padding: 20px; text-align: center; font-size: 13px; }
 
@@ -146,7 +158,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 /* Output image(s) behind the node workspace */
 .view-background .viewer-wrap { position: absolute; top: 34px; left: 0; right: 0; bottom: 0; }
 .view-background .viewer { position: absolute; inset: 0; z-index: 0; }
-.view-background .viewer.layout-single canvas { width: 100%; height: 100%; }
+
 .view-background .viewer::after { content: ''; position: absolute; inset: 0; background: rgba(14, 16, 20, var(--bg-dim)); pointer-events: none; }
 .view-background .graph-panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: #1b1e25ee; }
 .view-background .graph { grid-row: 2; z-index: 1; border-top: 0; }
@@ -173,6 +185,7 @@ h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: 
 .preset-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
 .preset-head b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .preset-head small { color: #8a92a5; font-size: 11px; }
+.preset-desc { color: #b9bfcc; font-size: 11px; line-height: 1.35; }
 .preset-actions { display: flex; gap: 4px; }
 .preset-actions .mini-btn { flex: 1 1 auto; padding: 3px 4px; }
 

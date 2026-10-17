@@ -110,19 +110,25 @@ export const ZIP_MAX_BYTES = 0xfffffffe;
 /** Build a ZIP from files. Total size must stay below ~4 GB. */
 export async function makeZip(files: { name: string; blob: Blob }[]): Promise<Blob> {
   const enc = new TextEncoder();
-  const parts: BlobPart[] = [];
-  const central: Uint8Array[] = [];
+  // Only plain ArrayBuffers go into the Blob: valid BlobParts in every TypeScript version
+  // (TS 5.9 rejects Uint8Array<ArrayBufferLike> as a BlobPart).
+  const parts: ArrayBuffer[] = [];
+  const central: ArrayBuffer[] = [];
   let offset = 0;
+  let cdSize = 0;
   const d = new Date();
   const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
   const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
 
   for (const f of files) {
-    const data = new Uint8Array(await f.blob.arrayBuffer());
+    const dataBuf = await f.blob.arrayBuffer();
+    const data = new Uint8Array(dataBuf);
     const name = enc.encode(f.name);
     const crc = crc32(data);
 
-    const local = new DataView(new ArrayBuffer(30));
+    // Local file header + file name
+    const localBuf = new ArrayBuffer(30 + name.length);
+    const local = new DataView(localBuf);
     local.setUint32(0, 0x04034b50, true);
     local.setUint16(4, 20, true); // version needed
     local.setUint16(6, 0x0800, true); // UTF-8 names
@@ -134,9 +140,12 @@ export async function makeZip(files: { name: string; blob: Blob }[]): Promise<Bl
     local.setUint32(22, data.length, true);
     local.setUint16(26, name.length, true);
     local.setUint16(28, 0, true);
-    parts.push(local.buffer, name, data);
+    new Uint8Array(localBuf).set(name, 30);
+    parts.push(localBuf, dataBuf);
 
-    const c = new DataView(new ArrayBuffer(46));
+    // Central directory entry + file name
+    const entryBuf = new ArrayBuffer(46 + name.length);
+    const c = new DataView(entryBuf);
     c.setUint32(0, 0x02014b50, true);
     c.setUint16(4, 20, true);
     c.setUint16(6, 20, true);
@@ -149,20 +158,19 @@ export async function makeZip(files: { name: string; blob: Blob }[]): Promise<Bl
     c.setUint32(24, data.length, true);
     c.setUint16(28, name.length, true);
     c.setUint32(42, offset, true);
-    const entry = new Uint8Array(46 + name.length);
-    entry.set(new Uint8Array(c.buffer), 0);
-    entry.set(name, 46);
-    central.push(entry);
+    new Uint8Array(entryBuf).set(name, 46);
+    central.push(entryBuf);
+    cdSize += entryBuf.byteLength;
 
-    offset += 30 + name.length + data.length;
+    offset += localBuf.byteLength + dataBuf.byteLength;
   }
 
-  const cdSize = central.reduce((s, e) => s + e.length, 0);
-  const end = new DataView(new ArrayBuffer(22));
+  const endBuf = new ArrayBuffer(22);
+  const end = new DataView(endBuf);
   end.setUint32(0, 0x06054b50, true);
   end.setUint16(8, files.length, true);
   end.setUint16(10, files.length, true);
   end.setUint32(12, cdSize, true);
   end.setUint32(16, offset, true);
-  return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
+  return new Blob([...parts, ...central, endBuf], { type: 'application/zip' });
 }

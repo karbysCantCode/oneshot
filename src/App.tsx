@@ -72,7 +72,7 @@ import {
   type Plan,
 } from './nodes/graph';
 import { parseCube } from './nodes/lut';
-import { loadPresets, makePreset, savePresets } from './library';
+import { graphsInFile, loadPresets, makePreset, savePresets } from './library';
 import type {
   CurvePoint,
   GraphPreset,
@@ -1110,21 +1110,30 @@ export default function App() {
 
   const exportPreset = (id: string) => {
     const p = presets.find((x) => x.id === id);
-    if (p) download({ nodegl: 'graph', version: 5, ...p }, `${p.name.replace(/[^\w\- ]+/g, '_')}.nodegl-graph.json`);
+    if (p) download({ nodegl: 'graph', version: 7, ...p }, `${p.name.replace(/[^\w\- ]+/g, '_')}.nodegl-graph.json`);
   };
 
-  const importPreset = (file: File) => {
-    file
-      .text()
-      .then((text) => {
-        const j = JSON.parse(text);
-        if (!Array.isArray(j.nodes) || !Array.isArray(j.edges)) throw new Error('not a graph file');
-        const g = migrateGraph(j.nodes, j.edges);
-        const p = makePreset(j.name ?? file.name.replace(/\.(nodegl-graph\.)?json$/i, ''), g.nodes, g.edges, j.luts ?? {});
-        commitPresets([...live.current.presets, p]);
-        setStatus(`Imported “${p.name}” into the Library`);
-      })
-      .catch((e: Error) => setStatus(`Could not import ${file.name}: ${e.message}`));
+  /** Import graph files: single graphs, packs ({ graphs: [...] }) or several files at once. */
+  const importPresets = async (files: File[]) => {
+    const added: GraphPreset[] = [];
+    const failed: string[] = [];
+    for (const file of files) {
+      try {
+        const graphs = graphsInFile(JSON.parse(await file.text()));
+        if (!graphs.length) throw new Error('no graphs');
+        for (const j of graphs) {
+          const g = migrateGraph(j.nodes, j.edges);
+          added.push(makePreset(j.name ?? file.name.replace(/\.(nodegl-graph\.|nodegl-pack\.)?json$/i, ''), g.nodes, g.edges, j.luts ?? {}, j.description));
+        }
+      } catch {
+        failed.push(file.name);
+      }
+    }
+    if (added.length) commitPresets([...live.current.presets, ...added]);
+    setStatus(
+      (added.length ? `Imported ${added.length} graph${added.length === 1 ? '' : 's'} into the Library` : 'Nothing imported') +
+        (failed.length ? ` – could not read: ${failed.join(', ')}` : ''),
+    );
   };
 
   const libraryItem = settings.viewSource === 'library' ? derived.current?.media ?? null : null;
@@ -1391,6 +1400,10 @@ export default function App() {
                 <b>Export:</b> Export… in the viewer bar (Ctrl/⌘+E) saves processed images as JPEG / PNG / WebP, singly or as a ZIP.
               </p>
               <p>
+                <b>Viewer:</b> wheel or pinch to zoom, drag to pan, double-click for 100% ↔ Fit. Keys (click the image first): F fit, 1
+                actual pixels, + / − zoom, arrows pan.
+              </p>
+              <p>
                 <b>Layout:</b> drag the dividers between panels to resize them; double-click a divider to reset.
               </p>
             </div>
@@ -1439,6 +1452,7 @@ export default function App() {
               onSetVisible={setVisible}
               registerCanvas={registerViewerCanvas}
               onExport={() => setShowExport(true)}
+              background={settings.previewMode === 'background'}
               canExport={derived.batch.length > 0 && !exporting}
               footer={
                 settings.viewSource === 'library' && media.length > 0 ? (
@@ -1514,7 +1528,7 @@ export default function App() {
           onRenamePreset={renamePreset}
           onDeletePreset={deletePreset}
           onExportPreset={exportPreset}
-          onImportPreset={importPreset}
+          onImportPreset={(files) => void importPresets(files)}
         />
       </main>
 
