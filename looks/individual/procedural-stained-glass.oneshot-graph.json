@@ -1,0 +1,317 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Procedural · Stained Glass",
+  "description": "No image needed: Voronoi cells give each pane a random colour, Voronoi “distance to edge” draws the lead lines, noise adds glass texture and a radial gradient adds back-light.",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "value1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Cells",
+        "params": {
+          "value": 7
+        }
+      }
+    },
+    {
+      "id": "voronoi2",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "voronoi",
+        "label": "Pane colours",
+        "params": {
+          "feature": "f1",
+          "metric": "euclidean",
+          "in_scale": 5,
+          "in_randomness": 1,
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "voronoi3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "voronoi",
+        "label": "Pane edges",
+        "params": {
+          "feature": "edge",
+          "metric": "euclidean",
+          "in_scale": 5,
+          "in_randomness": 1,
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "mapRange4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 230
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Lead lines",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0.02,
+          "in_fromMax": 0.06,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "saturation5",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Richer glass",
+        "params": {
+          "saturation": 60,
+          "vibrance": 0
+        }
+      }
+    },
+    {
+      "id": "mix6",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Apply lead",
+        "params": {
+          "blend": "multiply",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 1,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "noise7",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 460
+      },
+      "data": {
+        "kind": "noise",
+        "label": "Glass texture",
+        "params": {
+          "in_scale": 40,
+          "in_detail": 4,
+          "in_roughness": 0.5,
+          "in_lacunarity": 2,
+          "in_distortion": 0,
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "mix8",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Texture",
+        "params": {
+          "blend": "overlay",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.35,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "gradient9",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 460
+      },
+      "data": {
+        "kind": "gradient",
+        "label": "Back-light",
+        "params": {
+          "type": "spherical"
+        }
+      }
+    },
+    {
+      "id": "mapRange10",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 460
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Light falloff",
+        "params": {
+          "interp": "linear",
+          "clamp": false,
+          "in_value": 0.5,
+          "in_fromMin": 0,
+          "in_fromMax": 1,
+          "in_toMin": 0.35,
+          "in_toMax": 1.4,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Light",
+        "params": {
+          "blend": "multiply",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 1,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output12",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "voronoi2",
+      "targetHandle": "in:scale"
+    },
+    {
+      "id": "e2",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "voronoi3",
+      "targetHandle": "in:scale"
+    },
+    {
+      "id": "e3",
+      "source": "voronoi3",
+      "sourceHandle": "out:distance",
+      "target": "mapRange4",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e4",
+      "source": "voronoi2",
+      "sourceHandle": "out:color",
+      "target": "saturation5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "saturation5",
+      "sourceHandle": "out:image",
+      "target": "mix6",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "mapRange4",
+      "sourceHandle": "out:result",
+      "target": "mix6",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e7",
+      "source": "mix6",
+      "sourceHandle": "out:result",
+      "target": "mix8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "noise7",
+      "sourceHandle": "out:fac",
+      "target": "mix8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "gradient9",
+      "sourceHandle": "out:fac",
+      "target": "mapRange10",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e10",
+      "source": "mix8",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "mapRange10",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e12",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "output12",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

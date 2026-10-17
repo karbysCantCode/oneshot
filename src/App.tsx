@@ -1138,7 +1138,7 @@ export default function App() {
       if (files.length === 1) downloadBlob(files[0].blob, files[0].name);
       else if (opts.packaging === 'zip' && total < ZIP_MAX_BYTES) {
         setStatus(`Packaging ${files.length} images…`);
-        downloadBlob(await makeZip(files), `nodegl-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.zip`);
+        downloadBlob(await makeZip(files), `oneshot-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.zip`);
       } else {
         for (const f of files) {
           downloadBlob(f.blob, f.name);
@@ -1320,7 +1320,7 @@ export default function App() {
 
   const exportPreset = (id: string) => {
     const p = presets.find((x) => x.id === id);
-    if (p) download({ nodegl: 'graph', version: 7, ...p }, `${p.name.replace(/[^\w\- ]+/g, '_')}.nodegl-graph.json`);
+    if (p) download({ oneshot: 'graph', version: 10, ...p, builtin: undefined }, `${p.name.replace(/[^\w\- ]+/g, '_')}.oneshot-graph.json`);
   };
 
   /** Import graph files: single graphs, packs ({ graphs: [...] }) or several files at once. */
@@ -1333,7 +1333,7 @@ export default function App() {
         if (!graphs.length) throw new Error('no graphs');
         for (const j of graphs) {
           const g = migrateGraph(j.nodes, j.edges);
-          added.push(makePreset(j.name ?? file.name.replace(/\.(nodegl-graph\.|nodegl-pack\.)?json$/i, ''), g.nodes, g.edges, j.luts ?? {}, j.description));
+          added.push(makePreset(j.name ?? file.name.replace(/\.((nodegl|oneshot)-(graph|pack)\.)?json$/i, ''), g.nodes, g.edges, j.luts ?? {}, j.description, j.collection));
         }
       } catch {
         failed.push(file.name);
@@ -1404,7 +1404,7 @@ export default function App() {
     const root = rootGraph();
     download(
       { version: 5, nodes: root.nodes.map(cleanNode), edges: root.edges.map(cleanEdge), luts: lutTextsFor(root.nodes, luts) },
-      'nodegl-project.json',
+      'oneshot-project.json',
     );
   };
 
@@ -1480,7 +1480,10 @@ export default function App() {
       />
 
       <header>
-        <strong>NodeGL</strong>
+        <strong className="brand">
+          <img src="/logo.svg" alt="" width={18} height={18} />
+          OneShot
+        </strong>
         <nav>
           <details>
             <summary>File</summary>

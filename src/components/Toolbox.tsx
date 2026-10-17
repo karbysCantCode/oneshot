@@ -25,6 +25,24 @@ export default function Toolbox(p: Props) {
   const [search, setSearch] = useState('');
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const q = search.trim().toLowerCase();
+  const [closedSections, setClosedSections] = useState<Set<string>>(new Set());
+  const toggleSection = (k: string) =>
+    setClosedSections((s) => {
+      const next = new Set(s);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+
+  // Library sections in the order they first appear; user graphs without a collection under "My Graphs".
+  const sections: [string, GraphPreset[]][] = [];
+  for (const g of p.presets) {
+    if (q && !`${g.name} ${g.description ?? ''} ${g.collection ?? ''}`.toLowerCase().includes(q)) continue;
+    const key = g.collection ?? 'My Graphs';
+    const hit = sections.find(([k]) => k === key);
+    if (hit) hit[1].push(g);
+    else sections.push([key, [g]]);
+  }
 
   const matches = (d: NodeDef) =>
     !d.hidden && (!q || `${d.label} ${d.description} ${d.category} ${d.keywords ?? ''}`.toLowerCase().includes(q));
@@ -79,6 +97,7 @@ export default function Toolbox(p: Props) {
 
       {tab === 'library' && (
         <>
+          <input placeholder="Search looks…" value={search} onChange={(e) => setSearch(e.target.value)} />
           <button className="import full" onClick={p.onSavePreset}>
             + Save current graph
           </button>
@@ -107,40 +126,51 @@ export default function Toolbox(p: Props) {
               per-image parameters, shown under the image in Library view.
             </p>
           )}
-          {p.presets.map((g) => {
-            const exposed = exposedNodes(g.nodes).length;
+          {sections.map(([section, list]) => {
+            const open = !!q || !closedSections.has(section);
             return (
-              <div key={g.id} className="preset">
-                <div className="preset-head">
-                  <b title={g.name}>
-                    {g.name}
-                    {g.builtin && <span className="builtin-tag">BUILT-IN</span>}
-                  </b>
-                  {g.description && <span className="preset-desc">{g.description}</span>}
-                  <small>
-                    {g.nodes.length} nodes · {exposed} param{exposed === 1 ? '' : 's'}
-                  </small>
-                </div>
-                <div className="preset-actions">
-                  <button className="mini-btn" title="Apply to the images shown in the viewer (switches to Library view)" onClick={() => p.onApplyPreset(g.id)}>
-                    Apply
-                  </button>
-                  <button className="mini-btn" title="Add this graph's nodes to the workspace, appended after the current graph, so you can see and tinker with them" onClick={() => p.onInsertPreset(g.id)}>
-                    Insert
-                  </button>
-                  <button className="mini-btn" title="Open in the node workspace (replaces the current graph)" onClick={() => p.onLoadPreset(g.id)}>
-                    Edit
-                  </button>
-                  <button className="mini-btn" title="Rename" onClick={() => p.onRenamePreset(g.id)}>
-                    ✎
-                  </button>
-                  <button className="mini-btn" title="Download as file" onClick={() => p.onExportPreset(g.id)}>
-                    ⤓
-                  </button>
-                  <button className="mini-btn danger" title="Delete" onClick={() => p.onDeletePreset(g.id)}>
-                    ✕
-                  </button>
-                </div>
+              <div key={section} className="tool-group">
+                <button className="tool-cat" onClick={() => toggleSection(section)}>
+                  {open ? '▾' : '▸'} {section} <span className="count">{list.length}</span>
+                </button>
+                {open &&
+                  list.map((g) => {
+                    const exposed = exposedNodes(g.nodes).length;
+                    return (
+                      <div key={g.id} className="preset">
+                        <div className="preset-head">
+                          <b title={g.name}>
+                            {g.name}
+                            {g.builtin && <span className="builtin-tag">BUILT-IN</span>}
+                          </b>
+                          {g.description && <span className="preset-desc">{g.description}</span>}
+                          <small>
+                            {g.nodes.length} nodes · {exposed} param{exposed === 1 ? '' : 's'}
+                          </small>
+                        </div>
+                        <div className="preset-actions">
+                          <button className="mini-btn" title="Apply to the images shown in the viewer (switches to Library view)" onClick={() => p.onApplyPreset(g.id)}>
+                            Apply
+                          </button>
+                          <button className="mini-btn" title="Add this graph's nodes to the workspace, appended after the current graph, so you can see and tinker with them" onClick={() => p.onInsertPreset(g.id)}>
+                            Insert
+                          </button>
+                          <button className="mini-btn" title="Open in the node workspace (replaces the current graph)" onClick={() => p.onLoadPreset(g.id)}>
+                            Edit
+                          </button>
+                          <button className="mini-btn" title="Rename" onClick={() => p.onRenamePreset(g.id)}>
+                            ✎
+                          </button>
+                          <button className="mini-btn" title="Download as file" onClick={() => p.onExportPreset(g.id)}>
+                            ⤓
+                          </button>
+                          <button className="mini-btn danger" title="Delete" onClick={() => p.onDeletePreset(g.id)}>
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             );
           })}

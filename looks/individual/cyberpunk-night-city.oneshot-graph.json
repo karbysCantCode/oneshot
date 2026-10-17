@@ -1,0 +1,493 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Cyberpunk Night City",
+  "description": "Neon dystopia: acid-yellow highlights, cyan shadows, crushed greens, hard contrast, neon bloom and CRT scanlines.",
+  "collection": "Movie Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Scanlines",
+        "params": {
+          "value": 0.35
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Vignette",
+        "params": {
+          "value": 0.55
+        }
+      }
+    },
+    {
+      "id": "whiteBalance5",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 5200,
+          "tint": 18
+        }
+      }
+    },
+    {
+      "id": "hsl6",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "hsl",
+        "label": "HSL / Colour Mixer",
+        "params": {
+          "h0": -20,
+          "h1": 60,
+          "h2": -15,
+          "h3": 0,
+          "h4": 25,
+          "h5": -100,
+          "h6": -60,
+          "h7": 0,
+          "s0": 25,
+          "s1": 0,
+          "s2": 45,
+          "s3": -60,
+          "s4": 55,
+          "s5": 30,
+          "s6": 0,
+          "s7": 0,
+          "l0": 0,
+          "l1": 0,
+          "l2": 0,
+          "l3": 0,
+          "l4": 0,
+          "l5": 0,
+          "l6": 0,
+          "l7": 0
+        }
+      }
+    },
+    {
+      "id": "grading7",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": -0.13,
+          "shY": 0.739,
+          "shM": -8,
+          "midX": -0.068,
+          "midY": 0.188,
+          "midM": 0,
+          "hiX": 0.491,
+          "hiY": -0.344,
+          "hiM": 5,
+          "globX": 0,
+          "globY": 0,
+          "globM": 0,
+          "blend": 55,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "contrast8",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 45,
+          "pivot": 20,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "bloom9",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.5,
+          "radius": 30,
+          "intensity": 85
+        }
+      }
+    },
+    {
+      "id": "wave10",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 460
+      },
+      "data": {
+        "kind": "wave",
+        "label": "Scanline pattern",
+        "params": {
+          "type": "bands",
+          "direction": "y",
+          "profile": "sine",
+          "in_scale": 90,
+          "in_distortion": 0,
+          "in_detail": 2,
+          "in_detailScale": 1,
+          "in_phase": 0
+        }
+      }
+    },
+    {
+      "id": "mapRange11",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 460
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Line darkness",
+        "params": {
+          "interp": "linear",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0,
+          "in_fromMax": 1,
+          "in_toMin": 0.55,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "mix12",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Scanlines",
+        "params": {
+          "blend": "multiply",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "ellipseMask13",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 230
+      },
+      "data": {
+        "kind": "ellipseMask",
+        "label": "Vignette shape",
+        "params": {
+          "invert": true,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_rx": 0.48,
+          "in_ry": 0.32,
+          "in_rotation": 0,
+          "in_feather": 0.5
+        }
+      }
+    },
+    {
+      "id": "math14",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Vignette amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "exposure15",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -4
+        }
+      }
+    },
+    {
+      "id": "mix16",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Vignette",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix17",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output18",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance5",
+      "sourceHandle": "out:image",
+      "target": "hsl6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "hsl6",
+      "sourceHandle": "out:image",
+      "target": "grading7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "grading7",
+      "sourceHandle": "out:image",
+      "target": "contrast8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "contrast8",
+      "sourceHandle": "out:image",
+      "target": "bloom9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "wave10",
+      "sourceHandle": "out:fac",
+      "target": "mapRange11",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e7",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "mix12",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "bloom9",
+      "sourceHandle": "out:image",
+      "target": "mix12",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "mapRange11",
+      "sourceHandle": "out:result",
+      "target": "mix12",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e10",
+      "source": "ellipseMask13",
+      "sourceHandle": "out:mask",
+      "target": "math14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "math14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e12",
+      "source": "mix12",
+      "sourceHandle": "out:result",
+      "target": "exposure15",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e13",
+      "source": "math14",
+      "sourceHandle": "out:value",
+      "target": "mix16",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e14",
+      "source": "mix12",
+      "sourceHandle": "out:result",
+      "target": "mix16",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e15",
+      "source": "exposure15",
+      "sourceHandle": "out:image",
+      "target": "mix16",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e16",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix17",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e17",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix17",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e18",
+      "source": "mix16",
+      "sourceHandle": "out:result",
+      "target": "mix17",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e19",
+      "source": "mix17",
+      "sourceHandle": "out:result",
+      "target": "output18",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

@@ -1,0 +1,405 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Barbie Dreamhouse",
+  "description": "Candy-coloured plastic fantastic: pink-shifted reds, magenta highlights, pastel brights, soft glow and a pink wash.",
+  "collection": "Movie Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Pink wash",
+        "params": {
+          "value": 0.25
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Glow",
+        "params": {
+          "value": 0.6
+        }
+      }
+    },
+    {
+      "id": "whiteBalance5",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 6800,
+          "tint": 40
+        }
+      }
+    },
+    {
+      "id": "hsl6",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "hsl",
+        "label": "HSL / Colour Mixer",
+        "params": {
+          "h0": -80,
+          "h1": -100,
+          "h2": 0,
+          "h3": 0,
+          "h4": 15,
+          "h5": 0,
+          "h6": 0,
+          "h7": 10,
+          "s0": 35,
+          "s1": 20,
+          "s2": 0,
+          "s3": -25,
+          "s4": 25,
+          "s5": 0,
+          "s6": 40,
+          "s7": 45,
+          "l0": 10,
+          "l1": 0,
+          "l2": 0,
+          "l3": 0,
+          "l4": 0,
+          "l5": 0,
+          "l6": 0,
+          "l7": 15
+        }
+      }
+    },
+    {
+      "id": "grading7",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": -0.299,
+          "shY": -0.026,
+          "shM": 4,
+          "midX": -0.15,
+          "midY": -0.26,
+          "midM": 0,
+          "hiX": -0.318,
+          "hiY": -0.318,
+          "hiM": 4,
+          "globX": 0,
+          "globY": 0,
+          "globM": 0,
+          "blend": 55,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "saturation8",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": 10,
+          "vibrance": 35
+        }
+      }
+    },
+    {
+      "id": "tones9",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -10,
+          "shadows": 30,
+          "whites": 10,
+          "blacks": 15
+        }
+      }
+    },
+    {
+      "id": "bloom10",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 230
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.55,
+          "radius": 40,
+          "intensity": 60
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Glow mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "rgb12",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 460
+      },
+      "data": {
+        "kind": "rgb",
+        "label": "Pink",
+        "params": {
+          "color": "#ff6fc0"
+        }
+      }
+    },
+    {
+      "id": "mix13",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Pink wash",
+        "params": {
+          "blend": "screen",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix14",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output15",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance5",
+      "sourceHandle": "out:image",
+      "target": "hsl6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "hsl6",
+      "sourceHandle": "out:image",
+      "target": "grading7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "grading7",
+      "sourceHandle": "out:image",
+      "target": "saturation8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "saturation8",
+      "sourceHandle": "out:image",
+      "target": "tones9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "tones9",
+      "sourceHandle": "out:image",
+      "target": "bloom10",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "mix11",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "tones9",
+      "sourceHandle": "out:image",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "bloom10",
+      "sourceHandle": "out:image",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e10",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "mix13",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e11",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "mix13",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "rgb12",
+      "sourceHandle": "out:color",
+      "target": "mix13",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix14",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e14",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e15",
+      "source": "mix13",
+      "sourceHandle": "out:result",
+      "target": "mix14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e16",
+      "source": "mix14",
+      "sourceHandle": "out:result",
+      "target": "output15",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

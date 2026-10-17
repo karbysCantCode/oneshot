@@ -1,0 +1,2653 @@
+{
+  "oneshot": "graph-pack",
+  "version": 10,
+  "name": "Photographer Batch",
+  "graphs": [
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Auto Enhance",
+      "description": "One-click fix for a whole shoot: per-image auto levels and auto exposure (each photo measured on the GPU), recovered highlights, opened shadows, vibrance and capture sharpening.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "autoLevels3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoLevels",
+            "label": "Auto Levels",
+            "params": {
+              "strength": 70
+            }
+          }
+        },
+        {
+          "id": "autoExposure4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoExposure",
+            "label": "Auto Exposure",
+            "params": {
+              "target": 18,
+              "strength": 60,
+              "limit": 1.5
+            }
+          }
+        },
+        {
+          "id": "tones5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -25,
+              "shadows": 25,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 20
+            }
+          }
+        },
+        {
+          "id": "sharpen7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 60,
+              "radius": 1.2,
+              "threshold": 0
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "autoLevels3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "autoLevels3",
+          "sourceHandle": "out:image",
+          "target": "autoExposure4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "autoExposure4",
+          "sourceHandle": "out:image",
+          "target": "tones5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "tones5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "sharpen7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix8",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "sharpen7",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "output9",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Bright & Airy (Wedding)",
+      "description": "Light and romantic: brighter exposure, soft highlights, open shadows, warm skin, pastel greens and a light matte.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "exposure3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 0.35
+            }
+          }
+        },
+        {
+          "id": "tones4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -35,
+              "shadows": 35,
+              "whites": 10,
+              "blacks": 10
+            }
+          }
+        },
+        {
+          "id": "whiteBalance5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 6900,
+              "tint": 6
+            }
+          }
+        },
+        {
+          "id": "hsl6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "hsl",
+            "label": "HSL / Colour Mixer",
+            "params": {
+              "h0": 0,
+              "h1": 0,
+              "h2": 0,
+              "h3": -20,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0,
+              "h7": 0,
+              "s0": 0,
+              "s1": -10,
+              "s2": 0,
+              "s3": -35,
+              "s4": 0,
+              "s5": -20,
+              "s6": 0,
+              "s7": 0,
+              "l0": 0,
+              "l1": 12,
+              "l2": 0,
+              "l3": 15,
+              "l4": 0,
+              "l5": 0,
+              "l6": 0,
+              "l7": 0
+            }
+          }
+        },
+        {
+          "id": "curves7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "curves",
+            "label": "Curves",
+            "params": {},
+            "curves": {
+              "master": [
+                [
+                  0,
+                  0.06
+                ],
+                [
+                  0.5,
+                  0.54
+                ],
+                [
+                  1,
+                  1
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "id": "saturation8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": -8,
+              "vibrance": 12
+            }
+          }
+        },
+        {
+          "id": "mix9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output10",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "exposure3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "exposure3",
+          "sourceHandle": "out:image",
+          "target": "tones4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "tones4",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "whiteBalance5",
+          "sourceHandle": "out:image",
+          "target": "hsl6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "hsl6",
+          "sourceHandle": "out:image",
+          "target": "curves7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "curves7",
+          "sourceHandle": "out:image",
+          "target": "saturation8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "saturation8",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "output10",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Real Estate Interior",
+      "description": "Bright, even interiors: auto exposure per room, strong shadow lift and highlight recovery (windows), neutral-cool white balance, clean vibrance and crisp detail.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "autoExposure3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoExposure",
+            "label": "Auto Exposure",
+            "params": {
+              "target": 24,
+              "strength": 80,
+              "limit": 2
+            }
+          }
+        },
+        {
+          "id": "tones4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -55,
+              "shadows": 55,
+              "whites": 15,
+              "blacks": -5
+            }
+          }
+        },
+        {
+          "id": "whiteBalance5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 6200,
+              "tint": -3
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 15
+            }
+          }
+        },
+        {
+          "id": "contrast7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 10,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "sharpen8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 80,
+              "radius": 1.5,
+              "threshold": 0
+            }
+          }
+        },
+        {
+          "id": "mix9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output10",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "autoExposure3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "autoExposure3",
+          "sourceHandle": "out:image",
+          "target": "tones4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "tones4",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "whiteBalance5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "contrast7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "contrast7",
+          "sourceHandle": "out:image",
+          "target": "sharpen8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "sharpen8",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "output10",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Landscape + Grad ND",
+      "description": "Punchy landscapes with a virtual graduated ND filter: deeper blue skies, richer foliage, local contrast, and a feathered Rectangle Mask darkening the sky down to the “Horizon”.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Sky darken",
+            "params": {
+              "value": 0.8
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Horizon",
+            "params": {
+              "value": 0.45
+            }
+          }
+        },
+        {
+          "id": "contrast5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 20,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 35
+            }
+          }
+        },
+        {
+          "id": "hsl7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "hsl",
+            "label": "HSL / Colour Mixer",
+            "params": {
+              "h0": 0,
+              "h1": 0,
+              "h2": 0,
+              "h3": -10,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0,
+              "h7": 0,
+              "s0": 0,
+              "s1": 0,
+              "s2": 0,
+              "s3": 15,
+              "s4": 15,
+              "s5": 20,
+              "s6": 0,
+              "s7": 0,
+              "l0": 0,
+              "l1": 0,
+              "l2": 0,
+              "l3": 0,
+              "l4": 0,
+              "l5": -30,
+              "l6": 0,
+              "l7": 0
+            }
+          }
+        },
+        {
+          "id": "tones8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -25,
+              "shadows": 15,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "sharpen9",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 70,
+              "radius": 1.2,
+              "threshold": 0
+            }
+          }
+        },
+        {
+          "id": "math10",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Band height",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 2,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "rectMask11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 920
+          },
+          "data": {
+            "kind": "rectMask",
+            "label": "Graduated filter",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0,
+              "in_w": 4,
+              "in_h": 0.4,
+              "in_corner": 0,
+              "in_rotation": 0,
+              "in_feather": 0.3
+            }
+          }
+        },
+        {
+          "id": "math12",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Filter strength",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure13",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 460
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -1.1
+            }
+          }
+        },
+        {
+          "id": "whiteBalance14",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 460
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 6000,
+              "tint": 0
+            }
+          }
+        },
+        {
+          "id": "mix15",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Grad ND",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix16",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output17",
+          "type": "shader",
+          "position": {
+            "x": 2970,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "contrast5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "contrast5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "hsl7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "hsl7",
+          "sourceHandle": "out:image",
+          "target": "tones8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "tones8",
+          "sourceHandle": "out:image",
+          "target": "sharpen9",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "math10",
+          "sourceHandle": "out:value",
+          "target": "rectMask11",
+          "targetHandle": "in:h"
+        },
+        {
+          "id": "e8",
+          "source": "rectMask11",
+          "sourceHandle": "out:mask",
+          "target": "math12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math12",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "sharpen9",
+          "sourceHandle": "out:image",
+          "target": "exposure13",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e11",
+          "source": "exposure13",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance14",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e12",
+          "source": "math12",
+          "sourceHandle": "out:value",
+          "target": "mix15",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e13",
+          "source": "sharpen9",
+          "sourceHandle": "out:image",
+          "target": "mix15",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e14",
+          "source": "whiteBalance14",
+          "sourceHandle": "out:image",
+          "target": "mix15",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e15",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix16",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e16",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix16",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e17",
+          "source": "mix15",
+          "sourceHandle": "out:result",
+          "target": "mix16",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e18",
+          "source": "mix16",
+          "sourceHandle": "out:result",
+          "target": "output17",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Portrait Soft Skin",
+      "description": "Flattering portraits: a hue mask finds skin tones and blends in a soft blur only there (“Smoothing”), then warmth, gentle shadow lift and sharpening for the eyes.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Smoothing",
+            "params": {
+              "value": 0.6
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1150
+          },
+          "data": {
+            "kind": "value",
+            "label": "Skin hue",
+            "params": {
+              "value": 0.06
+            }
+          }
+        },
+        {
+          "id": "value5",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1380
+          },
+          "data": {
+            "kind": "value",
+            "label": "Skin range",
+            "params": {
+              "value": 0.07
+            }
+          }
+        },
+        {
+          "id": "separateHsv6",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 920
+          },
+          "data": {
+            "kind": "separateHsv",
+            "label": "Hue / Sat",
+            "params": {}
+          }
+        },
+        {
+          "id": "math7",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Hue difference",
+            "params": {
+              "op": "subtract",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Wrap around",
+            "params": {
+              "op": "wrap",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": -0.5
+            }
+          }
+        },
+        {
+          "id": "math9",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Distance",
+            "params": {
+              "op": "absolute",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math10",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 1150
+          },
+          "data": {
+            "kind": "math",
+            "label": "Inner range",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "mapRange11",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 920
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Hue match",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0,
+              "in_fromMax": 1,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "mapRange12",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 1150
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Saturation gate",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0.12,
+              "in_fromMax": 0.3,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "math13",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Hue mask",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math14",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Smoothing amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "blur15",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 460
+          },
+          "data": {
+            "kind": "blur",
+            "label": "Gaussian Blur",
+            "params": {
+              "radius": 6
+            }
+          }
+        },
+        {
+          "id": "mix16",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Smooth skin",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "whiteBalance17",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 7000,
+              "tint": 4
+            }
+          }
+        },
+        {
+          "id": "exposure18",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 0.1
+            }
+          }
+        },
+        {
+          "id": "tones19",
+          "type": "shader",
+          "position": {
+            "x": 2970,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -10,
+              "shadows": 15,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "sharpen20",
+          "type": "shader",
+          "position": {
+            "x": 3240,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 50,
+              "radius": 1,
+              "threshold": 6
+            }
+          }
+        },
+        {
+          "id": "mix21",
+          "type": "shader",
+          "position": {
+            "x": 3510,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output22",
+          "type": "shader",
+          "position": {
+            "x": 3780,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "separateHsv6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "separateHsv6",
+          "sourceHandle": "out:h",
+          "target": "math7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e3",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math7",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e4",
+          "source": "math7",
+          "sourceHandle": "out:value",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e5",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "math9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "value5",
+          "sourceHandle": "out:value",
+          "target": "math10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "math9",
+          "sourceHandle": "out:value",
+          "target": "mapRange11",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e8",
+          "source": "value5",
+          "sourceHandle": "out:value",
+          "target": "mapRange11",
+          "targetHandle": "in:fromMin"
+        },
+        {
+          "id": "e9",
+          "source": "math10",
+          "sourceHandle": "out:value",
+          "target": "mapRange11",
+          "targetHandle": "in:fromMax"
+        },
+        {
+          "id": "e10",
+          "source": "separateHsv6",
+          "sourceHandle": "out:s",
+          "target": "mapRange12",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e11",
+          "source": "mapRange11",
+          "sourceHandle": "out:result",
+          "target": "math13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "mapRange12",
+          "sourceHandle": "out:result",
+          "target": "math13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "math13",
+          "sourceHandle": "out:value",
+          "target": "math14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e14",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e15",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "blur15",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e16",
+          "source": "math14",
+          "sourceHandle": "out:value",
+          "target": "mix16",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e17",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix16",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e18",
+          "source": "blur15",
+          "sourceHandle": "out:image",
+          "target": "mix16",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e19",
+          "source": "mix16",
+          "sourceHandle": "out:result",
+          "target": "whiteBalance17",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e20",
+          "source": "whiteBalance17",
+          "sourceHandle": "out:image",
+          "target": "exposure18",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e21",
+          "source": "exposure18",
+          "sourceHandle": "out:image",
+          "target": "tones19",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e22",
+          "source": "tones19",
+          "sourceHandle": "out:image",
+          "target": "sharpen20",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e23",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix21",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e24",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix21",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e25",
+          "source": "sharpen20",
+          "sourceHandle": "out:image",
+          "target": "mix21",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e26",
+          "source": "mix21",
+          "sourceHandle": "out:result",
+          "target": "output22",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Classic B&W Portrait",
+      "description": "Timeless monochrome: skin-friendly black & white mix, rich contrast, deep blacks, fine grain and a subtle vignette.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Grain",
+            "params": {
+              "value": 0.1
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Vignette",
+            "params": {
+              "value": 0.45
+            }
+          }
+        },
+        {
+          "id": "bwMix5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "bwMix",
+            "label": "Black & White Mix",
+            "params": {
+              "w0": 15,
+              "w1": 25,
+              "w2": 10,
+              "w3": 0,
+              "w4": 0,
+              "w5": -20,
+              "w6": 0,
+              "w7": 0
+            }
+          }
+        },
+        {
+          "id": "contrast6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 30,
+              "pivot": 20,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "tones7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -15,
+              "shadows": 0,
+              "whites": 0,
+              "blacks": -15
+            }
+          }
+        },
+        {
+          "id": "whiteNoise8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 230
+          },
+          "data": {
+            "kind": "whiteNoise",
+            "label": "Grain noise",
+            "params": {
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mix9",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Grain",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "ellipseMask10",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 230
+          },
+          "data": {
+            "kind": "ellipseMask",
+            "label": "Vignette shape",
+            "params": {
+              "invert": true,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_rx": 0.48,
+              "in_ry": 0.32,
+              "in_rotation": 0,
+              "in_feather": 0.5
+            }
+          }
+        },
+        {
+          "id": "math11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vignette amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure12",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -4
+            }
+          }
+        },
+        {
+          "id": "mix13",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Vignette",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix14",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output15",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "bwMix5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "bwMix5",
+          "sourceHandle": "out:image",
+          "target": "contrast6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "contrast6",
+          "sourceHandle": "out:image",
+          "target": "tones7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "tones7",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "whiteNoise8",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "ellipseMask10",
+          "sourceHandle": "out:mask",
+          "target": "math11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "exposure12",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e10",
+          "source": "math11",
+          "sourceHandle": "out:value",
+          "target": "mix13",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e11",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "mix13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "exposure12",
+          "sourceHandle": "out:image",
+          "target": "mix13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix14",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e14",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e15",
+          "source": "mix13",
+          "sourceHandle": "out:result",
+          "target": "mix14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e16",
+          "source": "mix14",
+          "sourceHandle": "out:result",
+          "target": "output15",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Product on White",
+      "description": "E-commerce catalogue: auto levels, a bright exposure that pushes the background to clean white, neutral colour and crisp detail – consistent across a whole product shoot.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "autoLevels3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoLevels",
+            "label": "Auto Levels",
+            "params": {
+              "strength": 100
+            }
+          }
+        },
+        {
+          "id": "exposure4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 0.25
+            }
+          }
+        },
+        {
+          "id": "tones5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -10,
+              "shadows": 10,
+              "whites": 40,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 10
+            }
+          }
+        },
+        {
+          "id": "sharpen7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 90,
+              "radius": 1,
+              "threshold": 0
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "autoLevels3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "autoLevels3",
+          "sourceHandle": "out:image",
+          "target": "exposure4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "exposure4",
+          "sourceHandle": "out:image",
+          "target": "tones5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "tones5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "sharpen7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix8",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "sharpen7",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "output9",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Batch · Low-Light Rescue",
+      "description": "Dim events and indoor shots: strong per-image auto exposure, lifted shadows, edge-preserving noise reduction (“Denoise”) and light sharpening.",
+      "collection": "Photographer Batch",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Denoise",
+            "params": {
+              "value": 0.6
+            }
+          }
+        },
+        {
+          "id": "autoExposure4",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoExposure",
+            "label": "Auto Exposure",
+            "params": {
+              "target": 20,
+              "strength": 100,
+              "limit": 3
+            }
+          }
+        },
+        {
+          "id": "tones5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -20,
+              "shadows": 40,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "kuwahara6",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 230
+          },
+          "data": {
+            "kind": "kuwahara",
+            "label": "Kuwahara (Painterly)",
+            "params": {
+              "radius": 2
+            }
+          }
+        },
+        {
+          "id": "mix7",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Denoise mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "saturation8",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 10
+            }
+          }
+        },
+        {
+          "id": "sharpen9",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "sharpen",
+            "label": "Sharpen",
+            "params": {
+              "amount": 40,
+              "radius": 1.2,
+              "threshold": 8
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output11",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "autoExposure4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "autoExposure4",
+          "sourceHandle": "out:image",
+          "target": "tones5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "tones5",
+          "sourceHandle": "out:image",
+          "target": "kuwahara6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "mix7",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "tones5",
+          "sourceHandle": "out:image",
+          "target": "mix7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "kuwahara6",
+          "sourceHandle": "out:image",
+          "target": "mix7",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "mix7",
+          "sourceHandle": "out:result",
+          "target": "saturation8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e8",
+          "source": "saturation8",
+          "sourceHandle": "out:image",
+          "target": "sharpen9",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e9",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e10",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "sharpen9",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e12",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "output11",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Cyberpunk Neon",
+  "description": "Night-city neon: cold blue shadows, magenta highlights, pink-shifted warm tones and glow.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "whiteBalance3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 5200,
+          "tint": 25
+        }
+      }
+    },
+    {
+      "id": "hsl4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "hsl",
+        "label": "HSL / Colour Mixer",
+        "params": {
+          "h0": -60,
+          "h1": -100,
+          "h2": -60,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0,
+          "h7": 0,
+          "s0": 0,
+          "s1": 0,
+          "s2": 0,
+          "s3": 0,
+          "s4": 30,
+          "s5": 40,
+          "s6": 40,
+          "s7": 30,
+          "l0": 0,
+          "l1": 0,
+          "l2": 0,
+          "l3": 0,
+          "l4": 0,
+          "l5": 0,
+          "l6": 0,
+          "l7": 0
+        }
+      }
+    },
+    {
+      "id": "grading5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": -0.613,
+          "shY": 0.514,
+          "shM": -8,
+          "midX": -0.249,
+          "midY": -0.022,
+          "midM": 0,
+          "hiX": -0.424,
+          "hiY": -0.424,
+          "hiM": 4,
+          "globX": 0,
+          "globY": 0,
+          "globM": 0,
+          "blend": 55,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "contrast6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 35,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "bloom7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.6,
+          "radius": 25,
+          "intensity": 70
+        }
+      }
+    },
+    {
+      "id": "mix8",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output9",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance3",
+      "sourceHandle": "out:image",
+      "target": "hsl4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "hsl4",
+      "sourceHandle": "out:image",
+      "target": "grading5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "grading5",
+      "sourceHandle": "out:image",
+      "target": "contrast6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "contrast6",
+      "sourceHandle": "out:image",
+      "target": "bloom7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix8",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e7",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "bloom7",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "mix8",
+      "sourceHandle": "out:result",
+      "target": "output9",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

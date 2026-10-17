@@ -1,0 +1,574 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Batch · Portrait Soft Skin",
+  "description": "Flattering portraits: a hue mask finds skin tones and blends in a soft blur only there (“Smoothing”), then warmth, gentle shadow lift and sharpening for the eyes.",
+  "collection": "Photographer Batch",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Smoothing",
+        "params": {
+          "value": 0.6
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "value",
+        "label": "Skin hue",
+        "params": {
+          "value": 0.06
+        }
+      }
+    },
+    {
+      "id": "value5",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1380
+      },
+      "data": {
+        "kind": "value",
+        "label": "Skin range",
+        "params": {
+          "value": 0.07
+        }
+      }
+    },
+    {
+      "id": "separateHsv6",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 920
+      },
+      "data": {
+        "kind": "separateHsv",
+        "label": "Hue / Sat",
+        "params": {}
+      }
+    },
+    {
+      "id": "math7",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Hue difference",
+        "params": {
+          "op": "subtract",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math8",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Wrap around",
+        "params": {
+          "op": "wrap",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": -0.5
+        }
+      }
+    },
+    {
+      "id": "math9",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Distance",
+        "params": {
+          "op": "absolute",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math10",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 1150
+      },
+      "data": {
+        "kind": "math",
+        "label": "Inner range",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "mapRange11",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 920
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Hue match",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0,
+          "in_fromMax": 1,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "mapRange12",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 1150
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Saturation gate",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0.12,
+          "in_fromMax": 0.3,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "math13",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Hue mask",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math14",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Smoothing amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "blur15",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 460
+      },
+      "data": {
+        "kind": "blur",
+        "label": "Gaussian Blur",
+        "params": {
+          "radius": 6
+        }
+      }
+    },
+    {
+      "id": "mix16",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Smooth skin",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "whiteBalance17",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 7000,
+          "tint": 4
+        }
+      }
+    },
+    {
+      "id": "exposure18",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": 0.1
+        }
+      }
+    },
+    {
+      "id": "tones19",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -10,
+          "shadows": 15,
+          "whites": 0,
+          "blacks": 0
+        }
+      }
+    },
+    {
+      "id": "sharpen20",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 0
+      },
+      "data": {
+        "kind": "sharpen",
+        "label": "Sharpen",
+        "params": {
+          "amount": 50,
+          "radius": 1,
+          "threshold": 6
+        }
+      }
+    },
+    {
+      "id": "mix21",
+      "type": "shader",
+      "position": {
+        "x": 3510,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output22",
+      "type": "shader",
+      "position": {
+        "x": 3780,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "separateHsv6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "separateHsv6",
+      "sourceHandle": "out:h",
+      "target": "math7",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e3",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "math7",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e4",
+      "source": "math7",
+      "sourceHandle": "out:value",
+      "target": "math8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e5",
+      "source": "math8",
+      "sourceHandle": "out:value",
+      "target": "math9",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "value5",
+      "sourceHandle": "out:value",
+      "target": "math10",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e7",
+      "source": "math9",
+      "sourceHandle": "out:value",
+      "target": "mapRange11",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e8",
+      "source": "value5",
+      "sourceHandle": "out:value",
+      "target": "mapRange11",
+      "targetHandle": "in:fromMin"
+    },
+    {
+      "id": "e9",
+      "source": "math10",
+      "sourceHandle": "out:value",
+      "target": "mapRange11",
+      "targetHandle": "in:fromMax"
+    },
+    {
+      "id": "e10",
+      "source": "separateHsv6",
+      "sourceHandle": "out:s",
+      "target": "mapRange12",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e11",
+      "source": "mapRange11",
+      "sourceHandle": "out:result",
+      "target": "math13",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "mapRange12",
+      "sourceHandle": "out:result",
+      "target": "math13",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "math13",
+      "sourceHandle": "out:value",
+      "target": "math14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e14",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "math14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e15",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "blur15",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e16",
+      "source": "math14",
+      "sourceHandle": "out:value",
+      "target": "mix16",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e17",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix16",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e18",
+      "source": "blur15",
+      "sourceHandle": "out:image",
+      "target": "mix16",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e19",
+      "source": "mix16",
+      "sourceHandle": "out:result",
+      "target": "whiteBalance17",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e20",
+      "source": "whiteBalance17",
+      "sourceHandle": "out:image",
+      "target": "exposure18",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e21",
+      "source": "exposure18",
+      "sourceHandle": "out:image",
+      "target": "tones19",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e22",
+      "source": "tones19",
+      "sourceHandle": "out:image",
+      "target": "sharpen20",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e23",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix21",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e24",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix21",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e25",
+      "source": "sharpen20",
+      "sourceHandle": "out:image",
+      "target": "mix21",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e26",
+      "source": "mix21",
+      "sourceHandle": "out:result",
+      "target": "output22",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

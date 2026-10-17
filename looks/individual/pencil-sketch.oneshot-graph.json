@@ -1,0 +1,375 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Pencil Sketch",
+  "description": "Graphite drawing on warm paper: traced edges with soft shading.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Line weight",
+        "params": {
+          "value": 1.2
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "value",
+        "label": "Shading",
+        "params": {
+          "value": 0.35
+        }
+      }
+    },
+    {
+      "id": "edges5",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "edges",
+        "label": "Edge Detect",
+        "params": {
+          "op": "sobel",
+          "strength": 260,
+          "width": 1.2
+        }
+      }
+    },
+    {
+      "id": "math6",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Line weight",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math7",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Ink lines",
+        "params": {
+          "op": "subtract",
+          "clamp": true,
+          "in_a": 1,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "grayscale8",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "grayscale",
+        "label": "Grayscale",
+        "params": {}
+      }
+    },
+    {
+      "id": "exposure9",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": 1.3
+        }
+      }
+    },
+    {
+      "id": "mix10",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Shading",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#ffffff",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Draw lines",
+        "params": {
+          "blend": "multiply",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 1,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "rgb12",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 230
+      },
+      "data": {
+        "kind": "rgb",
+        "label": "Paper colour",
+        "params": {
+          "color": "#f4ecdb"
+        }
+      }
+    },
+    {
+      "id": "mix13",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Paper",
+        "params": {
+          "blend": "multiply",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 1,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix14",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output15",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "edges5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "edges5",
+      "sourceHandle": "out:edges",
+      "target": "math6",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e3",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "math6",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e4",
+      "source": "math6",
+      "sourceHandle": "out:value",
+      "target": "math7",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e5",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "grayscale8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "grayscale8",
+      "sourceHandle": "out:image",
+      "target": "exposure9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "mix10",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "exposure9",
+      "sourceHandle": "out:image",
+      "target": "mix10",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "mix10",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e10",
+      "source": "math7",
+      "sourceHandle": "out:value",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e11",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "mix13",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "rgb12",
+      "sourceHandle": "out:color",
+      "target": "mix13",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix14",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e14",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e15",
+      "source": "mix13",
+      "sourceHandle": "out:result",
+      "target": "mix14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e16",
+      "source": "mix14",
+      "sourceHandle": "out:result",
+      "target": "output15",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

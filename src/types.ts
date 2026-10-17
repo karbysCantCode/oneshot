@@ -142,4 +142,6 @@ export type GraphPreset = {
   description?: string;
   /** Shipped with the app (looks pack). */
   builtin?: boolean;
+  /** Library section (e.g. "Movie Looks"). Saved graphs without one appear under "My Graphs". */
+  collection?: string;
 };

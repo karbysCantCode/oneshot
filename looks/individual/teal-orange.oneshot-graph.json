@@ -1,0 +1,317 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Teal & Orange",
+  "description": "Cinematic blockbuster grade: teal shadows, warm skin and highlights, punchy contrast.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Vignette",
+        "params": {
+          "value": 0.5
+        }
+      }
+    },
+    {
+      "id": "contrast4",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 25,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "grading5",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": -0.065,
+          "shY": 0.747,
+          "shM": -4,
+          "midX": -0.013,
+          "midY": 0.149,
+          "midM": 0,
+          "hiX": 0.3,
+          "hiY": -0.52,
+          "hiM": 3,
+          "globX": 0,
+          "globY": 0,
+          "globM": 0,
+          "blend": 60,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "saturation6",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": 5,
+          "vibrance": 20
+        }
+      }
+    },
+    {
+      "id": "ellipseMask7",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 230
+      },
+      "data": {
+        "kind": "ellipseMask",
+        "label": "Vignette shape",
+        "params": {
+          "invert": true,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_rx": 0.48,
+          "in_ry": 0.32,
+          "in_rotation": 0,
+          "in_feather": 0.5
+        }
+      }
+    },
+    {
+      "id": "math8",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Vignette amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "exposure9",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -4
+        }
+      }
+    },
+    {
+      "id": "mix10",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Vignette",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output12",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "contrast4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "contrast4",
+      "sourceHandle": "out:image",
+      "target": "grading5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "grading5",
+      "sourceHandle": "out:image",
+      "target": "saturation6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "ellipseMask7",
+      "sourceHandle": "out:mask",
+      "target": "math8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e5",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "math8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e6",
+      "source": "saturation6",
+      "sourceHandle": "out:image",
+      "target": "exposure9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "math8",
+      "sourceHandle": "out:value",
+      "target": "mix10",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "saturation6",
+      "sourceHandle": "out:image",
+      "target": "mix10",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "exposure9",
+      "sourceHandle": "out:image",
+      "target": "mix10",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e10",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix11",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e11",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "mix10",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "output12",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

@@ -1,0 +1,486 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Mask · Colour Pop",
+  "description": "A mask built from maths instead of shapes: Separate HSV → hue distance → Map Range gives a per-pixel mask that keeps one colour and turns the rest black & white. Hue: 0 red, 0.08 orange, 0.16 yellow, 0.33 green, 0.55 cyan, 0.66 blue, 0.83 magenta.",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Hue",
+        "params": {
+          "value": 0
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Range",
+        "params": {
+          "value": 0.08
+        }
+      }
+    },
+    {
+      "id": "separateHsv5",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 690
+      },
+      "data": {
+        "kind": "separateHsv",
+        "label": "Hue / Sat",
+        "params": {}
+      }
+    },
+    {
+      "id": "math6",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 690
+      },
+      "data": {
+        "kind": "math",
+        "label": "Hue difference",
+        "params": {
+          "op": "subtract",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math7",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 690
+      },
+      "data": {
+        "kind": "math",
+        "label": "Wrap around",
+        "params": {
+          "op": "wrap",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": -0.5
+        }
+      }
+    },
+    {
+      "id": "math8",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 690
+      },
+      "data": {
+        "kind": "math",
+        "label": "Distance",
+        "params": {
+          "op": "absolute",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math9",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Inner range",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "mapRange10",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 690
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Hue match",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0,
+          "in_fromMax": 1,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "mapRange11",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 920
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Saturation gate",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0.12,
+          "in_fromMax": 0.3,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "math12",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 690
+      },
+      "data": {
+        "kind": "math",
+        "label": "Hue mask",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "bwMix13",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "bwMix",
+        "label": "Black & White Mix",
+        "params": {
+          "w0": 0,
+          "w1": 0,
+          "w2": 0,
+          "w3": 0,
+          "w4": 0,
+          "w5": 0,
+          "w6": 0,
+          "w7": 0
+        }
+      }
+    },
+    {
+      "id": "contrast14",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 230
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 20,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "saturation15",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": 25,
+          "vibrance": 0
+        }
+      }
+    },
+    {
+      "id": "mix16",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Keep colour",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix17",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output18",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "separateHsv5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "separateHsv5",
+      "sourceHandle": "out:h",
+      "target": "math6",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e3",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "math6",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e4",
+      "source": "math6",
+      "sourceHandle": "out:value",
+      "target": "math7",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e5",
+      "source": "math7",
+      "sourceHandle": "out:value",
+      "target": "math8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "math9",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e7",
+      "source": "math8",
+      "sourceHandle": "out:value",
+      "target": "mapRange10",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e8",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "mapRange10",
+      "targetHandle": "in:fromMin"
+    },
+    {
+      "id": "e9",
+      "source": "math9",
+      "sourceHandle": "out:value",
+      "target": "mapRange10",
+      "targetHandle": "in:fromMax"
+    },
+    {
+      "id": "e10",
+      "source": "separateHsv5",
+      "sourceHandle": "out:s",
+      "target": "mapRange11",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e11",
+      "source": "mapRange10",
+      "sourceHandle": "out:result",
+      "target": "math12",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "mapRange11",
+      "sourceHandle": "out:result",
+      "target": "math12",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "bwMix13",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e14",
+      "source": "bwMix13",
+      "sourceHandle": "out:image",
+      "target": "contrast14",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e15",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "saturation15",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e16",
+      "source": "math12",
+      "sourceHandle": "out:value",
+      "target": "mix16",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e17",
+      "source": "contrast14",
+      "sourceHandle": "out:image",
+      "target": "mix16",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e18",
+      "source": "saturation15",
+      "sourceHandle": "out:image",
+      "target": "mix16",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e19",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix17",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e20",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix17",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e21",
+      "source": "mix16",
+      "sourceHandle": "out:result",
+      "target": "mix17",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e22",
+      "source": "mix17",
+      "sourceHandle": "out:result",
+      "target": "output18",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

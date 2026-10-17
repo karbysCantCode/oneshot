@@ -1,0 +1,229 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Bleach Bypass",
+  "description": "Gritty silver-retained film look: desaturated, metallic, high contrast.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "grayscale3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "grayscale",
+        "label": "Grayscale",
+        "params": {}
+      }
+    },
+    {
+      "id": "mix4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Silver layer",
+        "params": {
+          "blend": "overlay",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.75,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "saturation5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": -45,
+          "vibrance": 0
+        }
+      }
+    },
+    {
+      "id": "contrast6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 40,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "tones7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -15,
+          "shadows": 0,
+          "whites": 0,
+          "blacks": -10
+        }
+      }
+    },
+    {
+      "id": "mix8",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output9",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "grayscale3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix4",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e3",
+      "source": "grayscale3",
+      "sourceHandle": "out:image",
+      "target": "mix4",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e4",
+      "source": "mix4",
+      "sourceHandle": "out:result",
+      "target": "saturation5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "saturation5",
+      "sourceHandle": "out:image",
+      "target": "contrast6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "contrast6",
+      "sourceHandle": "out:image",
+      "target": "tones7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix8",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "tones7",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e10",
+      "source": "mix8",
+      "sourceHandle": "out:result",
+      "target": "output9",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

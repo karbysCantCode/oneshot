@@ -1,0 +1,319 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Mask · Hexagon Frame",
+  "description": "Polygon Mask framing: the photo inside a regular polygon on a coloured card. Sides, size and frame colour are per-image parameters (RGB Colour nodes are exposed too).",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Size",
+        "params": {
+          "value": 0.44
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Sides",
+        "params": {
+          "value": 6
+        }
+      }
+    },
+    {
+      "id": "rgb5",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "rgb",
+        "label": "Frame colour",
+        "params": {
+          "color": "#f3eee6"
+        }
+      }
+    },
+    {
+      "id": "polygonMask6",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 690
+      },
+      "data": {
+        "kind": "polygonMask",
+        "label": "Window",
+        "params": {
+          "invert": false,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_radius": 0.3,
+          "in_sides": 6,
+          "in_rotation": 30,
+          "in_feather": 0.004
+        }
+      }
+    },
+    {
+      "id": "polygonMask7",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 920
+      },
+      "data": {
+        "kind": "polygonMask",
+        "label": "Drop shadow",
+        "params": {
+          "invert": false,
+          "in_x": 0.5,
+          "in_y": 0.52,
+          "in_radius": 0.3,
+          "in_sides": 6,
+          "in_rotation": 30,
+          "in_feather": 0.06
+        }
+      }
+    },
+    {
+      "id": "math8",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.45,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "mix9",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 230
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Card + shadow",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#3a3530"
+        }
+      }
+    },
+    {
+      "id": "mix10",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Photo in window",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output12",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "polygonMask6",
+      "targetHandle": "in:radius"
+    },
+    {
+      "id": "e2",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "polygonMask6",
+      "targetHandle": "in:sides"
+    },
+    {
+      "id": "e3",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "polygonMask7",
+      "targetHandle": "in:radius"
+    },
+    {
+      "id": "e4",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "polygonMask7",
+      "targetHandle": "in:sides"
+    },
+    {
+      "id": "e5",
+      "source": "polygonMask7",
+      "sourceHandle": "out:mask",
+      "target": "math8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "math8",
+      "sourceHandle": "out:value",
+      "target": "mix9",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e7",
+      "source": "rgb5",
+      "sourceHandle": "out:color",
+      "target": "mix9",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "polygonMask6",
+      "sourceHandle": "out:mask",
+      "target": "mix10",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e9",
+      "source": "mix9",
+      "sourceHandle": "out:result",
+      "target": "mix10",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e10",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix10",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e11",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix11",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e12",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e13",
+      "source": "mix10",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e14",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "output12",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

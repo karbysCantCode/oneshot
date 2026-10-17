@@ -1,0 +1,3551 @@
+{
+  "oneshot": "graph-pack",
+  "version": 10,
+  "name": "Advanced Demos",
+  "graphs": [
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Procedural · Plasma",
+      "description": "No image needed: four sine waves summed over pixel position, mapped through a Colour Ramp. Change “Time” to animate, “Scale” to zoom. Open with Edit to see it on the procedural canvas.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "value1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Time",
+            "params": {
+              "value": 0
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Scale",
+            "params": {
+              "value": 10
+            }
+          }
+        },
+        {
+          "id": "texcoord3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "texcoord",
+            "label": "Texture Coordinate",
+            "params": {}
+          }
+        },
+        {
+          "id": "separateRgb4",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "separateRgb",
+            "label": "X · Y (centred)",
+            "params": {}
+          }
+        },
+        {
+          "id": "vectorMath5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "vectorMath",
+            "label": "Distance from centre",
+            "params": {
+              "op": "length",
+              "in_a": "#000000",
+              "in_b": "#000000",
+              "in_c": "#000000",
+              "in_scale": 1
+            }
+          }
+        },
+        {
+          "id": "math6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 1380
+          },
+          "data": {
+            "kind": "math",
+            "label": "X + Y",
+            "params": {
+              "op": "add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math7",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "math",
+            "label": "x × scale",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "math",
+            "label": "x + time",
+            "params": {
+              "op": "multiply_add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 1,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math9",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 115
+          },
+          "data": {
+            "kind": "math",
+            "label": "time × 1",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 1,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math10",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "math",
+            "label": "sin(x)",
+            "params": {
+              "op": "sine",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math11",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 460
+          },
+          "data": {
+            "kind": "math",
+            "label": "y × scale",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math12",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 460
+          },
+          "data": {
+            "kind": "math",
+            "label": "y + time",
+            "params": {
+              "op": "multiply_add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 1,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math13",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 575
+          },
+          "data": {
+            "kind": "math",
+            "label": "time × 1.3",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 1.3,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math14",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 460
+          },
+          "data": {
+            "kind": "math",
+            "label": "sin(y)",
+            "params": {
+              "op": "sine",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math15",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "x+y × scale",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math16",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "x+y + time",
+            "params": {
+              "op": "multiply_add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.7,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math17",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 1035
+          },
+          "data": {
+            "kind": "math",
+            "label": "time × 0.7",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.7,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math18",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "sin(x+y)",
+            "params": {
+              "op": "sine",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math19",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 1610
+          },
+          "data": {
+            "kind": "math",
+            "label": "radius × scale",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math20",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 1610
+          },
+          "data": {
+            "kind": "math",
+            "label": "radius + time",
+            "params": {
+              "op": "multiply_add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 1.6,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math21",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 1725
+          },
+          "data": {
+            "kind": "math",
+            "label": "time × -2",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": -2,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math22",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 1610
+          },
+          "data": {
+            "kind": "math",
+            "label": "sin(radius)",
+            "params": {
+              "op": "sine",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math23",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math24",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 1150
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math25",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Sum of waves",
+            "params": {
+              "op": "add",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "mapRange26",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 690
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "To 0–1",
+            "params": {
+              "interp": "linear",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": -4,
+              "in_fromMax": 4,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "colorRamp27",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 690
+          },
+          "data": {
+            "kind": "colorRamp",
+            "label": "Colour Ramp",
+            "params": {
+              "in_fac": 0.5
+            },
+            "ramp": {
+              "interp": "ease",
+              "stops": [
+                {
+                  "pos": 0,
+                  "color": "#12002b",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.25,
+                  "color": "#7a00b8",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.45,
+                  "color": "#ff2f7a",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.62,
+                  "color": "#ffb02e",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.8,
+                  "color": "#3df2ff",
+                  "alpha": 1
+                },
+                {
+                  "pos": 1,
+                  "color": "#ffffff",
+                  "alpha": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "output28",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 690
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "texcoord3",
+          "sourceHandle": "out:centered",
+          "target": "separateRgb4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "texcoord3",
+          "sourceHandle": "out:centered",
+          "target": "vectorMath5",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e3",
+          "source": "separateRgb4",
+          "sourceHandle": "out:r",
+          "target": "math6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e4",
+          "source": "separateRgb4",
+          "sourceHandle": "out:g",
+          "target": "math6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e5",
+          "source": "separateRgb4",
+          "sourceHandle": "out:r",
+          "target": "math7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "math7",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "math7",
+          "sourceHandle": "out:value",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "math9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "math9",
+          "sourceHandle": "out:value",
+          "target": "math8",
+          "targetHandle": "in:c"
+        },
+        {
+          "id": "e10",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "math10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "separateRgb4",
+          "sourceHandle": "out:g",
+          "target": "math11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "math11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "math11",
+          "sourceHandle": "out:value",
+          "target": "math12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e14",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "math13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e15",
+          "source": "math13",
+          "sourceHandle": "out:value",
+          "target": "math12",
+          "targetHandle": "in:c"
+        },
+        {
+          "id": "e16",
+          "source": "math12",
+          "sourceHandle": "out:value",
+          "target": "math14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e17",
+          "source": "math6",
+          "sourceHandle": "out:value",
+          "target": "math15",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e18",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "math15",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e19",
+          "source": "math15",
+          "sourceHandle": "out:value",
+          "target": "math16",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e20",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "math17",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e21",
+          "source": "math17",
+          "sourceHandle": "out:value",
+          "target": "math16",
+          "targetHandle": "in:c"
+        },
+        {
+          "id": "e22",
+          "source": "math16",
+          "sourceHandle": "out:value",
+          "target": "math18",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e23",
+          "source": "vectorMath5",
+          "sourceHandle": "out:value",
+          "target": "math19",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e24",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "math19",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e25",
+          "source": "math19",
+          "sourceHandle": "out:value",
+          "target": "math20",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e26",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "math21",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e27",
+          "source": "math21",
+          "sourceHandle": "out:value",
+          "target": "math20",
+          "targetHandle": "in:c"
+        },
+        {
+          "id": "e28",
+          "source": "math20",
+          "sourceHandle": "out:value",
+          "target": "math22",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e29",
+          "source": "math10",
+          "sourceHandle": "out:value",
+          "target": "math23",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e30",
+          "source": "math14",
+          "sourceHandle": "out:value",
+          "target": "math23",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e31",
+          "source": "math18",
+          "sourceHandle": "out:value",
+          "target": "math24",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e32",
+          "source": "math22",
+          "sourceHandle": "out:value",
+          "target": "math24",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e33",
+          "source": "math23",
+          "sourceHandle": "out:value",
+          "target": "math25",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e34",
+          "source": "math24",
+          "sourceHandle": "out:value",
+          "target": "math25",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e35",
+          "source": "math25",
+          "sourceHandle": "out:value",
+          "target": "mapRange26",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e36",
+          "source": "mapRange26",
+          "sourceHandle": "out:result",
+          "target": "colorRamp27",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e37",
+          "source": "colorRamp27",
+          "sourceHandle": "out:color",
+          "target": "output28",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Procedural · Stained Glass",
+      "description": "No image needed: Voronoi cells give each pane a random colour, Voronoi “distance to edge” draws the lead lines, noise adds glass texture and a radial gradient adds back-light.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "value1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Cells",
+            "params": {
+              "value": 7
+            }
+          }
+        },
+        {
+          "id": "voronoi2",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "voronoi",
+            "label": "Pane colours",
+            "params": {
+              "feature": "f1",
+              "metric": "euclidean",
+              "in_scale": 5,
+              "in_randomness": 1,
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "voronoi3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "voronoi",
+            "label": "Pane edges",
+            "params": {
+              "feature": "edge",
+              "metric": "euclidean",
+              "in_scale": 5,
+              "in_randomness": 1,
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mapRange4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 230
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Lead lines",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0.02,
+              "in_fromMax": 0.06,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "saturation5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Richer glass",
+            "params": {
+              "saturation": 60,
+              "vibrance": 0
+            }
+          }
+        },
+        {
+          "id": "mix6",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Apply lead",
+            "params": {
+              "blend": "multiply",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 1,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "noise7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 460
+          },
+          "data": {
+            "kind": "noise",
+            "label": "Glass texture",
+            "params": {
+              "in_scale": 40,
+              "in_detail": 4,
+              "in_roughness": 0.5,
+              "in_lacunarity": 2,
+              "in_distortion": 0,
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Texture",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.35,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "gradient9",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 460
+          },
+          "data": {
+            "kind": "gradient",
+            "label": "Back-light",
+            "params": {
+              "type": "spherical"
+            }
+          }
+        },
+        {
+          "id": "mapRange10",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 460
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Light falloff",
+            "params": {
+              "interp": "linear",
+              "clamp": false,
+              "in_value": 0.5,
+              "in_fromMin": 0,
+              "in_fromMax": 1,
+              "in_toMin": 0.35,
+              "in_toMax": 1.4,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Light",
+            "params": {
+              "blend": "multiply",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 1,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output12",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "voronoi2",
+          "targetHandle": "in:scale"
+        },
+        {
+          "id": "e2",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "voronoi3",
+          "targetHandle": "in:scale"
+        },
+        {
+          "id": "e3",
+          "source": "voronoi3",
+          "sourceHandle": "out:distance",
+          "target": "mapRange4",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e4",
+          "source": "voronoi2",
+          "sourceHandle": "out:color",
+          "target": "saturation5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation5",
+          "sourceHandle": "out:image",
+          "target": "mix6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "mapRange4",
+          "sourceHandle": "out:result",
+          "target": "mix6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "mix6",
+          "sourceHandle": "out:result",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "noise7",
+          "sourceHandle": "out:fac",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "gradient9",
+          "sourceHandle": "out:fac",
+          "target": "mapRange10",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e10",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "mapRange10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e12",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "output12",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Procedural · Synthwave Sunset",
+      "description": "No image needed: sky from a Colour Ramp on Y, a circle-mask sun cut by stripes, fractal-noise mountains, and a perspective grid floor built from maths.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "value1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Sun height",
+            "params": {
+              "value": 0.38
+            }
+          }
+        },
+        {
+          "id": "texcoord2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "texcoord",
+            "label": "Texture Coordinate",
+            "params": {}
+          }
+        },
+        {
+          "id": "separateRgb3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "separateRgb",
+            "label": "X · Y",
+            "params": {}
+          }
+        },
+        {
+          "id": "colorRamp4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "colorRamp",
+            "label": "Sky",
+            "params": {
+              "in_fac": 0.5
+            },
+            "ramp": {
+              "interp": "ease",
+              "stops": [
+                {
+                  "pos": 0.3,
+                  "color": "#ff4f8b",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.55,
+                  "color": "#7b2cbf",
+                  "alpha": 1
+                },
+                {
+                  "pos": 1,
+                  "color": "#10002b",
+                  "alpha": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "circleMask5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 460
+          },
+          "data": {
+            "kind": "circleMask",
+            "label": "Sun",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_radius": 0.2,
+              "in_feather": 0.006
+            }
+          }
+        },
+        {
+          "id": "wave6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 690
+          },
+          "data": {
+            "kind": "wave",
+            "label": "Sun stripes",
+            "params": {
+              "type": "bands",
+              "direction": "y",
+              "profile": "saw",
+              "in_scale": 6,
+              "in_distortion": 0,
+              "in_detail": 2,
+              "in_detailScale": 1,
+              "in_phase": 0
+            }
+          }
+        },
+        {
+          "id": "math7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "greater_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.25,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Above cut line",
+            "params": {
+              "op": "greater_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.55,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math9",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Keep top / stripes",
+            "params": {
+              "op": "maximum",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math10",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 460
+          },
+          "data": {
+            "kind": "math",
+            "label": "Striped sun",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "gradient11",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 920
+          },
+          "data": {
+            "kind": "gradient",
+            "label": "Sun gradient",
+            "params": {
+              "type": "linear"
+            }
+          }
+        },
+        {
+          "id": "colorRamp12",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 920
+          },
+          "data": {
+            "kind": "colorRamp",
+            "label": "Colour Ramp",
+            "params": {
+              "in_fac": 0.5
+            },
+            "ramp": {
+              "interp": "linear",
+              "stops": [
+                {
+                  "pos": 0.5,
+                  "color": "#ff2fa0",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.75,
+                  "color": "#ffd23f",
+                  "alpha": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "combineRgb13",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 1150
+          },
+          "data": {
+            "kind": "combineRgb",
+            "label": "Y → vector",
+            "params": {
+              "in_r": 0,
+              "in_g": 0,
+              "in_b": 0,
+              "in_a": 1
+            }
+          }
+        },
+        {
+          "id": "mix14",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Add sun",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "combineRgb15",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 1380
+          },
+          "data": {
+            "kind": "combineRgb",
+            "label": "X → vector",
+            "params": {
+              "in_r": 0,
+              "in_g": 0,
+              "in_b": 0,
+              "in_a": 1
+            }
+          }
+        },
+        {
+          "id": "noise16",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 1380
+          },
+          "data": {
+            "kind": "noise",
+            "label": "Ridge noise",
+            "params": {
+              "in_scale": 3,
+              "in_detail": 6,
+              "in_roughness": 0.55,
+              "in_lacunarity": 2,
+              "in_distortion": 0,
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mapRange17",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 1380
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Ridge height",
+            "params": {
+              "interp": "linear",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0,
+              "in_fromMax": 1,
+              "in_toMin": 0.32,
+              "in_toMax": 0.58,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "math18",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 1380
+          },
+          "data": {
+            "kind": "math",
+            "label": "Mountain mask",
+            "params": {
+              "op": "less_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "rgb19",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 1610
+          },
+          "data": {
+            "kind": "rgb",
+            "label": "Mountain colour",
+            "params": {
+              "color": "#1a0638"
+            }
+          }
+        },
+        {
+          "id": "mix20",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Add mountains",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "math21",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "0.3 − y",
+            "params": {
+              "op": "subtract",
+              "clamp": false,
+              "in_a": 0.3,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math22",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "Perspective z",
+            "params": {
+              "op": "divide",
+              "clamp": false,
+              "in_a": 0.05,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math23",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "fraction",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math24",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "Horizontal lines",
+            "params": {
+              "op": "less_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.12,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math25",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 2300
+          },
+          "data": {
+            "kind": "math",
+            "label": "x − centre",
+            "params": {
+              "op": "subtract",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.75,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math26",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 2300
+          },
+          "data": {
+            "kind": "math",
+            "label": "x × z",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math27",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 2300
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 6,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math28",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 2300
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "fraction",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math29",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 2300
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vertical lines",
+            "params": {
+              "op": "less_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.08,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math30",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "Grid",
+            "params": {
+              "op": "maximum",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math31",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 1840
+          },
+          "data": {
+            "kind": "math",
+            "label": "Floor area",
+            "params": {
+              "op": "less_than",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.3,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "rgb32",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 1840
+          },
+          "data": {
+            "kind": "rgb",
+            "label": "Floor colour",
+            "params": {
+              "color": "#14001f"
+            }
+          }
+        },
+        {
+          "id": "mix33",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Add floor",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "math34",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 2070
+          },
+          "data": {
+            "kind": "math",
+            "label": "Grid on floor",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "rgb35",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 1840
+          },
+          "data": {
+            "kind": "rgb",
+            "label": "Grid colour",
+            "params": {
+              "color": "#ff3fd8"
+            }
+          }
+        },
+        {
+          "id": "mix36",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Add grid",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "bloom37",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "bloom",
+            "label": "Bloom / Glow",
+            "params": {
+              "threshold": 0.45,
+              "radius": 25,
+              "intensity": 80
+            }
+          }
+        },
+        {
+          "id": "output38",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "texcoord2",
+          "sourceHandle": "out:aspect",
+          "target": "separateRgb3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "colorRamp4",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e3",
+          "source": "value1",
+          "sourceHandle": "out:value",
+          "target": "circleMask5",
+          "targetHandle": "in:y"
+        },
+        {
+          "id": "e4",
+          "source": "wave6",
+          "sourceHandle": "out:fac",
+          "target": "math7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e5",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "math7",
+          "sourceHandle": "out:value",
+          "target": "math9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "math9",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e8",
+          "source": "circleMask5",
+          "sourceHandle": "out:mask",
+          "target": "math10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "math9",
+          "sourceHandle": "out:value",
+          "target": "math10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "combineRgb13",
+          "targetHandle": "in:r"
+        },
+        {
+          "id": "e11",
+          "source": "combineRgb13",
+          "sourceHandle": "out:image",
+          "target": "gradient11",
+          "targetHandle": "in:vector"
+        },
+        {
+          "id": "e12",
+          "source": "gradient11",
+          "sourceHandle": "out:fac",
+          "target": "colorRamp12",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e13",
+          "source": "math10",
+          "sourceHandle": "out:value",
+          "target": "mix14",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e14",
+          "source": "colorRamp4",
+          "sourceHandle": "out:color",
+          "target": "mix14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e15",
+          "source": "colorRamp12",
+          "sourceHandle": "out:color",
+          "target": "mix14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e16",
+          "source": "separateRgb3",
+          "sourceHandle": "out:r",
+          "target": "combineRgb15",
+          "targetHandle": "in:r"
+        },
+        {
+          "id": "e17",
+          "source": "combineRgb15",
+          "sourceHandle": "out:image",
+          "target": "noise16",
+          "targetHandle": "in:vector"
+        },
+        {
+          "id": "e18",
+          "source": "noise16",
+          "sourceHandle": "out:fac",
+          "target": "mapRange17",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e19",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "math18",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e20",
+          "source": "mapRange17",
+          "sourceHandle": "out:result",
+          "target": "math18",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e21",
+          "source": "math18",
+          "sourceHandle": "out:value",
+          "target": "mix20",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e22",
+          "source": "mix14",
+          "sourceHandle": "out:result",
+          "target": "mix20",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e23",
+          "source": "rgb19",
+          "sourceHandle": "out:color",
+          "target": "mix20",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e24",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "math21",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e25",
+          "source": "math21",
+          "sourceHandle": "out:value",
+          "target": "math22",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e26",
+          "source": "math22",
+          "sourceHandle": "out:value",
+          "target": "math23",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e27",
+          "source": "math23",
+          "sourceHandle": "out:value",
+          "target": "math24",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e28",
+          "source": "separateRgb3",
+          "sourceHandle": "out:r",
+          "target": "math25",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e29",
+          "source": "math25",
+          "sourceHandle": "out:value",
+          "target": "math26",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e30",
+          "source": "math22",
+          "sourceHandle": "out:value",
+          "target": "math26",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e31",
+          "source": "math26",
+          "sourceHandle": "out:value",
+          "target": "math27",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e32",
+          "source": "math27",
+          "sourceHandle": "out:value",
+          "target": "math28",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e33",
+          "source": "math28",
+          "sourceHandle": "out:value",
+          "target": "math29",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e34",
+          "source": "math24",
+          "sourceHandle": "out:value",
+          "target": "math30",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e35",
+          "source": "math29",
+          "sourceHandle": "out:value",
+          "target": "math30",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e36",
+          "source": "separateRgb3",
+          "sourceHandle": "out:g",
+          "target": "math31",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e37",
+          "source": "math31",
+          "sourceHandle": "out:value",
+          "target": "mix33",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e38",
+          "source": "mix20",
+          "sourceHandle": "out:result",
+          "target": "mix33",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e39",
+          "source": "rgb32",
+          "sourceHandle": "out:color",
+          "target": "mix33",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e40",
+          "source": "math30",
+          "sourceHandle": "out:value",
+          "target": "math34",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e41",
+          "source": "math31",
+          "sourceHandle": "out:value",
+          "target": "math34",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e42",
+          "source": "math34",
+          "sourceHandle": "out:value",
+          "target": "mix36",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e43",
+          "source": "mix33",
+          "sourceHandle": "out:result",
+          "target": "mix36",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e44",
+          "source": "rgb35",
+          "sourceHandle": "out:color",
+          "target": "mix36",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e45",
+          "source": "mix36",
+          "sourceHandle": "out:result",
+          "target": "bloom37",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e46",
+          "source": "bloom37",
+          "sourceHandle": "out:image",
+          "target": "output38",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Mask · Spotlight",
+      "description": "Shape masking: a feathered Circle Mask keeps the subject bright and warm while the rest falls into dark, desaturated shadow. Move X / Y / Radius per photo.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Spot X",
+            "params": {
+              "value": 0.5
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Spot Y",
+            "params": {
+              "value": 0.45
+            }
+          }
+        },
+        {
+          "id": "value5",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1150
+          },
+          "data": {
+            "kind": "value",
+            "label": "Radius",
+            "params": {
+              "value": 0.28
+            }
+          }
+        },
+        {
+          "id": "circleMask6",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 690
+          },
+          "data": {
+            "kind": "circleMask",
+            "label": "Spotlight",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_radius": 0.25,
+              "in_feather": 0.25
+            }
+          }
+        },
+        {
+          "id": "saturation7",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": -70,
+              "vibrance": 0
+            }
+          }
+        },
+        {
+          "id": "exposure8",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 230
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -2.2
+            }
+          }
+        },
+        {
+          "id": "whiteBalance9",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 7600,
+              "tint": 0
+            }
+          }
+        },
+        {
+          "id": "exposure10",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 0.25
+            }
+          }
+        },
+        {
+          "id": "contrast11",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 15,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "mix12",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Spot blend",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix13",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output14",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "circleMask6",
+          "targetHandle": "in:x"
+        },
+        {
+          "id": "e2",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "circleMask6",
+          "targetHandle": "in:y"
+        },
+        {
+          "id": "e3",
+          "source": "value5",
+          "sourceHandle": "out:value",
+          "target": "circleMask6",
+          "targetHandle": "in:radius"
+        },
+        {
+          "id": "e4",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "saturation7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation7",
+          "sourceHandle": "out:image",
+          "target": "exposure8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance9",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "whiteBalance9",
+          "sourceHandle": "out:image",
+          "target": "exposure10",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e8",
+          "source": "exposure10",
+          "sourceHandle": "out:image",
+          "target": "contrast11",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e9",
+          "source": "circleMask6",
+          "sourceHandle": "out:mask",
+          "target": "mix12",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e10",
+          "source": "exposure8",
+          "sourceHandle": "out:image",
+          "target": "mix12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "contrast11",
+          "sourceHandle": "out:image",
+          "target": "mix12",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e12",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix13",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e13",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e14",
+          "source": "mix12",
+          "sourceHandle": "out:result",
+          "target": "mix13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e15",
+          "source": "mix13",
+          "sourceHandle": "out:result",
+          "target": "output14",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Mask · Colour Pop",
+      "description": "A mask built from maths instead of shapes: Separate HSV → hue distance → Map Range gives a per-pixel mask that keeps one colour and turns the rest black & white. Hue: 0 red, 0.08 orange, 0.16 yellow, 0.33 green, 0.55 cyan, 0.66 blue, 0.83 magenta.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Hue",
+            "params": {
+              "value": 0
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Range",
+            "params": {
+              "value": 0.08
+            }
+          }
+        },
+        {
+          "id": "separateHsv5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 690
+          },
+          "data": {
+            "kind": "separateHsv",
+            "label": "Hue / Sat",
+            "params": {}
+          }
+        },
+        {
+          "id": "math6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Hue difference",
+            "params": {
+              "op": "subtract",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Wrap around",
+            "params": {
+              "op": "wrap",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": -0.5
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Distance",
+            "params": {
+              "op": "absolute",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math9",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Inner range",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "mapRange10",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 690
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Hue match",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0,
+              "in_fromMax": 1,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "mapRange11",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 920
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Saturation gate",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0.12,
+              "in_fromMax": 0.3,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "math12",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 690
+          },
+          "data": {
+            "kind": "math",
+            "label": "Hue mask",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "bwMix13",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "bwMix",
+            "label": "Black & White Mix",
+            "params": {
+              "w0": 0,
+              "w1": 0,
+              "w2": 0,
+              "w3": 0,
+              "w4": 0,
+              "w5": 0,
+              "w6": 0,
+              "w7": 0
+            }
+          }
+        },
+        {
+          "id": "contrast14",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 230
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 20,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "saturation15",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 25,
+              "vibrance": 0
+            }
+          }
+        },
+        {
+          "id": "mix16",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Keep colour",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix17",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output18",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "separateHsv5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "separateHsv5",
+          "sourceHandle": "out:h",
+          "target": "math6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e3",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e4",
+          "source": "math6",
+          "sourceHandle": "out:value",
+          "target": "math7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e5",
+          "source": "math7",
+          "sourceHandle": "out:value",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "mapRange10",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e8",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "mapRange10",
+          "targetHandle": "in:fromMin"
+        },
+        {
+          "id": "e9",
+          "source": "math9",
+          "sourceHandle": "out:value",
+          "target": "mapRange10",
+          "targetHandle": "in:fromMax"
+        },
+        {
+          "id": "e10",
+          "source": "separateHsv5",
+          "sourceHandle": "out:s",
+          "target": "mapRange11",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e11",
+          "source": "mapRange10",
+          "sourceHandle": "out:result",
+          "target": "math12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "mapRange11",
+          "sourceHandle": "out:result",
+          "target": "math12",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "bwMix13",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e14",
+          "source": "bwMix13",
+          "sourceHandle": "out:image",
+          "target": "contrast14",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e15",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "saturation15",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e16",
+          "source": "math12",
+          "sourceHandle": "out:value",
+          "target": "mix16",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e17",
+          "source": "contrast14",
+          "sourceHandle": "out:image",
+          "target": "mix16",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e18",
+          "source": "saturation15",
+          "sourceHandle": "out:image",
+          "target": "mix16",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e19",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix17",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e20",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix17",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e21",
+          "source": "mix16",
+          "sourceHandle": "out:result",
+          "target": "mix17",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e22",
+          "source": "mix17",
+          "sourceHandle": "out:result",
+          "target": "output18",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Mask · Hexagon Frame",
+      "description": "Polygon Mask framing: the photo inside a regular polygon on a coloured card. Sides, size and frame colour are per-image parameters (RGB Colour nodes are exposed too).",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Size",
+            "params": {
+              "value": 0.44
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Sides",
+            "params": {
+              "value": 6
+            }
+          }
+        },
+        {
+          "id": "rgb5",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1150
+          },
+          "data": {
+            "kind": "rgb",
+            "label": "Frame colour",
+            "params": {
+              "color": "#f3eee6"
+            }
+          }
+        },
+        {
+          "id": "polygonMask6",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 690
+          },
+          "data": {
+            "kind": "polygonMask",
+            "label": "Window",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_radius": 0.3,
+              "in_sides": 6,
+              "in_rotation": 30,
+              "in_feather": 0.004
+            }
+          }
+        },
+        {
+          "id": "polygonMask7",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 920
+          },
+          "data": {
+            "kind": "polygonMask",
+            "label": "Drop shadow",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0.52,
+              "in_radius": 0.3,
+              "in_sides": 6,
+              "in_rotation": 30,
+              "in_feather": 0.06
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 920
+          },
+          "data": {
+            "kind": "math",
+            "label": "Math",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.45,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "mix9",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 230
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Card + shadow",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#3a3530"
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Photo in window",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output12",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "polygonMask6",
+          "targetHandle": "in:radius"
+        },
+        {
+          "id": "e2",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "polygonMask6",
+          "targetHandle": "in:sides"
+        },
+        {
+          "id": "e3",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "polygonMask7",
+          "targetHandle": "in:radius"
+        },
+        {
+          "id": "e4",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "polygonMask7",
+          "targetHandle": "in:sides"
+        },
+        {
+          "id": "e5",
+          "source": "polygonMask7",
+          "sourceHandle": "out:mask",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "rgb5",
+          "sourceHandle": "out:color",
+          "target": "mix9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "polygonMask6",
+          "sourceHandle": "out:mask",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e9",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e10",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e11",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix11",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e12",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e13",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e14",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "output12",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Converter · Duotone Map",
+      "description": "Image → RGB to BW → Colour Ramp: brightness re-mapped through a gradient (Spotify-style duotone). Swap the ramp colours to taste.",
+      "collection": "Advanced Demos",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "autoLevels3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "autoLevels",
+            "label": "Auto Levels",
+            "params": {
+              "strength": 100
+            }
+          }
+        },
+        {
+          "id": "rgbToBw4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "rgbToBw",
+            "label": "RGB to BW",
+            "params": {}
+          }
+        },
+        {
+          "id": "mapRange5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "mapRange",
+            "label": "Contrast",
+            "params": {
+              "interp": "smooth",
+              "clamp": true,
+              "in_value": 0.5,
+              "in_fromMin": 0.03,
+              "in_fromMax": 0.85,
+              "in_toMin": 0,
+              "in_toMax": 1,
+              "in_steps": 4
+            }
+          }
+        },
+        {
+          "id": "colorRamp6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "colorRamp",
+            "label": "Colour Ramp",
+            "params": {
+              "in_fac": 0.5
+            },
+            "ramp": {
+              "interp": "linear",
+              "stops": [
+                {
+                  "pos": 0,
+                  "color": "#1b1464",
+                  "alpha": 1
+                },
+                {
+                  "pos": 0.55,
+                  "color": "#e8467c",
+                  "alpha": 1
+                },
+                {
+                  "pos": 1,
+                  "color": "#ffe066",
+                  "alpha": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "mix7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "autoLevels3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "autoLevels3",
+          "sourceHandle": "out:image",
+          "target": "rgbToBw4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "rgbToBw4",
+          "sourceHandle": "out:val",
+          "target": "mapRange5",
+          "targetHandle": "in:value"
+        },
+        {
+          "id": "e4",
+          "source": "mapRange5",
+          "sourceHandle": "out:result",
+          "target": "colorRamp6",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix7",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e6",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix7",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "colorRamp6",
+          "sourceHandle": "out:color",
+          "target": "mix7",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e8",
+          "source": "mix7",
+          "sourceHandle": "out:result",
+          "target": "output8",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    }
+  ]
+}

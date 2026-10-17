@@ -1,0 +1,3602 @@
+{
+  "oneshot": "graph-pack",
+  "version": 10,
+  "name": "Film Looks",
+  "graphs": [
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Teal & Orange",
+      "description": "Cinematic blockbuster grade: teal shadows, warm skin and highlights, punchy contrast.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Vignette",
+            "params": {
+              "value": 0.5
+            }
+          }
+        },
+        {
+          "id": "contrast4",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 25,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "grading5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "grading",
+            "label": "Colour Grading",
+            "params": {
+              "shX": -0.065,
+              "shY": 0.747,
+              "shM": -4,
+              "midX": -0.013,
+              "midY": 0.149,
+              "midM": 0,
+              "hiX": 0.3,
+              "hiY": -0.52,
+              "hiM": 3,
+              "globX": 0,
+              "globY": 0,
+              "globM": 0,
+              "blend": 60,
+              "balance": 0
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 5,
+              "vibrance": 20
+            }
+          }
+        },
+        {
+          "id": "ellipseMask7",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 230
+          },
+          "data": {
+            "kind": "ellipseMask",
+            "label": "Vignette shape",
+            "params": {
+              "invert": true,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_rx": 0.48,
+              "in_ry": 0.32,
+              "in_rotation": 0,
+              "in_feather": 0.5
+            }
+          }
+        },
+        {
+          "id": "math8",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vignette amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure9",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -4
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Vignette",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output12",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "contrast4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "contrast4",
+          "sourceHandle": "out:image",
+          "target": "grading5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "grading5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "ellipseMask7",
+          "sourceHandle": "out:mask",
+          "target": "math8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e5",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e6",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "exposure9",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "math8",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "exposure9",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix11",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e11",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "output12",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Vintage Film",
+      "description": "Faded 70s print: warm cast, lifted blacks, soft highlights, muted colour, grain and vignette.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Grain",
+            "params": {
+              "value": 0.2
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Vignette",
+            "params": {
+              "value": 0.6
+            }
+          }
+        },
+        {
+          "id": "whiteBalance5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 7800,
+              "tint": 12
+            }
+          }
+        },
+        {
+          "id": "saturation6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": -30,
+              "vibrance": -10
+            }
+          }
+        },
+        {
+          "id": "curves7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "curves",
+            "label": "Curves",
+            "params": {},
+            "curves": {
+              "master": [
+                [
+                  0,
+                  0.1
+                ],
+                [
+                  0.25,
+                  0.25
+                ],
+                [
+                  0.75,
+                  0.78
+                ],
+                [
+                  1,
+                  0.93
+                ]
+              ],
+              "r": [
+                [
+                  0,
+                  0.03
+                ],
+                [
+                  1,
+                  1
+                ]
+              ],
+              "b": [
+                [
+                  0,
+                  0.08
+                ],
+                [
+                  1,
+                  0.9
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "id": "grading8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "grading",
+            "label": "Colour Grading",
+            "params": {
+              "shX": 0.217,
+              "shY": -0.125,
+              "shM": 0,
+              "midX": 0,
+              "midY": 0,
+              "midM": 0,
+              "hiX": 0.125,
+              "hiY": -0.217,
+              "hiM": 0,
+              "globX": 0,
+              "globY": 0,
+              "globM": 0,
+              "blend": 50,
+              "balance": 0
+            }
+          }
+        },
+        {
+          "id": "whiteNoise9",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 230
+          },
+          "data": {
+            "kind": "whiteNoise",
+            "label": "Grain noise",
+            "params": {
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Grain",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "ellipseMask11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 230
+          },
+          "data": {
+            "kind": "ellipseMask",
+            "label": "Vignette shape",
+            "params": {
+              "invert": true,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_rx": 0.48,
+              "in_ry": 0.32,
+              "in_rotation": 0,
+              "in_feather": 0.5
+            }
+          }
+        },
+        {
+          "id": "math12",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vignette amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure13",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -4
+            }
+          }
+        },
+        {
+          "id": "mix14",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Vignette",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix15",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output16",
+          "type": "shader",
+          "position": {
+            "x": 2970,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "whiteBalance5",
+          "sourceHandle": "out:image",
+          "target": "saturation6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "saturation6",
+          "sourceHandle": "out:image",
+          "target": "curves7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "curves7",
+          "sourceHandle": "out:image",
+          "target": "grading8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e6",
+          "source": "grading8",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "whiteNoise9",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e8",
+          "source": "ellipseMask11",
+          "sourceHandle": "out:mask",
+          "target": "math12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math12",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "exposure13",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e11",
+          "source": "math12",
+          "sourceHandle": "out:value",
+          "target": "mix14",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e12",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e13",
+          "source": "exposure13",
+          "sourceHandle": "out:image",
+          "target": "mix14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e14",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix15",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e15",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix15",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e16",
+          "source": "mix14",
+          "sourceHandle": "out:result",
+          "target": "mix15",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e17",
+          "source": "mix15",
+          "sourceHandle": "out:result",
+          "target": "output16",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Noir",
+      "description": "High-contrast black & white with bright skin, dark skies, grain and a heavy vignette.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Grain",
+            "params": {
+              "value": 0.25
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Vignette",
+            "params": {
+              "value": 0.85
+            }
+          }
+        },
+        {
+          "id": "bwMix5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "bwMix",
+            "label": "Black & White Mix",
+            "params": {
+              "w0": 20,
+              "w1": 10,
+              "w2": -25,
+              "w3": 0,
+              "w4": -20,
+              "w5": -45,
+              "w6": -20,
+              "w7": 0
+            }
+          }
+        },
+        {
+          "id": "contrast6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 45,
+              "pivot": 22,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "tones7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -40,
+              "shadows": 0,
+              "whites": 0,
+              "blacks": -25
+            }
+          }
+        },
+        {
+          "id": "whiteNoise8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 230
+          },
+          "data": {
+            "kind": "whiteNoise",
+            "label": "Grain noise",
+            "params": {
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mix9",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Grain",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "ellipseMask10",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 230
+          },
+          "data": {
+            "kind": "ellipseMask",
+            "label": "Vignette shape",
+            "params": {
+              "invert": true,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_rx": 0.48,
+              "in_ry": 0.32,
+              "in_rotation": 0,
+              "in_feather": 0.5
+            }
+          }
+        },
+        {
+          "id": "math11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vignette amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure12",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -4
+            }
+          }
+        },
+        {
+          "id": "mix13",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Vignette",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix14",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output15",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "bwMix5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "bwMix5",
+          "sourceHandle": "out:image",
+          "target": "contrast6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "contrast6",
+          "sourceHandle": "out:image",
+          "target": "tones7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "tones7",
+          "sourceHandle": "out:image",
+          "target": "mix9",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "whiteNoise8",
+          "sourceHandle": "out:value",
+          "target": "mix9",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "ellipseMask10",
+          "sourceHandle": "out:mask",
+          "target": "math11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "math11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "exposure12",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e10",
+          "source": "math11",
+          "sourceHandle": "out:value",
+          "target": "mix13",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e11",
+          "source": "mix9",
+          "sourceHandle": "out:result",
+          "target": "mix13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "exposure12",
+          "sourceHandle": "out:image",
+          "target": "mix13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix14",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e14",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e15",
+          "source": "mix13",
+          "sourceHandle": "out:result",
+          "target": "mix14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e16",
+          "source": "mix14",
+          "sourceHandle": "out:result",
+          "target": "output15",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Comic Pop",
+      "description": "Pop-art comic: boosted colour, flat cel shading, ink outlines and halftone dots.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "saturation3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 30,
+              "vibrance": 20
+            }
+          }
+        },
+        {
+          "id": "contrast4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 20,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "comic5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "comic",
+            "label": "Comic",
+            "params": {
+              "levels": 5,
+              "saturation": 140,
+              "edge": 22,
+              "thickness": 1.5,
+              "ink": "#111111",
+              "halftone": true,
+              "dot": 7
+            }
+          }
+        },
+        {
+          "id": "mix6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "saturation3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "saturation3",
+          "sourceHandle": "out:image",
+          "target": "contrast4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "contrast4",
+          "sourceHandle": "out:image",
+          "target": "comic5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix6",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "comic5",
+          "sourceHandle": "out:image",
+          "target": "mix6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "mix6",
+          "sourceHandle": "out:result",
+          "target": "output7",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Dreamy Glow",
+      "description": "Soft, airy and bright: glowing highlights, lifted shadows, gentle warmth and pastel colour.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "whiteBalance3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 7000,
+              "tint": 6
+            }
+          }
+        },
+        {
+          "id": "tones4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -25,
+              "shadows": 25,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "bloom5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "bloom",
+            "label": "Bloom / Glow",
+            "params": {
+              "threshold": 0.35,
+              "radius": 45,
+              "intensity": 90
+            }
+          }
+        },
+        {
+          "id": "levels6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "levels",
+            "label": "Levels",
+            "params": {
+              "channel": "rgb",
+              "inBlack": 0,
+              "inWhite": 255,
+              "gamma": 1,
+              "outBlack": 20,
+              "outWhite": 255
+            }
+          }
+        },
+        {
+          "id": "saturation7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": -15,
+              "vibrance": 10
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "whiteBalance3",
+          "sourceHandle": "out:image",
+          "target": "tones4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "tones4",
+          "sourceHandle": "out:image",
+          "target": "bloom5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "bloom5",
+          "sourceHandle": "out:image",
+          "target": "levels6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "levels6",
+          "sourceHandle": "out:image",
+          "target": "saturation7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix8",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "saturation7",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "output9",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Cyberpunk Neon",
+      "description": "Night-city neon: cold blue shadows, magenta highlights, pink-shifted warm tones and glow.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "whiteBalance3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 5200,
+              "tint": 25
+            }
+          }
+        },
+        {
+          "id": "hsl4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "hsl",
+            "label": "HSL / Colour Mixer",
+            "params": {
+              "h0": -60,
+              "h1": -100,
+              "h2": -60,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0,
+              "h7": 0,
+              "s0": 0,
+              "s1": 0,
+              "s2": 0,
+              "s3": 0,
+              "s4": 30,
+              "s5": 40,
+              "s6": 40,
+              "s7": 30,
+              "l0": 0,
+              "l1": 0,
+              "l2": 0,
+              "l3": 0,
+              "l4": 0,
+              "l5": 0,
+              "l6": 0,
+              "l7": 0
+            }
+          }
+        },
+        {
+          "id": "grading5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "grading",
+            "label": "Colour Grading",
+            "params": {
+              "shX": -0.613,
+              "shY": 0.514,
+              "shM": -8,
+              "midX": -0.249,
+              "midY": -0.022,
+              "midM": 0,
+              "hiX": -0.424,
+              "hiY": -0.424,
+              "hiM": 4,
+              "globX": 0,
+              "globY": 0,
+              "globM": 0,
+              "blend": 55,
+              "balance": 0
+            }
+          }
+        },
+        {
+          "id": "contrast6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 35,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "bloom7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "bloom",
+            "label": "Bloom / Glow",
+            "params": {
+              "threshold": 0.6,
+              "radius": 25,
+              "intensity": 70
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "whiteBalance3",
+          "sourceHandle": "out:image",
+          "target": "hsl4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "hsl4",
+          "sourceHandle": "out:image",
+          "target": "grading5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "grading5",
+          "sourceHandle": "out:image",
+          "target": "contrast6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "contrast6",
+          "sourceHandle": "out:image",
+          "target": "bloom7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix8",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "bloom7",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "output9",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Bleach Bypass",
+      "description": "Gritty silver-retained film look: desaturated, metallic, high contrast.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "grayscale3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "grayscale",
+            "label": "Grayscale",
+            "params": {}
+          }
+        },
+        {
+          "id": "mix4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Silver layer",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.75,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "saturation5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": -45,
+              "vibrance": 0
+            }
+          }
+        },
+        {
+          "id": "contrast6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 40,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "tones7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -15,
+              "shadows": 0,
+              "whites": 0,
+              "blacks": -10
+            }
+          }
+        },
+        {
+          "id": "mix8",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output9",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "grayscale3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix4",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e3",
+          "source": "grayscale3",
+          "sourceHandle": "out:image",
+          "target": "mix4",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e4",
+          "source": "mix4",
+          "sourceHandle": "out:result",
+          "target": "saturation5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation5",
+          "sourceHandle": "out:image",
+          "target": "contrast6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "contrast6",
+          "sourceHandle": "out:image",
+          "target": "tones7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix8",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "tones7",
+          "sourceHandle": "out:image",
+          "target": "mix8",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "mix8",
+          "sourceHandle": "out:result",
+          "target": "output9",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Cross Process",
+      "description": "Slide film in the wrong chemicals: yellow-green highlights, blue shadows, saturated and contrasty.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "curves3",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "curves",
+            "label": "Curves",
+            "params": {},
+            "curves": {
+              "r": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0.25,
+                  0.17
+                ],
+                [
+                  0.75,
+                  0.86
+                ],
+                [
+                  1,
+                  1
+                ]
+              ],
+              "g": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0.25,
+                  0.19
+                ],
+                [
+                  0.75,
+                  0.82
+                ],
+                [
+                  1,
+                  0.97
+                ]
+              ],
+              "b": [
+                [
+                  0,
+                  0.14
+                ],
+                [
+                  0.5,
+                  0.45
+                ],
+                [
+                  1,
+                  0.82
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "id": "saturation4",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 20,
+              "vibrance": 15
+            }
+          }
+        },
+        {
+          "id": "contrast5",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 15,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "mix6",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output7",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "curves3",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "curves3",
+          "sourceHandle": "out:image",
+          "target": "saturation4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "saturation4",
+          "sourceHandle": "out:image",
+          "target": "contrast5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix6",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e5",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e6",
+          "source": "contrast5",
+          "sourceHandle": "out:image",
+          "target": "mix6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e7",
+          "source": "mix6",
+          "sourceHandle": "out:result",
+          "target": "output7",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Tilt-Shift Miniature",
+      "description": "Makes real scenes look like tiny models: sharp focus band, blurred top and bottom, toy-like colour. Move “Focus Y” per photo.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Focus Y",
+            "params": {
+              "value": 0.6
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1150
+          },
+          "data": {
+            "kind": "value",
+            "label": "Focus band",
+            "params": {
+              "value": 0.18
+            }
+          }
+        },
+        {
+          "id": "saturation5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 35,
+              "vibrance": 20
+            }
+          }
+        },
+        {
+          "id": "contrast6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 25,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "exposure7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 0.2
+            }
+          }
+        },
+        {
+          "id": "blur8",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 230
+          },
+          "data": {
+            "kind": "blur",
+            "label": "Gaussian Blur",
+            "params": {
+              "radius": 14
+            }
+          }
+        },
+        {
+          "id": "rectMask9",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 460
+          },
+          "data": {
+            "kind": "rectMask",
+            "label": "Focus band",
+            "params": {
+              "invert": false,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_w": 4,
+              "in_h": 0.4,
+              "in_corner": 0,
+              "in_rotation": 0,
+              "in_feather": 0.22
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Focus",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output12",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "saturation5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "saturation5",
+          "sourceHandle": "out:image",
+          "target": "contrast6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "contrast6",
+          "sourceHandle": "out:image",
+          "target": "exposure7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "exposure7",
+          "sourceHandle": "out:image",
+          "target": "blur8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "rectMask9",
+          "targetHandle": "in:y"
+        },
+        {
+          "id": "e6",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "rectMask9",
+          "targetHandle": "in:h"
+        },
+        {
+          "id": "e7",
+          "source": "rectMask9",
+          "sourceHandle": "out:mask",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "blur8",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e9",
+          "source": "exposure7",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e10",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix11",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e11",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "output12",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Pencil Sketch",
+      "description": "Graphite drawing on warm paper: traced edges with soft shading.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 920
+          },
+          "data": {
+            "kind": "value",
+            "label": "Line weight",
+            "params": {
+              "value": 1.2
+            }
+          }
+        },
+        {
+          "id": "value4",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 1150
+          },
+          "data": {
+            "kind": "value",
+            "label": "Shading",
+            "params": {
+              "value": 0.35
+            }
+          }
+        },
+        {
+          "id": "edges5",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "data": {
+            "kind": "edges",
+            "label": "Edge Detect",
+            "params": {
+              "op": "sobel",
+              "strength": 260,
+              "width": 1.2
+            }
+          }
+        },
+        {
+          "id": "math6",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Line weight",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "math7",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Ink lines",
+            "params": {
+              "op": "subtract",
+              "clamp": true,
+              "in_a": 1,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "grayscale8",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "grayscale",
+            "label": "Grayscale",
+            "params": {}
+          }
+        },
+        {
+          "id": "exposure9",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": 1.3
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Shading",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#ffffff",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Draw lines",
+            "params": {
+              "blend": "multiply",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 1,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "rgb12",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 230
+          },
+          "data": {
+            "kind": "rgb",
+            "label": "Paper colour",
+            "params": {
+              "color": "#f4ecdb"
+            }
+          }
+        },
+        {
+          "id": "mix13",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Paper",
+            "params": {
+              "blend": "multiply",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 1,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix14",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output15",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "edges5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "edges5",
+          "sourceHandle": "out:edges",
+          "target": "math6",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e3",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math6",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e4",
+          "source": "math6",
+          "sourceHandle": "out:value",
+          "target": "math7",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e5",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "grayscale8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "grayscale8",
+          "sourceHandle": "out:image",
+          "target": "exposure9",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e7",
+          "source": "value4",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e8",
+          "source": "exposure9",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e10",
+          "source": "math7",
+          "sourceHandle": "out:value",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e11",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "mix13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e12",
+          "source": "rgb12",
+          "sourceHandle": "out:color",
+          "target": "mix13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e13",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix14",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e14",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix14",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e15",
+          "source": "mix13",
+          "sourceHandle": "out:result",
+          "target": "mix14",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e16",
+          "source": "mix14",
+          "sourceHandle": "out:result",
+          "target": "output15",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Golden Hour",
+      "description": "Late-afternoon sun: warm light, glowing highlights, opened shadows and rich colour.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Vignette",
+            "params": {
+              "value": 0.45
+            }
+          }
+        },
+        {
+          "id": "whiteBalance4",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "whiteBalance",
+            "label": "White Balance",
+            "params": {
+              "temp": 8800,
+              "tint": 8
+            }
+          }
+        },
+        {
+          "id": "tones5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -15,
+              "shadows": 20,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "grading6",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "grading",
+            "label": "Colour Grading",
+            "params": {
+              "shX": 0,
+              "shY": 0,
+              "shM": 0,
+              "midX": 0.1,
+              "midY": -0.173,
+              "midM": 0,
+              "hiX": 0.321,
+              "hiY": -0.383,
+              "hiM": 4,
+              "globX": 0,
+              "globY": 0,
+              "globM": 0,
+              "blend": 50,
+              "balance": 0
+            }
+          }
+        },
+        {
+          "id": "saturation7",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "saturation",
+            "label": "Saturation / Vibrance",
+            "params": {
+              "saturation": 0,
+              "vibrance": 25
+            }
+          }
+        },
+        {
+          "id": "bloom8",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "bloom",
+            "label": "Bloom / Glow",
+            "params": {
+              "threshold": 0.7,
+              "radius": 35,
+              "intensity": 45
+            }
+          }
+        },
+        {
+          "id": "ellipseMask9",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 230
+          },
+          "data": {
+            "kind": "ellipseMask",
+            "label": "Vignette shape",
+            "params": {
+              "invert": true,
+              "in_x": 0.5,
+              "in_y": 0.5,
+              "in_rx": 0.48,
+              "in_ry": 0.32,
+              "in_rotation": 0,
+              "in_feather": 0.5
+            }
+          }
+        },
+        {
+          "id": "math10",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 230
+          },
+          "data": {
+            "kind": "math",
+            "label": "Vignette amount",
+            "params": {
+              "op": "multiply",
+              "clamp": false,
+              "in_a": 0.5,
+              "in_b": 0.5,
+              "in_c": 0
+            }
+          }
+        },
+        {
+          "id": "exposure11",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -4
+            }
+          }
+        },
+        {
+          "id": "mix12",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Vignette",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix13",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output14",
+          "type": "shader",
+          "position": {
+            "x": 2700,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "whiteBalance4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "whiteBalance4",
+          "sourceHandle": "out:image",
+          "target": "tones5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "tones5",
+          "sourceHandle": "out:image",
+          "target": "grading6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "grading6",
+          "sourceHandle": "out:image",
+          "target": "saturation7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "saturation7",
+          "sourceHandle": "out:image",
+          "target": "bloom8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "ellipseMask9",
+          "sourceHandle": "out:mask",
+          "target": "math10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e7",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "math10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e8",
+          "source": "bloom8",
+          "sourceHandle": "out:image",
+          "target": "exposure11",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e9",
+          "source": "math10",
+          "sourceHandle": "out:value",
+          "target": "mix12",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e10",
+          "source": "bloom8",
+          "sourceHandle": "out:image",
+          "target": "mix12",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "exposure11",
+          "sourceHandle": "out:image",
+          "target": "mix12",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e12",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix13",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e13",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix13",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e14",
+          "source": "mix12",
+          "sourceHandle": "out:result",
+          "target": "mix13",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e15",
+          "source": "mix13",
+          "sourceHandle": "out:result",
+          "target": "output14",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    },
+    {
+      "oneshot": "graph",
+      "version": 10,
+      "name": "Faux Infrared",
+      "description": "Black & white infrared: glowing white foliage, near-black skies, dreamy halation.",
+      "collection": "Film Looks",
+      "nodes": [
+        {
+          "id": "input1",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "kind": "input",
+            "label": "Image Input",
+            "params": {
+              "media": ""
+            }
+          }
+        },
+        {
+          "id": "value2",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 460
+          },
+          "data": {
+            "kind": "value",
+            "label": "Strength",
+            "params": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "id": "value3",
+          "type": "shader",
+          "position": {
+            "x": 0,
+            "y": 690
+          },
+          "data": {
+            "kind": "value",
+            "label": "Grain",
+            "params": {
+              "value": 0.12
+            }
+          }
+        },
+        {
+          "id": "bwMix4",
+          "type": "shader",
+          "position": {
+            "x": 270,
+            "y": 0
+          },
+          "data": {
+            "kind": "bwMix",
+            "label": "Black & White Mix",
+            "params": {
+              "w0": -20,
+              "w1": -20,
+              "w2": 25,
+              "w3": 80,
+              "w4": 30,
+              "w5": -80,
+              "w6": -40,
+              "w7": 0
+            }
+          }
+        },
+        {
+          "id": "exposure5",
+          "type": "shader",
+          "position": {
+            "x": 540,
+            "y": 0
+          },
+          "data": {
+            "kind": "exposure",
+            "label": "Exposure",
+            "params": {
+              "stops": -0.15
+            }
+          }
+        },
+        {
+          "id": "tones6",
+          "type": "shader",
+          "position": {
+            "x": 810,
+            "y": 0
+          },
+          "data": {
+            "kind": "tones",
+            "label": "Highlights & Shadows",
+            "params": {
+              "highlights": -30,
+              "shadows": 0,
+              "whites": 0,
+              "blacks": 0
+            }
+          }
+        },
+        {
+          "id": "contrast7",
+          "type": "shader",
+          "position": {
+            "x": 1080,
+            "y": 0
+          },
+          "data": {
+            "kind": "contrast",
+            "label": "Contrast",
+            "params": {
+              "amount": 40,
+              "pivot": 18,
+              "luma": false
+            }
+          }
+        },
+        {
+          "id": "bloom8",
+          "type": "shader",
+          "position": {
+            "x": 1350,
+            "y": 0
+          },
+          "data": {
+            "kind": "bloom",
+            "label": "Bloom / Glow",
+            "params": {
+              "threshold": 0.55,
+              "radius": 30,
+              "intensity": 70
+            }
+          }
+        },
+        {
+          "id": "whiteNoise9",
+          "type": "shader",
+          "position": {
+            "x": 1620,
+            "y": 230
+          },
+          "data": {
+            "kind": "whiteNoise",
+            "label": "Grain noise",
+            "params": {
+              "in_w": 0
+            }
+          }
+        },
+        {
+          "id": "mix10",
+          "type": "shader",
+          "position": {
+            "x": 1890,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Grain",
+            "params": {
+              "blend": "overlay",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "mix11",
+          "type": "shader",
+          "position": {
+            "x": 2160,
+            "y": 0
+          },
+          "data": {
+            "kind": "mix",
+            "label": "Strength mix",
+            "params": {
+              "blend": "mix",
+              "clampFac": true,
+              "clampRes": false,
+              "in_fac": 0.5,
+              "in_a": "#808080",
+              "in_b": "#808080"
+            }
+          }
+        },
+        {
+          "id": "output12",
+          "type": "shader",
+          "position": {
+            "x": 2430,
+            "y": 0
+          },
+          "data": {
+            "kind": "output",
+            "label": "Output",
+            "params": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "bwMix4",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e2",
+          "source": "bwMix4",
+          "sourceHandle": "out:image",
+          "target": "exposure5",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e3",
+          "source": "exposure5",
+          "sourceHandle": "out:image",
+          "target": "tones6",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e4",
+          "source": "tones6",
+          "sourceHandle": "out:image",
+          "target": "contrast7",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e5",
+          "source": "contrast7",
+          "sourceHandle": "out:image",
+          "target": "bloom8",
+          "targetHandle": "in:image"
+        },
+        {
+          "id": "e6",
+          "source": "value3",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e7",
+          "source": "bloom8",
+          "sourceHandle": "out:image",
+          "target": "mix10",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e8",
+          "source": "whiteNoise9",
+          "sourceHandle": "out:value",
+          "target": "mix10",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e9",
+          "source": "value2",
+          "sourceHandle": "out:value",
+          "target": "mix11",
+          "targetHandle": "in:fac"
+        },
+        {
+          "id": "e10",
+          "source": "input1",
+          "sourceHandle": "out:image",
+          "target": "mix11",
+          "targetHandle": "in:a"
+        },
+        {
+          "id": "e11",
+          "source": "mix10",
+          "sourceHandle": "out:result",
+          "target": "mix11",
+          "targetHandle": "in:b"
+        },
+        {
+          "id": "e12",
+          "source": "mix11",
+          "sourceHandle": "out:result",
+          "target": "output12",
+          "targetHandle": "in:image"
+        }
+      ],
+      "luts": {}
+    }
+  ]
+}

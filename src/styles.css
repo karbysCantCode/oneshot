@@ -21,7 +21,9 @@ hr { border: 0; border-top: 1px solid #414858; margin: 5px 2px; }
 
 /* ---------- menu bar ---------- */
 header { display: flex; align-items: center; gap: 20px; padding: 0 8px 0 12px; background: #20232b; border-bottom: 1px solid #343845; }
-header strong { color: #8ab4ff; }
+header strong { color: #e8ebf3; }
+.brand { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; letter-spacing: 0.02em; }
+.brand img { display: block; }
 nav { display: flex; gap: 4px; }
 details { position: relative; }
 summary { list-style: none; padding: 7px 10px; cursor: pointer; border-radius: 4px; }

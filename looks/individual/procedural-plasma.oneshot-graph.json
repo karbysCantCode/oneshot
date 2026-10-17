@@ -1,0 +1,811 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Procedural · Plasma",
+  "description": "No image needed: four sine waves summed over pixel position, mapped through a Colour Ramp. Change “Time” to animate, “Scale” to zoom. Open with Edit to see it on the procedural canvas.",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "value1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Time",
+        "params": {
+          "value": 0
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Scale",
+        "params": {
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "texcoord3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "texcoord",
+        "label": "Texture Coordinate",
+        "params": {}
+      }
+    },
+    {
+      "id": "separateRgb4",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "separateRgb",
+        "label": "X · Y (centred)",
+        "params": {}
+      }
+    },
+    {
+      "id": "vectorMath5",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "vectorMath",
+        "label": "Distance from centre",
+        "params": {
+          "op": "length",
+          "in_a": "#000000",
+          "in_b": "#000000",
+          "in_c": "#000000",
+          "in_scale": 1
+        }
+      }
+    },
+    {
+      "id": "math6",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 1380
+      },
+      "data": {
+        "kind": "math",
+        "label": "X + Y",
+        "params": {
+          "op": "add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math7",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "math",
+        "label": "x × scale",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math8",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "math",
+        "label": "x + time",
+        "params": {
+          "op": "multiply_add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 1,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math9",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 115
+      },
+      "data": {
+        "kind": "math",
+        "label": "time × 1",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 1,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math10",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "math",
+        "label": "sin(x)",
+        "params": {
+          "op": "sine",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math11",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 460
+      },
+      "data": {
+        "kind": "math",
+        "label": "y × scale",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math12",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 460
+      },
+      "data": {
+        "kind": "math",
+        "label": "y + time",
+        "params": {
+          "op": "multiply_add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 1,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math13",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 575
+      },
+      "data": {
+        "kind": "math",
+        "label": "time × 1.3",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 1.3,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math14",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 460
+      },
+      "data": {
+        "kind": "math",
+        "label": "sin(y)",
+        "params": {
+          "op": "sine",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math15",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "x+y × scale",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math16",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "x+y + time",
+        "params": {
+          "op": "multiply_add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.7,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math17",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 1035
+      },
+      "data": {
+        "kind": "math",
+        "label": "time × 0.7",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.7,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math18",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "sin(x+y)",
+        "params": {
+          "op": "sine",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math19",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 1610
+      },
+      "data": {
+        "kind": "math",
+        "label": "radius × scale",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math20",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 1610
+      },
+      "data": {
+        "kind": "math",
+        "label": "radius + time",
+        "params": {
+          "op": "multiply_add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 1.6,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math21",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 1725
+      },
+      "data": {
+        "kind": "math",
+        "label": "time × -2",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": -2,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math22",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 1610
+      },
+      "data": {
+        "kind": "math",
+        "label": "sin(radius)",
+        "params": {
+          "op": "sine",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math23",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math24",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 1150
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math25",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 690
+      },
+      "data": {
+        "kind": "math",
+        "label": "Sum of waves",
+        "params": {
+          "op": "add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "mapRange26",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 690
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "To 0–1",
+        "params": {
+          "interp": "linear",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": -4,
+          "in_fromMax": 4,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "colorRamp27",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 690
+      },
+      "data": {
+        "kind": "colorRamp",
+        "label": "Colour Ramp",
+        "params": {
+          "in_fac": 0.5
+        },
+        "ramp": {
+          "interp": "ease",
+          "stops": [
+            {
+              "pos": 0,
+              "color": "#12002b",
+              "alpha": 1
+            },
+            {
+              "pos": 0.25,
+              "color": "#7a00b8",
+              "alpha": 1
+            },
+            {
+              "pos": 0.45,
+              "color": "#ff2f7a",
+              "alpha": 1
+            },
+            {
+              "pos": 0.62,
+              "color": "#ffb02e",
+              "alpha": 1
+            },
+            {
+              "pos": 0.8,
+              "color": "#3df2ff",
+              "alpha": 1
+            },
+            {
+              "pos": 1,
+              "color": "#ffffff",
+              "alpha": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "output28",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 690
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "texcoord3",
+      "sourceHandle": "out:centered",
+      "target": "separateRgb4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "texcoord3",
+      "sourceHandle": "out:centered",
+      "target": "vectorMath5",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e3",
+      "source": "separateRgb4",
+      "sourceHandle": "out:r",
+      "target": "math6",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e4",
+      "source": "separateRgb4",
+      "sourceHandle": "out:g",
+      "target": "math6",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e5",
+      "source": "separateRgb4",
+      "sourceHandle": "out:r",
+      "target": "math7",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "math7",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e7",
+      "source": "math7",
+      "sourceHandle": "out:value",
+      "target": "math8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "math9",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "math9",
+      "sourceHandle": "out:value",
+      "target": "math8",
+      "targetHandle": "in:c"
+    },
+    {
+      "id": "e10",
+      "source": "math8",
+      "sourceHandle": "out:value",
+      "target": "math10",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "separateRgb4",
+      "sourceHandle": "out:g",
+      "target": "math11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "math11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "math11",
+      "sourceHandle": "out:value",
+      "target": "math12",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e14",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "math13",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e15",
+      "source": "math13",
+      "sourceHandle": "out:value",
+      "target": "math12",
+      "targetHandle": "in:c"
+    },
+    {
+      "id": "e16",
+      "source": "math12",
+      "sourceHandle": "out:value",
+      "target": "math14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e17",
+      "source": "math6",
+      "sourceHandle": "out:value",
+      "target": "math15",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e18",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "math15",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e19",
+      "source": "math15",
+      "sourceHandle": "out:value",
+      "target": "math16",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e20",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "math17",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e21",
+      "source": "math17",
+      "sourceHandle": "out:value",
+      "target": "math16",
+      "targetHandle": "in:c"
+    },
+    {
+      "id": "e22",
+      "source": "math16",
+      "sourceHandle": "out:value",
+      "target": "math18",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e23",
+      "source": "vectorMath5",
+      "sourceHandle": "out:value",
+      "target": "math19",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e24",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "math19",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e25",
+      "source": "math19",
+      "sourceHandle": "out:value",
+      "target": "math20",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e26",
+      "source": "value1",
+      "sourceHandle": "out:value",
+      "target": "math21",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e27",
+      "source": "math21",
+      "sourceHandle": "out:value",
+      "target": "math20",
+      "targetHandle": "in:c"
+    },
+    {
+      "id": "e28",
+      "source": "math20",
+      "sourceHandle": "out:value",
+      "target": "math22",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e29",
+      "source": "math10",
+      "sourceHandle": "out:value",
+      "target": "math23",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e30",
+      "source": "math14",
+      "sourceHandle": "out:value",
+      "target": "math23",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e31",
+      "source": "math18",
+      "sourceHandle": "out:value",
+      "target": "math24",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e32",
+      "source": "math22",
+      "sourceHandle": "out:value",
+      "target": "math24",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e33",
+      "source": "math23",
+      "sourceHandle": "out:value",
+      "target": "math25",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e34",
+      "source": "math24",
+      "sourceHandle": "out:value",
+      "target": "math25",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e35",
+      "source": "math25",
+      "sourceHandle": "out:value",
+      "target": "mapRange26",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e36",
+      "source": "mapRange26",
+      "sourceHandle": "out:result",
+      "target": "colorRamp27",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e37",
+      "source": "colorRamp27",
+      "sourceHandle": "out:color",
+      "target": "output28",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

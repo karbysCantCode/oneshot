@@ -1,0 +1,298 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Faux Infrared",
+  "description": "Black & white infrared: glowing white foliage, near-black skies, dreamy halation.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Grain",
+        "params": {
+          "value": 0.12
+        }
+      }
+    },
+    {
+      "id": "bwMix4",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "bwMix",
+        "label": "Black & White Mix",
+        "params": {
+          "w0": -20,
+          "w1": -20,
+          "w2": 25,
+          "w3": 80,
+          "w4": 30,
+          "w5": -80,
+          "w6": -40,
+          "w7": 0
+        }
+      }
+    },
+    {
+      "id": "exposure5",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -0.15
+        }
+      }
+    },
+    {
+      "id": "tones6",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -30,
+          "shadows": 0,
+          "whites": 0,
+          "blacks": 0
+        }
+      }
+    },
+    {
+      "id": "contrast7",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 40,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "bloom8",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.55,
+          "radius": 30,
+          "intensity": 70
+        }
+      }
+    },
+    {
+      "id": "whiteNoise9",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 230
+      },
+      "data": {
+        "kind": "whiteNoise",
+        "label": "Grain noise",
+        "params": {
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "mix10",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Grain",
+        "params": {
+          "blend": "overlay",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix11",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output12",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "bwMix4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "bwMix4",
+      "sourceHandle": "out:image",
+      "target": "exposure5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "exposure5",
+      "sourceHandle": "out:image",
+      "target": "tones6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "tones6",
+      "sourceHandle": "out:image",
+      "target": "contrast7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "contrast7",
+      "sourceHandle": "out:image",
+      "target": "bloom8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "mix10",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e7",
+      "source": "bloom8",
+      "sourceHandle": "out:image",
+      "target": "mix10",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "whiteNoise9",
+      "sourceHandle": "out:value",
+      "target": "mix10",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix11",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e10",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix11",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "mix10",
+      "sourceHandle": "out:result",
+      "target": "mix11",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e12",
+      "source": "mix11",
+      "sourceHandle": "out:result",
+      "target": "output12",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

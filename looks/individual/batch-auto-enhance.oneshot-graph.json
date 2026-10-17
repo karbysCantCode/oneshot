@@ -1,0 +1,221 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Batch · Auto Enhance",
+  "description": "One-click fix for a whole shoot: per-image auto levels and auto exposure (each photo measured on the GPU), recovered highlights, opened shadows, vibrance and capture sharpening.",
+  "collection": "Photographer Batch",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "autoLevels3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "autoLevels",
+        "label": "Auto Levels",
+        "params": {
+          "strength": 70
+        }
+      }
+    },
+    {
+      "id": "autoExposure4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "autoExposure",
+        "label": "Auto Exposure",
+        "params": {
+          "target": 18,
+          "strength": 60,
+          "limit": 1.5
+        }
+      }
+    },
+    {
+      "id": "tones5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -25,
+          "shadows": 25,
+          "whites": 0,
+          "blacks": 0
+        }
+      }
+    },
+    {
+      "id": "saturation6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": 0,
+          "vibrance": 20
+        }
+      }
+    },
+    {
+      "id": "sharpen7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "sharpen",
+        "label": "Sharpen",
+        "params": {
+          "amount": 60,
+          "radius": 1.2,
+          "threshold": 0
+        }
+      }
+    },
+    {
+      "id": "mix8",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output9",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "autoLevels3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "autoLevels3",
+      "sourceHandle": "out:image",
+      "target": "autoExposure4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "autoExposure4",
+      "sourceHandle": "out:image",
+      "target": "tones5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "tones5",
+      "sourceHandle": "out:image",
+      "target": "saturation6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "saturation6",
+      "sourceHandle": "out:image",
+      "target": "sharpen7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix8",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e7",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "sharpen7",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "mix8",
+      "sourceHandle": "out:result",
+      "target": "output9",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

@@ -1,0 +1,343 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Mask · Spotlight",
+  "description": "Shape masking: a feathered Circle Mask keeps the subject bright and warm while the rest falls into dark, desaturated shadow. Move X / Y / Radius per photo.",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Spot X",
+        "params": {
+          "value": 0.5
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Spot Y",
+        "params": {
+          "value": 0.45
+        }
+      }
+    },
+    {
+      "id": "value5",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "value",
+        "label": "Radius",
+        "params": {
+          "value": 0.28
+        }
+      }
+    },
+    {
+      "id": "circleMask6",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 690
+      },
+      "data": {
+        "kind": "circleMask",
+        "label": "Spotlight",
+        "params": {
+          "invert": false,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_radius": 0.25,
+          "in_feather": 0.25
+        }
+      }
+    },
+    {
+      "id": "saturation7",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 230
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": -70,
+          "vibrance": 0
+        }
+      }
+    },
+    {
+      "id": "exposure8",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 230
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -2.2
+        }
+      }
+    },
+    {
+      "id": "whiteBalance9",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 7600,
+          "tint": 0
+        }
+      }
+    },
+    {
+      "id": "exposure10",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": 0.25
+        }
+      }
+    },
+    {
+      "id": "contrast11",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 15,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "mix12",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Spot blend",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix13",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output14",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "circleMask6",
+      "targetHandle": "in:x"
+    },
+    {
+      "id": "e2",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "circleMask6",
+      "targetHandle": "in:y"
+    },
+    {
+      "id": "e3",
+      "source": "value5",
+      "sourceHandle": "out:value",
+      "target": "circleMask6",
+      "targetHandle": "in:radius"
+    },
+    {
+      "id": "e4",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "saturation7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "saturation7",
+      "sourceHandle": "out:image",
+      "target": "exposure8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "whiteBalance9",
+      "sourceHandle": "out:image",
+      "target": "exposure10",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e8",
+      "source": "exposure10",
+      "sourceHandle": "out:image",
+      "target": "contrast11",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e9",
+      "source": "circleMask6",
+      "sourceHandle": "out:mask",
+      "target": "mix12",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e10",
+      "source": "exposure8",
+      "sourceHandle": "out:image",
+      "target": "mix12",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "contrast11",
+      "sourceHandle": "out:image",
+      "target": "mix12",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e12",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix13",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e13",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix13",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e14",
+      "source": "mix12",
+      "sourceHandle": "out:result",
+      "target": "mix13",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e15",
+      "source": "mix13",
+      "sourceHandle": "out:result",
+      "target": "output14",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

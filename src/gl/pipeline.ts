@@ -444,7 +444,7 @@ export class WebGLPipeline {
         if (loc) gl.uniform1i(loc, unit);
       }
     } catch (e) {
-      console.error(`[NodeGL] shader "${name}" failed:`, e);
+      console.error(`[OneShot] shader "${name}" failed:`, e);
     }
     this.programs.set(name, result);
     return result;

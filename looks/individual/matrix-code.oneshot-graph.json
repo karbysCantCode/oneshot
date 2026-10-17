@@ -1,0 +1,1087 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Matrix Code",
+  "description": "The green-tinted world of the 1999 film: green cast, crushed cool shadows, cel-shaded ink edges and optional falling code rain.",
+  "collection": "Movie Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Cartoon",
+        "params": {
+          "value": 0.55
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Code rain",
+        "params": {
+          "value": 0.35
+        }
+      }
+    },
+    {
+      "id": "value5",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "value",
+        "label": "Vignette",
+        "params": {
+          "value": 0.6
+        }
+      }
+    },
+    {
+      "id": "whiteBalance6",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 5800,
+          "tint": -70
+        }
+      }
+    },
+    {
+      "id": "channelMixer7",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "channelMixer",
+        "label": "Channel Mixer",
+        "params": {
+          "rr": 50,
+          "rg": 40,
+          "rb": 0,
+          "gr": 5,
+          "gg": 105,
+          "gb": 0,
+          "br": 0,
+          "bg": 45,
+          "bb": 25,
+          "preserve": true
+        }
+      }
+    },
+    {
+      "id": "hsl8",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "hsl",
+        "label": "HSL / Colour Mixer",
+        "params": {
+          "h0": 0,
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": -60,
+          "h5": 0,
+          "h6": 0,
+          "h7": 0,
+          "s0": 0,
+          "s1": 0,
+          "s2": 0,
+          "s3": 0,
+          "s4": -40,
+          "s5": -55,
+          "s6": 0,
+          "s7": 0,
+          "l0": 0,
+          "l1": 0,
+          "l2": 0,
+          "l3": 0,
+          "l4": 0,
+          "l5": 0,
+          "l6": 0,
+          "l7": 0
+        }
+      }
+    },
+    {
+      "id": "grading9",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": 0.45,
+          "shY": 0.536,
+          "shM": -6,
+          "midX": 0.476,
+          "midY": 0.275,
+          "midM": 0,
+          "hiX": 0.349,
+          "hiY": 0.031,
+          "hiM": 2,
+          "globX": 0.217,
+          "globY": 0.125,
+          "globM": 0,
+          "blend": 60,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "contrast10",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 35,
+          "pivot": 20,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "saturation11",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": -10,
+          "vibrance": 0
+        }
+      }
+    },
+    {
+      "id": "kuwahara12",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 230
+      },
+      "data": {
+        "kind": "kuwahara",
+        "label": "Kuwahara (Painterly)",
+        "params": {
+          "radius": 3
+        }
+      }
+    },
+    {
+      "id": "comic13",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 230
+      },
+      "data": {
+        "kind": "comic",
+        "label": "Comic",
+        "params": {
+          "levels": 9,
+          "saturation": 110,
+          "edge": 30,
+          "thickness": 1.2,
+          "ink": "#021a07",
+          "halftone": false,
+          "dot": 8
+        }
+      }
+    },
+    {
+      "id": "mix14",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Cartoon mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "bloom15",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 0
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.6,
+          "radius": 20,
+          "intensity": 45
+        }
+      }
+    },
+    {
+      "id": "texcoord16",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 920
+      },
+      "data": {
+        "kind": "texcoord",
+        "label": "Texture Coordinate",
+        "params": {}
+      }
+    },
+    {
+      "id": "separateRgb17",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 920
+      },
+      "data": {
+        "kind": "separateRgb",
+        "label": "X · Y",
+        "params": {}
+      }
+    },
+    {
+      "id": "math18",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Column",
+        "params": {
+          "op": "snap",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.014,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "combineRgb19",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 920
+      },
+      "data": {
+        "kind": "combineRgb",
+        "label": "Column id",
+        "params": {
+          "in_r": 0,
+          "in_g": 0,
+          "in_b": 0,
+          "in_a": 1
+        }
+      }
+    },
+    {
+      "id": "whiteNoise20",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 920
+      },
+      "data": {
+        "kind": "whiteNoise",
+        "label": "Column offset",
+        "params": {
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "whiteNoise21",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 1150
+      },
+      "data": {
+        "kind": "whiteNoise",
+        "label": "Column on/off",
+        "params": {
+          "in_w": 7
+        }
+      }
+    },
+    {
+      "id": "math22",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Fall position",
+        "params": {
+          "op": "add",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math23",
+      "type": "shader",
+      "position": {
+        "x": 3510,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "fraction",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math24",
+      "type": "shader",
+      "position": {
+        "x": 3780,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Trail",
+        "params": {
+          "op": "subtract",
+          "clamp": false,
+          "in_a": 1,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math25",
+      "type": "shader",
+      "position": {
+        "x": 4050,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Trail fade",
+        "params": {
+          "op": "power",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 6,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math26",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 1150
+      },
+      "data": {
+        "kind": "math",
+        "label": "Active columns",
+        "params": {
+          "op": "greater_than",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.55,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math27",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 1380
+      },
+      "data": {
+        "kind": "math",
+        "label": "Glyph row",
+        "params": {
+          "op": "snap",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.02,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "combineRgb28",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 1380
+      },
+      "data": {
+        "kind": "combineRgb",
+        "label": "Glyph cell",
+        "params": {
+          "in_r": 0,
+          "in_g": 0,
+          "in_b": 0,
+          "in_a": 1
+        }
+      }
+    },
+    {
+      "id": "whiteNoise29",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 1380
+      },
+      "data": {
+        "kind": "whiteNoise",
+        "label": "Glyphs",
+        "params": {
+          "in_w": 3
+        }
+      }
+    },
+    {
+      "id": "math30",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 1380
+      },
+      "data": {
+        "kind": "math",
+        "label": "Glyph on",
+        "params": {
+          "op": "greater_than",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.35,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math31",
+      "type": "shader",
+      "position": {
+        "x": 4320,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math32",
+      "type": "shader",
+      "position": {
+        "x": 4590,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Math",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "math33",
+      "type": "shader",
+      "position": {
+        "x": 4860,
+        "y": 920
+      },
+      "data": {
+        "kind": "math",
+        "label": "Rain amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "rgb34",
+      "type": "shader",
+      "position": {
+        "x": 4860,
+        "y": 1150
+      },
+      "data": {
+        "kind": "rgb",
+        "label": "Rain colour",
+        "params": {
+          "color": "#3dff6e"
+        }
+      }
+    },
+    {
+      "id": "mix35",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Add code rain",
+        "params": {
+          "blend": "add",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "ellipseMask36",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 230
+      },
+      "data": {
+        "kind": "ellipseMask",
+        "label": "Vignette shape",
+        "params": {
+          "invert": true,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_rx": 0.48,
+          "in_ry": 0.32,
+          "in_rotation": 0,
+          "in_feather": 0.5
+        }
+      }
+    },
+    {
+      "id": "math37",
+      "type": "shader",
+      "position": {
+        "x": 3510,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Vignette amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "exposure38",
+      "type": "shader",
+      "position": {
+        "x": 3510,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -4
+        }
+      }
+    },
+    {
+      "id": "mix39",
+      "type": "shader",
+      "position": {
+        "x": 3780,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Vignette",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix40",
+      "type": "shader",
+      "position": {
+        "x": 4050,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output41",
+      "type": "shader",
+      "position": {
+        "x": 4320,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance6",
+      "sourceHandle": "out:image",
+      "target": "channelMixer7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "channelMixer7",
+      "sourceHandle": "out:image",
+      "target": "hsl8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "hsl8",
+      "sourceHandle": "out:image",
+      "target": "grading9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "grading9",
+      "sourceHandle": "out:image",
+      "target": "contrast10",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "contrast10",
+      "sourceHandle": "out:image",
+      "target": "saturation11",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "saturation11",
+      "sourceHandle": "out:image",
+      "target": "kuwahara12",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e8",
+      "source": "kuwahara12",
+      "sourceHandle": "out:image",
+      "target": "comic13",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e9",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "mix14",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e10",
+      "source": "saturation11",
+      "sourceHandle": "out:image",
+      "target": "mix14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e11",
+      "source": "comic13",
+      "sourceHandle": "out:image",
+      "target": "mix14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e12",
+      "source": "mix14",
+      "sourceHandle": "out:result",
+      "target": "bloom15",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e13",
+      "source": "texcoord16",
+      "sourceHandle": "out:aspect",
+      "target": "separateRgb17",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e14",
+      "source": "separateRgb17",
+      "sourceHandle": "out:r",
+      "target": "math18",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e15",
+      "source": "math18",
+      "sourceHandle": "out:value",
+      "target": "combineRgb19",
+      "targetHandle": "in:r"
+    },
+    {
+      "id": "e16",
+      "source": "combineRgb19",
+      "sourceHandle": "out:image",
+      "target": "whiteNoise20",
+      "targetHandle": "in:vector"
+    },
+    {
+      "id": "e17",
+      "source": "combineRgb19",
+      "sourceHandle": "out:image",
+      "target": "whiteNoise21",
+      "targetHandle": "in:vector"
+    },
+    {
+      "id": "e18",
+      "source": "separateRgb17",
+      "sourceHandle": "out:g",
+      "target": "math22",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e19",
+      "source": "whiteNoise20",
+      "sourceHandle": "out:value",
+      "target": "math22",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e20",
+      "source": "math22",
+      "sourceHandle": "out:value",
+      "target": "math23",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e21",
+      "source": "math23",
+      "sourceHandle": "out:value",
+      "target": "math24",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e22",
+      "source": "math24",
+      "sourceHandle": "out:value",
+      "target": "math25",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e23",
+      "source": "whiteNoise21",
+      "sourceHandle": "out:value",
+      "target": "math26",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e24",
+      "source": "separateRgb17",
+      "sourceHandle": "out:g",
+      "target": "math27",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e25",
+      "source": "math18",
+      "sourceHandle": "out:value",
+      "target": "combineRgb28",
+      "targetHandle": "in:r"
+    },
+    {
+      "id": "e26",
+      "source": "math27",
+      "sourceHandle": "out:value",
+      "target": "combineRgb28",
+      "targetHandle": "in:g"
+    },
+    {
+      "id": "e27",
+      "source": "combineRgb28",
+      "sourceHandle": "out:image",
+      "target": "whiteNoise29",
+      "targetHandle": "in:vector"
+    },
+    {
+      "id": "e28",
+      "source": "whiteNoise29",
+      "sourceHandle": "out:value",
+      "target": "math30",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e29",
+      "source": "math25",
+      "sourceHandle": "out:value",
+      "target": "math31",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e30",
+      "source": "math26",
+      "sourceHandle": "out:value",
+      "target": "math31",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e31",
+      "source": "math31",
+      "sourceHandle": "out:value",
+      "target": "math32",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e32",
+      "source": "math30",
+      "sourceHandle": "out:value",
+      "target": "math32",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e33",
+      "source": "math32",
+      "sourceHandle": "out:value",
+      "target": "math33",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e34",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "math33",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e35",
+      "source": "math33",
+      "sourceHandle": "out:value",
+      "target": "mix35",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e36",
+      "source": "bloom15",
+      "sourceHandle": "out:image",
+      "target": "mix35",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e37",
+      "source": "rgb34",
+      "sourceHandle": "out:color",
+      "target": "mix35",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e38",
+      "source": "ellipseMask36",
+      "sourceHandle": "out:mask",
+      "target": "math37",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e39",
+      "source": "value5",
+      "sourceHandle": "out:value",
+      "target": "math37",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e40",
+      "source": "mix35",
+      "sourceHandle": "out:result",
+      "target": "exposure38",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e41",
+      "source": "math37",
+      "sourceHandle": "out:value",
+      "target": "mix39",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e42",
+      "source": "mix35",
+      "sourceHandle": "out:result",
+      "target": "mix39",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e43",
+      "source": "exposure38",
+      "sourceHandle": "out:image",
+      "target": "mix39",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e44",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix40",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e45",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix40",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e46",
+      "source": "mix39",
+      "sourceHandle": "out:result",
+      "target": "mix40",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e47",
+      "source": "mix40",
+      "sourceHandle": "out:result",
+      "target": "output41",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

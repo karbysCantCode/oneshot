@@ -1,0 +1,553 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Dune Desert",
+  "description": "Arrakis: burnt-orange monochrome palette, bleached skies, matte lifted blacks, heat-haze glow and grain.",
+  "collection": "Movie Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "value3",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 690
+      },
+      "data": {
+        "kind": "value",
+        "label": "Haze",
+        "params": {
+          "value": 0.6
+        }
+      }
+    },
+    {
+      "id": "value4",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 920
+      },
+      "data": {
+        "kind": "value",
+        "label": "Grain",
+        "params": {
+          "value": 0.18
+        }
+      }
+    },
+    {
+      "id": "value5",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 1150
+      },
+      "data": {
+        "kind": "value",
+        "label": "Vignette",
+        "params": {
+          "value": 0.5
+        }
+      }
+    },
+    {
+      "id": "whiteBalance6",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 9500,
+          "tint": 12
+        }
+      }
+    },
+    {
+      "id": "hsl7",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "hsl",
+        "label": "HSL / Colour Mixer",
+        "params": {
+          "h0": 8,
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0,
+          "h7": 0,
+          "s0": 0,
+          "s1": 0,
+          "s2": -20,
+          "s3": -70,
+          "s4": -75,
+          "s5": -80,
+          "s6": -60,
+          "s7": 0,
+          "l0": 0,
+          "l1": 0,
+          "l2": 0,
+          "l3": 0,
+          "l4": 0,
+          "l5": 20,
+          "l6": 0,
+          "l7": 0
+        }
+      }
+    },
+    {
+      "id": "grading8",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "grading",
+        "label": "Colour Grading",
+        "params": {
+          "shX": 0.169,
+          "shY": -0.417,
+          "shM": -3,
+          "midX": 0.225,
+          "midY": -0.39,
+          "midM": 0,
+          "hiX": 0.234,
+          "hiY": -0.26,
+          "hiM": 3,
+          "globX": 0.075,
+          "globY": -0.13,
+          "globM": 0,
+          "blend": 65,
+          "balance": 0
+        }
+      }
+    },
+    {
+      "id": "curves9",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "curves",
+        "label": "Curves",
+        "params": {},
+        "curves": {
+          "master": [
+            [
+              0,
+              0.07
+            ],
+            [
+              0.35,
+              0.3
+            ],
+            [
+              0.7,
+              0.7
+            ],
+            [
+              1,
+              0.9
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "contrast10",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 15,
+          "pivot": 25,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "bloom11",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 230
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.45,
+          "radius": 90,
+          "intensity": 30
+        }
+      }
+    },
+    {
+      "id": "mix12",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Haze mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "whiteNoise13",
+      "type": "shader",
+      "position": {
+        "x": 2160,
+        "y": 230
+      },
+      "data": {
+        "kind": "whiteNoise",
+        "label": "Grain noise",
+        "params": {
+          "in_w": 0
+        }
+      }
+    },
+    {
+      "id": "mix14",
+      "type": "shader",
+      "position": {
+        "x": 2430,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Grain",
+        "params": {
+          "blend": "overlay",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "ellipseMask15",
+      "type": "shader",
+      "position": {
+        "x": 2700,
+        "y": 230
+      },
+      "data": {
+        "kind": "ellipseMask",
+        "label": "Vignette shape",
+        "params": {
+          "invert": true,
+          "in_x": 0.5,
+          "in_y": 0.5,
+          "in_rx": 0.48,
+          "in_ry": 0.32,
+          "in_rotation": 0,
+          "in_feather": 0.5
+        }
+      }
+    },
+    {
+      "id": "math16",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 230
+      },
+      "data": {
+        "kind": "math",
+        "label": "Vignette amount",
+        "params": {
+          "op": "multiply",
+          "clamp": false,
+          "in_a": 0.5,
+          "in_b": 0.5,
+          "in_c": 0
+        }
+      }
+    },
+    {
+      "id": "exposure17",
+      "type": "shader",
+      "position": {
+        "x": 2970,
+        "y": 0
+      },
+      "data": {
+        "kind": "exposure",
+        "label": "Exposure",
+        "params": {
+          "stops": -4
+        }
+      }
+    },
+    {
+      "id": "mix18",
+      "type": "shader",
+      "position": {
+        "x": 3240,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Vignette",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "mix19",
+      "type": "shader",
+      "position": {
+        "x": 3510,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output20",
+      "type": "shader",
+      "position": {
+        "x": 3780,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance6",
+      "sourceHandle": "out:image",
+      "target": "hsl7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "hsl7",
+      "sourceHandle": "out:image",
+      "target": "grading8",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "grading8",
+      "sourceHandle": "out:image",
+      "target": "curves9",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "curves9",
+      "sourceHandle": "out:image",
+      "target": "contrast10",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "contrast10",
+      "sourceHandle": "out:image",
+      "target": "bloom11",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e7",
+      "source": "value3",
+      "sourceHandle": "out:value",
+      "target": "mix12",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e8",
+      "source": "contrast10",
+      "sourceHandle": "out:image",
+      "target": "mix12",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e9",
+      "source": "bloom11",
+      "sourceHandle": "out:image",
+      "target": "mix12",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e10",
+      "source": "value4",
+      "sourceHandle": "out:value",
+      "target": "mix14",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e11",
+      "source": "mix12",
+      "sourceHandle": "out:result",
+      "target": "mix14",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e12",
+      "source": "whiteNoise13",
+      "sourceHandle": "out:value",
+      "target": "mix14",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e13",
+      "source": "ellipseMask15",
+      "sourceHandle": "out:mask",
+      "target": "math16",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e14",
+      "source": "value5",
+      "sourceHandle": "out:value",
+      "target": "math16",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e15",
+      "source": "mix14",
+      "sourceHandle": "out:result",
+      "target": "exposure17",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e16",
+      "source": "math16",
+      "sourceHandle": "out:value",
+      "target": "mix18",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e17",
+      "source": "mix14",
+      "sourceHandle": "out:result",
+      "target": "mix18",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e18",
+      "source": "exposure17",
+      "sourceHandle": "out:image",
+      "target": "mix18",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e19",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix19",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e20",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix19",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e21",
+      "source": "mix18",
+      "sourceHandle": "out:result",
+      "target": "mix19",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e22",
+      "source": "mix19",
+      "sourceHandle": "out:result",
+      "target": "output20",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

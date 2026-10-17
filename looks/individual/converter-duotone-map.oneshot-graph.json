@@ -1,0 +1,216 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Converter · Duotone Map",
+  "description": "Image → RGB to BW → Colour Ramp: brightness re-mapped through a gradient (Spotify-style duotone). Swap the ramp colours to taste.",
+  "collection": "Advanced Demos",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "autoLevels3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "autoLevels",
+        "label": "Auto Levels",
+        "params": {
+          "strength": 100
+        }
+      }
+    },
+    {
+      "id": "rgbToBw4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "rgbToBw",
+        "label": "RGB to BW",
+        "params": {}
+      }
+    },
+    {
+      "id": "mapRange5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "mapRange",
+        "label": "Contrast",
+        "params": {
+          "interp": "smooth",
+          "clamp": true,
+          "in_value": 0.5,
+          "in_fromMin": 0.03,
+          "in_fromMax": 0.85,
+          "in_toMin": 0,
+          "in_toMax": 1,
+          "in_steps": 4
+        }
+      }
+    },
+    {
+      "id": "colorRamp6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "colorRamp",
+        "label": "Colour Ramp",
+        "params": {
+          "in_fac": 0.5
+        },
+        "ramp": {
+          "interp": "linear",
+          "stops": [
+            {
+              "pos": 0,
+              "color": "#1b1464",
+              "alpha": 1
+            },
+            {
+              "pos": 0.55,
+              "color": "#e8467c",
+              "alpha": 1
+            },
+            {
+              "pos": 1,
+              "color": "#ffe066",
+              "alpha": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mix7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output8",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "autoLevels3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "autoLevels3",
+      "sourceHandle": "out:image",
+      "target": "rgbToBw4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "rgbToBw4",
+      "sourceHandle": "out:val",
+      "target": "mapRange5",
+      "targetHandle": "in:value"
+    },
+    {
+      "id": "e4",
+      "source": "mapRange5",
+      "sourceHandle": "out:result",
+      "target": "colorRamp6",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e5",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix7",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e6",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix7",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e7",
+      "source": "colorRamp6",
+      "sourceHandle": "out:color",
+      "target": "mix7",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e8",
+      "source": "mix7",
+      "sourceHandle": "out:result",
+      "target": "output8",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

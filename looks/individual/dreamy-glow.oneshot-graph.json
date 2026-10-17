@@ -1,0 +1,225 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Dreamy Glow",
+  "description": "Soft, airy and bright: glowing highlights, lifted shadows, gentle warmth and pastel colour.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "whiteBalance3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "whiteBalance",
+        "label": "White Balance",
+        "params": {
+          "temp": 7000,
+          "tint": 6
+        }
+      }
+    },
+    {
+      "id": "tones4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "tones",
+        "label": "Highlights & Shadows",
+        "params": {
+          "highlights": -25,
+          "shadows": 25,
+          "whites": 0,
+          "blacks": 0
+        }
+      }
+    },
+    {
+      "id": "bloom5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "bloom",
+        "label": "Bloom / Glow",
+        "params": {
+          "threshold": 0.35,
+          "radius": 45,
+          "intensity": 90
+        }
+      }
+    },
+    {
+      "id": "levels6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "levels",
+        "label": "Levels",
+        "params": {
+          "channel": "rgb",
+          "inBlack": 0,
+          "inWhite": 255,
+          "gamma": 1,
+          "outBlack": 20,
+          "outWhite": 255
+        }
+      }
+    },
+    {
+      "id": "saturation7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": -15,
+          "vibrance": 10
+        }
+      }
+    },
+    {
+      "id": "mix8",
+      "type": "shader",
+      "position": {
+        "x": 1620,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output9",
+      "type": "shader",
+      "position": {
+        "x": 1890,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "whiteBalance3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "whiteBalance3",
+      "sourceHandle": "out:image",
+      "target": "tones4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "tones4",
+      "sourceHandle": "out:image",
+      "target": "bloom5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "bloom5",
+      "sourceHandle": "out:image",
+      "target": "levels6",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e5",
+      "source": "levels6",
+      "sourceHandle": "out:image",
+      "target": "saturation7",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e6",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix8",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e7",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e8",
+      "source": "saturation7",
+      "sourceHandle": "out:image",
+      "target": "mix8",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e9",
+      "source": "mix8",
+      "sourceHandle": "out:result",
+      "target": "output9",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}

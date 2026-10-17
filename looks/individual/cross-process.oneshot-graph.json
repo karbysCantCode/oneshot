@@ -1,0 +1,222 @@
+{
+  "oneshot": "graph",
+  "version": 10,
+  "name": "Cross Process",
+  "description": "Slide film in the wrong chemicals: yellow-green highlights, blue shadows, saturated and contrasty.",
+  "collection": "Film Looks",
+  "nodes": [
+    {
+      "id": "input1",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "kind": "input",
+        "label": "Image Input",
+        "params": {
+          "media": ""
+        }
+      }
+    },
+    {
+      "id": "value2",
+      "type": "shader",
+      "position": {
+        "x": 0,
+        "y": 460
+      },
+      "data": {
+        "kind": "value",
+        "label": "Strength",
+        "params": {
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "curves3",
+      "type": "shader",
+      "position": {
+        "x": 270,
+        "y": 0
+      },
+      "data": {
+        "kind": "curves",
+        "label": "Curves",
+        "params": {},
+        "curves": {
+          "r": [
+            [
+              0,
+              0
+            ],
+            [
+              0.25,
+              0.17
+            ],
+            [
+              0.75,
+              0.86
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "g": [
+            [
+              0,
+              0
+            ],
+            [
+              0.25,
+              0.19
+            ],
+            [
+              0.75,
+              0.82
+            ],
+            [
+              1,
+              0.97
+            ]
+          ],
+          "b": [
+            [
+              0,
+              0.14
+            ],
+            [
+              0.5,
+              0.45
+            ],
+            [
+              1,
+              0.82
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "saturation4",
+      "type": "shader",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "data": {
+        "kind": "saturation",
+        "label": "Saturation / Vibrance",
+        "params": {
+          "saturation": 20,
+          "vibrance": 15
+        }
+      }
+    },
+    {
+      "id": "contrast5",
+      "type": "shader",
+      "position": {
+        "x": 810,
+        "y": 0
+      },
+      "data": {
+        "kind": "contrast",
+        "label": "Contrast",
+        "params": {
+          "amount": 15,
+          "pivot": 18,
+          "luma": false
+        }
+      }
+    },
+    {
+      "id": "mix6",
+      "type": "shader",
+      "position": {
+        "x": 1080,
+        "y": 0
+      },
+      "data": {
+        "kind": "mix",
+        "label": "Strength mix",
+        "params": {
+          "blend": "mix",
+          "clampFac": true,
+          "clampRes": false,
+          "in_fac": 0.5,
+          "in_a": "#808080",
+          "in_b": "#808080"
+        }
+      }
+    },
+    {
+      "id": "output7",
+      "type": "shader",
+      "position": {
+        "x": 1350,
+        "y": 0
+      },
+      "data": {
+        "kind": "output",
+        "label": "Output",
+        "params": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "curves3",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e2",
+      "source": "curves3",
+      "sourceHandle": "out:image",
+      "target": "saturation4",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e3",
+      "source": "saturation4",
+      "sourceHandle": "out:image",
+      "target": "contrast5",
+      "targetHandle": "in:image"
+    },
+    {
+      "id": "e4",
+      "source": "value2",
+      "sourceHandle": "out:value",
+      "target": "mix6",
+      "targetHandle": "in:fac"
+    },
+    {
+      "id": "e5",
+      "source": "input1",
+      "sourceHandle": "out:image",
+      "target": "mix6",
+      "targetHandle": "in:a"
+    },
+    {
+      "id": "e6",
+      "source": "contrast5",
+      "sourceHandle": "out:image",
+      "target": "mix6",
+      "targetHandle": "in:b"
+    },
+    {
+      "id": "e7",
+      "source": "mix6",
+      "sourceHandle": "out:result",
+      "target": "output7",
+      "targetHandle": "in:image"
+    }
+  ],
+  "luts": {}
+}
