@@ -126,6 +126,8 @@ export type MediaItem = {
   visible: boolean;
   /** Saved graph applied to this image (Library mode). */
   graph?: ImageGraph;
+  /** Original file data (kept so the image can be stored for the next session). */
+  blob?: Blob;
 };
 
 /** A saved node graph (Library). */
@@ -138,4 +140,6 @@ export type GraphPreset = {
   luts: Record<string, { name: string; text: string }>;
   /** Optional short description shown in the Library. */
   description?: string;
+  /** Shipped with the app (looks pack). */
+  builtin?: boolean;
 };

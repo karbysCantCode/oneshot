@@ -72,7 +72,17 @@ import {
   type Plan,
 } from './nodes/graph';
 import { parseCube } from './nodes/lut';
-import { graphsInFile, loadPresets, makePreset, savePresets } from './library';
+import { graphsInFile, loadPresets, makePreset, missingBuiltins, savePresets } from './library';
+import {
+  deleteImages,
+  getImage,
+  loadMediaMeta,
+  loadWorkspace,
+  putImage,
+  requestPersistence,
+  saveMediaMeta,
+  saveWorkspace,
+} from './persist';
 import type {
   CurvePoint,
   GraphPreset,
@@ -142,13 +152,41 @@ const loadImage = (file: File, folder: string) =>
     const url = URL.createObjectURL(file);
     const image = new Image();
     image.decoding = 'async';
-    image.onload = () => resolve({ id: uid(), name: file.name, url, image, folder, visible: true });
+    image.onload = () => resolve({ id: uid(), name: file.name, url, image, folder, visible: true, blob: file });
     image.onerror = () => {
       URL.revokeObjectURL(url);
       resolve(null);
     };
     image.src = url;
   });
+
+/** Decode an image restored from the previous session. */
+const decodeStored = (blob: Blob, meta: Pick<MediaItem, 'id' | 'name' | 'folder' | 'visible' | 'graph'>) =>
+  new Promise<MediaItem | null>((resolve) => {
+    const url = URL.createObjectURL(blob);
+    const image = new Image();
+    image.decoding = 'async';
+    image.onload = () => resolve({ ...meta, url, image, blob });
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    image.src = url;
+  });
+
+/** Workspace graph from the previous session (or the starter graph). */
+function initialWorkspace() {
+  const saved = loadWorkspace();
+  if (saved) {
+    try {
+      const g = migrateGraph(saved.nodes, saved.edges);
+      if (g.nodes.length) return { ...g, luts: parseLuts(saved.luts).map };
+    } catch {
+      /* fall through to the starter graph */
+    }
+  }
+  return { nodes: starter, edges: starterEdges, luts: new Map<string, LutData>() };
+}
 
 /** All node ids in a graph, including inside groups. */
 const allNodeIds = (nodes: ShaderNode[], out = new Set<string>()) => {
@@ -180,12 +218,13 @@ type Frame = { groupId: string; label: string; nodes: ShaderNode[]; edges: Edge[
 type RenderJob = { canvas: HTMLCanvasElement; plan: Plan | null; item: RenderItem | null; maxSize: number; luts: Map<string, LutData> };
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState<ShaderNode>(starter);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(starterEdges);
+  const [initial] = useState(initialWorkspace);
+  const [nodes, setNodes, onNodesChange] = useNodesState<ShaderNode>(initial.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initial.edges);
   const [stack, setStack] = useState<Frame[]>([]);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [luts, setLuts] = useState<Map<string, LutData>>(new Map());
+  const [luts, setLuts] = useState<Map<string, LutData>>(initial.luts);
   const [presets, setPresets] = useState<GraphPreset[]>(loadPresets);
   const [status, setStatus] = useState('Import an image or folder to begin');
   const [settings, setSettings] = useState<Settings>(loadSettings);
@@ -843,6 +882,91 @@ export default function App() {
     setStatus(`${m.name} • ${m.image.naturalWidth}×${m.image.naturalHeight}`);
   }, []);
 
+  /** Remove images from the Media Pool (and the stored session). */
+  const deleteMedia = useCallback((ids: string[]) => {
+    const gone = new Set(ids);
+    const ms = live.current.media;
+    const removed = ms.filter((m) => gone.has(m.id));
+    if (!removed.length) return;
+    for (const m of removed) {
+      URL.revokeObjectURL(m.url);
+      gpu.current?.forget(m.id);
+    }
+    const remaining = ms.filter((m) => !gone.has(m.id));
+    setMedia(remaining);
+    setActiveId((a) => (a && gone.has(a) ? remaining[0]?.id ?? null : a));
+    setStatus(`Removed ${removed.length} image${removed.length === 1 ? '' : 's'} from the Media Pool`);
+  }, []);
+
+  /* ---------- session retention ---------- */
+  const restored = useRef(false);
+  const stored = useRef(new Set<string>());
+
+  // Restore the previous session's images (IndexedDB) on start-up.
+  useEffect(() => {
+    let cancelled = false;
+    const { items: meta, activeId: savedActive } = loadMediaMeta();
+    if (!meta.length) {
+      restored.current = true;
+      return;
+    }
+    setStatus(`Restoring ${meta.length} image${meta.length === 1 ? '' : 's'} from the last session…`);
+    (async () => {
+      const out: (MediaItem | null)[] = new Array(meta.length).fill(null);
+      let next = 0;
+      const worker = async () => {
+        while (next < meta.length) {
+          const i = next++;
+          try {
+            const blob = await getImage(meta[i].id);
+            if (blob && !cancelled) out[i] = await decodeStored(blob, meta[i]);
+          } catch {
+            /* missing / unreadable – skip */
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(DECODE_CONCURRENCY, meta.length) }, worker));
+      const items = out.filter((m): m is MediaItem => !!m);
+      if (cancelled) {
+        items.forEach((m) => URL.revokeObjectURL(m.url));
+        return;
+      }
+      items.forEach((m) => stored.current.add(m.id));
+      restored.current = true;
+      setMedia((cur) => [...items, ...cur]); // keep anything imported while restoring
+      setActiveId((a) => a ?? (items.some((m) => m.id === savedActive) ? savedActive : items[0]?.id ?? null));
+      const lost = meta.length - items.length;
+      setStatus(`Restored ${items.length} image${items.length === 1 ? '' : 's'}${lost ? ` (${lost} could not be restored)` : ''}`);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Keep the stored session in sync with the Media Pool.
+  useEffect(() => {
+    if (!restored.current) return;
+    saveMediaMeta(
+      media.map((m) => ({ id: m.id, name: m.name, folder: m.folder, visible: m.visible, graph: m.graph })),
+      activeId,
+    );
+    const ids = new Set(media.map((m) => m.id));
+    const toAdd = media.filter((m) => m.blob && !stored.current.has(m.id));
+    const toDelete = [...stored.current].filter((id) => !ids.has(id));
+    if (!toAdd.length && !toDelete.length) return;
+    toAdd.forEach((m) => stored.current.add(m.id));
+    toDelete.forEach((id) => stored.current.delete(id));
+    if (toAdd.length) requestPersistence();
+    void (async () => {
+      try {
+        for (const m of toAdd) await putImage(m.id, m.blob!);
+        if (toDelete.length) await deleteImages(toDelete);
+      } catch {
+        setStatus('Browser storage is full or unavailable – some images will not be kept after a refresh');
+      }
+    })();
+  }, [media, activeId]);
+
   const toggleVisible = useCallback((id: string) => setMedia((ms) => ms.map((m) => (m.id === id ? { ...m, visible: !m.visible } : m))), []);
 
   const setVisible = useCallback((ids: string[], visible: boolean) => {
@@ -1055,6 +1179,21 @@ export default function App() {
     return out;
   };
 
+  // Autosave the workspace graph (debounced) so it survives a refresh.
+  const wsWarned = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const root = rootGraph();
+      const ok = saveWorkspace({ nodes: root.nodes.map(cleanNode), edges: root.edges.map(cleanEdge), luts: lutTextsFor(root.nodes, luts) });
+      if (!ok && !wsWarned.current) {
+        wsWarned.current = true;
+        setStatus('Browser storage is full – the workspace graph will not be kept after a refresh');
+      }
+    }, 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, edges, stack, luts]);
+
   const savePreset = () => {
     const name = window.prompt('Name for this graph', `Graph ${presets.length + 1}`);
     if (!name?.trim()) return;
@@ -1079,6 +1218,77 @@ export default function App() {
     setSource('workspace');
     fitSoon();
     setStatus(`Editing “${p.name}” – save again to update the Library`);
+  };
+
+  /**
+   * Add a saved graph's nodes to the current workspace level so they can be seen and tweaked.
+   * The look is appended after the current graph: whatever fed Output now feeds the look's
+   * Image Input sockets, and the look's result goes to Output. Nodes arrive selected (Ctrl/⌘+G groups them).
+   */
+  const insertPresetIntoWorkspace = (id: string) => {
+    const p = presets.find((x) => x.id === id);
+    if (!p) return;
+    const g = migrateGraph(p.nodes, p.edges);
+    const { nodes: ns, edges: es } = live.current;
+    const remap = new Map(g.nodes.map((n) => [n.id, uid()]));
+
+    const out = ns.find((n) => n.data.kind === 'output');
+    const feeding = out ? es.find((e) => e.target === out.id) : undefined;
+    const pOut = g.nodes.find((n) => n.data.kind === 'output');
+    const pOutEdge = pOut ? g.edges.find((e) => e.target === pOut.id) : undefined;
+    // The look's "current image" inputs are replaced by the workspace chain (when there is one).
+    const replaced = new Set(feeding ? g.nodes.filter((n) => n.data.kind === 'input' && !n.data.params?.media).map((n) => n.id) : []);
+    const keep = g.nodes.filter((n) => n.data.kind !== 'output' && !replaced.has(n.id));
+    if (!keep.length) {
+      setStatus(`“${p.name}” has no nodes to insert`);
+      return;
+    }
+
+    // Place below the existing nodes.
+    const minX = Math.min(...keep.map((n) => n.position.x));
+    const minY = Math.min(...keep.map((n) => n.position.y));
+    const left = ns.length ? Math.min(...ns.map((n) => n.position.x)) : 0;
+    const top = ns.length ? Math.max(...ns.map((n) => n.position.y)) + 360 : 0;
+    const added: ShaderNode[] = keep.map((n) => ({
+      ...n,
+      id: remap.get(n.id)!,
+      selected: true,
+      position: { x: n.position.x - minX + left, y: n.position.y - minY + top },
+    }));
+
+    const newEdges: Edge[] = [];
+    for (const e of g.edges) {
+      if (pOut && e.target === pOut.id) continue;
+      if (replaced.has(e.source)) {
+        newEdges.push({ id: `e-${uid()}`, source: feeding!.source, sourceHandle: feeding!.sourceHandle, target: remap.get(e.target)!, targetHandle: e.targetHandle });
+      } else if (!replaced.has(e.target)) {
+        newEdges.push({ ...e, id: `e-${uid()}`, source: remap.get(e.source)!, target: remap.get(e.target)! });
+      }
+    }
+    let kept = es;
+    if (out && pOutEdge && !replaced.has(pOutEdge.source)) {
+      kept = es.filter((e) => e.target !== out.id);
+      newEdges.push({ id: `e-${uid()}`, source: remap.get(pOutEdge.source)!, sourceHandle: pOutEdge.sourceHandle, target: out.id, targetHandle: inHandle('image') });
+    }
+
+    setNodes([...ns.map((n) => ({ ...n, selected: false })), ...added]);
+    setEdges([...kept, ...newEdges]);
+    const lt = parseLuts(p.luts).map;
+    if (lt.size)
+      setLuts((m) => {
+        const next = new Map(m);
+        for (const [k, v] of lt) next.set(remap.get(k) ?? k, v);
+        return next;
+      });
+    setSource('workspace');
+    fitSoon();
+    setStatus(`Inserted “${p.name}” (${added.length} nodes) – connected after your graph. Ctrl/⌘+G groups the selected nodes.`);
+  };
+
+  const restoreBuiltins = () => {
+    const missing = missingBuiltins(presets);
+    commitPresets([...missing, ...presets]);
+    setStatus(`Restored ${missing.length} built-in look${missing.length === 1 ? '' : 's'}`);
   };
 
   const shownMediaIds = () => {
@@ -1135,6 +1345,8 @@ export default function App() {
         (failed.length ? ` – could not read: ${failed.join(', ')}` : ''),
     );
   };
+
+  const missingCount = useMemo(() => missingBuiltins(presets).length, [presets]);
 
   const libraryItem = settings.viewSource === 'library' ? derived.current?.media ?? null : null;
 
@@ -1394,6 +1606,13 @@ export default function App() {
                 <b>Import:</b> drag images or whole folders onto the Media Pool.
               </p>
               <p>
+                <b>Media Pool:</b> click / Ctrl-click / Shift-click to select images, Select all, then Delete (or the bin). Images,
+                the Library and the workspace graph are kept in this browser across refreshes.
+              </p>
+              <p>
+                <b>Library:</b> Insert adds a look’s nodes after your graph so you can tweak them; Edit replaces the graph.
+              </p>
+              <p>
                 <b>Reset:</b> the reset button in a node’s title restores its default values (Edit menu: selected / all nodes).
               </p>
               <p>
@@ -1431,6 +1650,7 @@ export default function App() {
           onImportFiles={(list) => void importFiles(list)}
           onImportFolder={() => pickFolder(null)}
           onDropFiles={(files) => void importDropped(files)}
+          onDelete={deleteMedia}
         />
 
         <Splitter axis="x" title="Drag to resize the Media Pool · double-click to reset" {...resizeMedia} />
@@ -1524,6 +1744,9 @@ export default function App() {
           presets={presets}
           onSavePreset={savePreset}
           onLoadPreset={loadPresetIntoWorkspace}
+          onInsertPreset={insertPresetIntoWorkspace}
+          missingBuiltins={missingCount}
+          onRestoreBuiltins={restoreBuiltins}
           onApplyPreset={applyPresetToShown}
           onRenamePreset={renamePreset}
           onDeletePreset={deletePreset}

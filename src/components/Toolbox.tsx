@@ -8,6 +8,11 @@ type Props = {
   presets: GraphPreset[];
   onSavePreset: () => void;
   onLoadPreset: (id: string) => void;
+  /** Add a saved graph's nodes to the workspace (keeps the current graph). */
+  onInsertPreset: (id: string) => void;
+  /** Number of built-in looks the user has deleted, and a way to bring them back. */
+  missingBuiltins: number;
+  onRestoreBuiltins: () => void;
   onApplyPreset: (id: string) => void;
   onRenamePreset: (id: string) => void;
   onDeletePreset: (id: string) => void;
@@ -91,6 +96,11 @@ export default function Toolbox(p: Props) {
               }}
             />
           </label>
+          {p.missingBuiltins > 0 && (
+            <button className="bar-btn file-btn" onClick={p.onRestoreBuiltins}>
+              Restore {p.missingBuiltins} built-in look{p.missingBuiltins === 1 ? '' : 's'}
+            </button>
+          )}
           {!p.presets.length && (
             <p className="hint">
               Saved graphs can be applied to images in the Media Pool. Value, RGB Colour and Image Input nodes in a saved graph become
@@ -102,7 +112,10 @@ export default function Toolbox(p: Props) {
             return (
               <div key={g.id} className="preset">
                 <div className="preset-head">
-                  <b title={g.name}>{g.name}</b>
+                  <b title={g.name}>
+                    {g.name}
+                    {g.builtin && <span className="builtin-tag">BUILT-IN</span>}
+                  </b>
                   {g.description && <span className="preset-desc">{g.description}</span>}
                   <small>
                     {g.nodes.length} nodes · {exposed} param{exposed === 1 ? '' : 's'}
@@ -111,6 +124,9 @@ export default function Toolbox(p: Props) {
                 <div className="preset-actions">
                   <button className="mini-btn" title="Apply to the images shown in the viewer (switches to Library view)" onClick={() => p.onApplyPreset(g.id)}>
                     Apply
+                  </button>
+                  <button className="mini-btn" title="Add this graph's nodes to the workspace, appended after the current graph, so you can see and tinker with them" onClick={() => p.onInsertPreset(g.id)}>
+                    Insert
                   </button>
                   <button className="mini-btn" title="Open in the node workspace (replaces the current graph)" onClick={() => p.onLoadPreset(g.id)}>
                     Edit

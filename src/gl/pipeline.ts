@@ -177,6 +177,16 @@ export class WebGLPipeline {
     return kinds.filter((k) => getDef(k)?.glsl && !this.program(k));
   }
 
+  /** Free every GPU texture cached for a media item (after it is deleted). */
+  forget(id: string) {
+    for (const [key, entry] of this.cache) {
+      if (!key.startsWith(`${id}@`)) continue;
+      this.gl.deleteTexture(entry.tex);
+      this.cache.delete(key);
+      this.cacheBytes -= entry.bytes;
+    }
+  }
+
   /** Output size for an item at a maximum edge length. */
   outputSize(item: RenderItem, maxSize: number) {
     const limit = Math.min(maxSize, this.maxTextureSize);

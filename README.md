@@ -42,10 +42,11 @@ Deploy `dist/` to any static host. No server-side processing is used.
 - Group sockets are fixed when the group is created (re-group to change them).
 
 ## Library: saved graphs per image
-- Toolbox → **Library** → **Save current graph** (also File → Save graph to Library…). Saved graphs live in the browser (localStorage); use ⤓ / **Import graph file…** to move them between machines.
+- Toolbox → **Library** → **Save current graph** (also File → Save graph to Library…). Saved graphs live in the browser (localStorage); use ⤓ / **Import graph / pack files…** to move them between machines. Several files, or pack files containing many graphs, can be imported at once.
 - **Apply** assigns a graph to the images shown in the viewer and switches to **Library** view (viewer bar: Workspace | Library).
 - In Library view each image is rendered with its own graph. Under the image, the graph's **Value**, **RGB Colour** and **Image Input** nodes appear as per-image parameters (named by their node labels), so the same look can be varied per photo. **Apply to all shown** copies the graph and parameters; **Reset** restores the graph's values.
-- **Edit** loads a saved graph into the workspace; saving again creates an updated copy.
+- **Insert** adds a saved graph's nodes to the workspace so you can see and tweak them: the look is appended after your current graph (whatever fed Output feeds the look, and the look feeds Output). The inserted nodes arrive selected – press Ctrl/⌘+G to collapse them into a compound node.
+- **Edit** replaces the workspace with a saved graph; saving again creates an updated copy.
 
 ## Nodes
 | Category | Nodes |
@@ -69,6 +70,13 @@ Circle, Ellipse, Rectangle (rounded corners) and Polygon (3–32 sides) Mask nod
 - **Rotation**: degrees. Every parameter is a socket, so it can be driven by a Value node (per-image in Library view) or by another node per pixel.
 - Combine masks with Math (Maximum = union, Minimum = intersection, Subtract = cut-out).
 
+## Session retention
+Imported images (IndexedDB), their Media Pool folders / display ticks / Library assignments, the Library, the workspace graph (including loaded LUTs) and settings are kept in this browser and restored after a refresh or restart. Nothing leaves the computer. Storage is per browser profile and per site address (e.g. `localhost:5173` and a LAN IP are separate). The app asks the browser to keep the data persistent; private/incognito windows discard it when closed.
+
+## Removing images
+- Hover an image → ✕, or the bin on a folder header to remove the whole folder.
+- Select several: click, **Ctrl/⌘-click** to add/remove, **Shift-click** for a range, **Select all** (or Ctrl/⌘+A in the Media Pool), then the bin button or **Delete / Backspace**. Removing several asks for confirmation. Removed images are also deleted from the stored session; the original files on disk are never touched.
+
 ## Importing
 - Drag images **or whole folders** onto the Media Pool (sub-folders included), or use “+ Images” / “+ Folder”. Each dropped folder becomes a Media Pool folder; dropped loose images go to “Loose images”.
 
@@ -84,6 +92,16 @@ Circle, Ellipse, Rectangle (rounded corners) and Polygon (3–32 sides) Mask nod
 - Size: full resolution or a maximum long edge. Filter radii scale with the size, so results match the full-size look.
 - Names: original name + suffix (default `_edit`). Several images download as one ZIP (or separate downloads).
 - Rendering is on the GPU; only file encoding and ZIP packaging use the CPU.
+
+## Viewer (single image)
+- Opens **fitted** to the panel and re-fits when you switch images or resize the panel (while in Fit).
+- **Wheel** or **pinch**: zoom around the cursor. **Drag** (left or middle button): pan. Trackpad two-finger scroll pans.
+- **Double-click**: 100% at the cursor ↔ Fit. Bottom-right controls: Fit, 100%, −, zoom %, +.
+- Keys (click the image first): **F** / **0** fit, **1** actual pixels, **+** / **−** zoom, **arrows** pan.
+- Above 200% (manual zoom) pixels are shown sharp for pixel-peeping. The viewer renders at full resolution, so 100% is true pixels.
+
+## Ready-made looks
+The 12 looks ship with the app (`src/looks/builtin-looks.json`) and are unpacked into the Library on first run, tagged BUILT-IN. Delete any you don't want; **Restore built-in looks** in the Library tab brings them back. `looks/` contains the same 12 looks as files (Teal & Orange, Vintage Film, Noir, Comic Pop, Dreamy Glow, Cyberpunk Neon, Bleach Bypass, Cross Process, Tilt-Shift Miniature, Pencil Sketch, Golden Hour, Faux Infrared). Import `looks/nodegl-looks-pack.json` via Toolbox → Library → Import graph / pack files…; see `looks/README.md`.
 
 ## Layout
 Drag the dividers between the Media Pool, centre and Toolbox, and between the viewer and node workspace, to resize them. Double-click a divider to reset it; Window → Reset panel sizes resets all. Sizes are remembered in the browser.
